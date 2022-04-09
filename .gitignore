@@ -1,7 +1,7 @@
 # my
-*/dataset/
-*/params/
-demo.py
+*/dataset/*
+*/params/*
+*/demo.py
 !.gitkeep
 
 # Byte-compiled / optimized / DLL files
