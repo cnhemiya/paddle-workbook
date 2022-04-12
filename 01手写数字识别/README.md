@@ -3,7 +3,7 @@
 ## 简介
 
 小熊百度飞桨练习项目，01手写数字识别，本项目开发和测试均在 Ubuntu20.04 系统下进行。  
-项目最新代码查看主页：[小熊飞桨练习册](https://gitee.com/cnhemiya/paddle-workbook)。  
+项目最新代码查看主页：[小熊飞桨练习册](https://gitee.com/cnhemiya/paddle-workbook)  
 百度飞桨 AI Studio 主页：[小熊飞桨练习册-01手写数字识别](https://aistudio.baidu.com/aistudio/projectdetail/3796241)
 
 ## 文件说明
@@ -26,7 +26,8 @@
 
 数据集来源于百度飞桨公共数据集：[经典MNIST数据集](https://aistudio.baidu.com/aistudio/datasetdetail/65)。  
 如果运行在本地计算机下载完数据集后解压文件放到 **dataset** 目录下即可。  
-如果运行在百度 **aistudio** 环境查看 **data** 目录有 **.gz** 数据在项目根目录运行下面命令即可。
+如果运行在百度 **aistudio** 环境查看 **data** 目录有数据在项目目录运行下面命令即可。
+
 ```bash
 bash aistudio-data.sh
 ```

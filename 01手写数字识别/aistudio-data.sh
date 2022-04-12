@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 from_dir=/home/aistudio/data/data65
-to_dir=/home/aistudio/dataset
+to_dir=/home/aistudio/work/dataset
 
 gzip -dfq $from_dir/train-images-idx3-ubyte.gz
 gzip -dfq $from_dir/train-labels-idx1-ubyte.gz
