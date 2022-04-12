@@ -18,8 +18,8 @@
 |mod/utils.py|杂项|
 |mod/config.py|配置|
 |mod/report.py|结果报表|
-|dataset|数据集路径|
-|params|模型参数保存路径|
+|dataset|数据集目录|
+|params|模型参数保存目录|
 
 ## 数据集
 
