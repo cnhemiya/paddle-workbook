@@ -35,7 +35,7 @@ bash aistudio-data.sh
 ## 网络模型
 
 网络模型使用 **LeNet 网络模型** 来源百度飞桨教程和网络  
-**LeNet 网络模型** 知识查看[百度飞桨教程](https://www.paddlepaddle.org.cn/tutorials/projectdetail/3106582)
+**LeNet 网络模型** 知识查看 [百度飞桨教程](https://www.paddlepaddle.org.cn/tutorials/projectdetail/3106582)
 
 ```python
 import paddle
