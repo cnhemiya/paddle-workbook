@@ -34,7 +34,8 @@ bash aistudio-data.sh
 
 ## 网络模型
 
-网络模型使用 **LeNet 网络模型** 来源百度飞桨教程和网络
+网络模型使用 **LeNet 网络模型** 来源百度飞桨教程和网络  
+**LeNet 网络模型** 知识查看[百度飞桨教程](https://www.paddlepaddle.org.cn/tutorials/projectdetail/3106582)
 
 ```python
 import paddle
@@ -192,7 +193,7 @@ python3 report.py
 
 ## report.json 说明
 
-|键|说明|
+|键名|说明|
 |--|--|
 |id|根据模型保存时间生成的 id|
 |loss|本次训练的 loss 值|
