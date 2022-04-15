@@ -42,7 +42,7 @@ bash get-data.sh
 获取数据完毕后，在项目目录下运行下面脚本，检查 dataset 目录下的数据是否存在。
 
 ```bash
-bash get-data.sh
+bash check-data.sh
 ```
 
 ## 网络模型
