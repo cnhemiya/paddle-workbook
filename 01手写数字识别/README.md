@@ -4,7 +4,8 @@
 
 小熊百度飞桨练习项目，01手写数字识别，本项目开发和测试均在 Ubuntu20.04 系统下进行。  
 项目最新代码查看主页：[小熊飞桨练习册](https://gitee.com/cnhemiya/paddle-workbook)  
-百度飞桨 AI Studio 主页：[小熊飞桨练习册-01手写数字识别](https://aistudio.baidu.com/aistudio/projectdetail/3796241)
+百度飞桨 AI Studio 主页：[小熊飞桨练习册-01手写数字识别](https://aistudio.baidu.com/aistudio/projectdetail/3796241)  
+Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https://my.oschina.net/hemiya/blog/5509991)
 
 ## 文件说明
 
@@ -13,7 +14,8 @@
 |train.py|训练程序|
 |test.py|测试程序|
 |report.py|报表程序|
-|aistudio-data.sh|aistudio 环境数据整理程序|
+|get-data.sh|获取数据到 dataset 目录下|
+|check-data.sh|检查 dataset 目录下的数据是否存在|
 |mod/lenet.py|LeNet 网络模型|
 |mod/dataset.py|MNIST 手写数据集解析|
 |mod/utils.py|杂项|
@@ -24,18 +26,29 @@
 
 ## 数据集
 
-数据集来源于百度飞桨公共数据集：[经典MNIST数据集](https://aistudio.baidu.com/aistudio/datasetdetail/65)。  
-如果运行在本地计算机下载完数据集后解压文件放到 **dataset** 目录下即可。  
-如果运行在百度 **aistudio** 环境查看 **data** 目录有数据在项目目录运行下面命令即可。
+数据集来源于百度飞桨公共数据集：[经典MNIST数据集](https://aistudio.baidu.com/aistudio/datasetdetail/65)
+
+### 获取数据
+
+如果运行在本地计算机，下载完数据，文件放到 **dataset** 目录下，在项目目录下运行下面脚本。  
+如果运行在百度 **AI Studio** 环境，查看 **data** 目录是否有数据，在项目目录下运行下面脚本。
 
 ```bash
-bash aistudio-data.sh
+bash get-data.sh
+```
+
+### 检查数据
+
+获取数据完毕后，在项目目录下运行下面脚本，检查 dataset 目录下的数据是否存在。
+
+```bash
+bash get-data.sh
 ```
 
 ## 网络模型
 
 网络模型使用 **LeNet 网络模型** 来源百度飞桨教程和网络  
-**LeNet 网络模型** 知识查看 [百度飞桨教程](https://www.paddlepaddle.org.cn/tutorials/projectdetail/3106582)
+**LeNet 网络模型** 参考： [百度飞桨教程](https://www.paddlepaddle.org.cn/tutorials/projectdetail/3106582)
 
 ```python
 import paddle
@@ -90,28 +103,40 @@ import numpy as np
 
 class MNIST(paddle.io.Dataset):
     """
-    步骤一: 继承paddle.io.Dataset类
+    MNIST 手写数据集解析, 继承 paddle.io.Dataset 类
     """
 
     def __init__(self,
-                 image_path=None,
-                 label_path=None,
+                 images_path: str,
+                 labels_path: str,
                  transform=None,
                  ):
         """
-        步骤二：实现构造函数，定义数据集大小
+        构造函数，定义数据集大小
+
+        Args:
+            images_path (str): 图像集路径
+            labels_path (str): 标签集路径
+            transform (Compose, optional): 转换数据的操作组合, 默认 None
         """
         super(MNIST, self).__init__()
-        self.image_path = image_path
-        self.label_path = label_path
-        self._check_path(image_path, "数据路径错误")
-        self._check_path(label_path, "标签路径错误")
+        self.images_path = images_path
+        self.labels_path = labels_path
+        self._check_path(images_path, "数据路径错误")
+        self._check_path(labels_path, "标签路径错误")
         self.transform = transform
-        self.images, self.labels = self.parse_dataset(image_path, label_path)
+        self.images, self.labels = self.parse_dataset(images_path, labels_path)
 
     def __getitem__(self, idx):
         """
         获取单个数据和标签
+
+        Args:
+            idx (Any): 索引
+
+        Returns:
+            image (float32): 图像
+            label (int64): 标签
         """
         image, label = self.images[idx], self.labels[idx]
         # 这里 reshape 是2维 [28 ,28]
@@ -122,23 +147,49 @@ class MNIST(paddle.io.Dataset):
         return image.astype('float32'), label.astype('int64')
 
     def __len__(self):
+        """
+        数据数量
+
+        Returns:
+            int: 数据数量
+        """
         return len(self.labels)
 
-    def _check_path(self, path, msg):
+    def _check_path(self, path: str, msg: str):
+        """
+        检查路径是否存在
+
+        Args:
+            path (str): 路径
+            msg (str, optional): 异常消息
+
+        Raises:
+            Exception: 路径错误, 异常
+        """
         if not os.path.exists(path):
             raise Exception("{}: {}".format(msg, path))
 
     @staticmethod
-    def parse_dataset(image_path, label_path):
+    def parse_dataset(images_path: str, labels_path: str):
         """
         数据集解析
+
+        Args:
+            images_path (str): 图像集路径
+            labels_path (str): 标签集路径
+
+        Returns:
+            images: 图像集
+            labels: 标签集
         """
-        with open(image_path, 'rb') as imgpath:
+        with open(images_path, 'rb') as imgpath:
+            # 解析图像集
             magic, num, rows, cols = struct.unpack('>IIII', imgpath.read(16))
             # 这里 reshape 是1维 [786]
             images = np.fromfile(
                 imgpath, dtype=np.uint8).reshape(num, rows * cols)
-        with open(label_path, 'rb') as lbpath:
+        with open(labels_path, 'rb') as lbpath:
+            # 解析标签集
             magic, n = struct.unpack('>II', lbpath.read(8))
             labels = np.fromfile(lbpath, dtype=np.uint8)
         return images, labels
@@ -146,7 +197,7 @@ class MNIST(paddle.io.Dataset):
 
 ## 配置模块
 
-可以自行修改 **mod/config.py** 文件，有详细的说明
+可以查看修改 **mod/config.py** 文件，有详细的说明
 
 ## 开始训练
 
@@ -195,9 +246,9 @@ python3 report.py
 
 |键名|说明|
 |--|--|
-|id|根据模型保存时间生成的 id|
+|id|根据模型保存的时间生成的 id|
 |loss|本次训练的 loss 值|
 |acc|本次训练的 acc 值|
-|epochs|程序命令行传入的 epochs 值|
-|batch_size|程序命令行传入的 batch_size 值|
-|learning_rate|程序命令行传入的 learning_rate 值|
+|epochs|本次训练的 epochs 值|
+|batch_size|本次训练的 batch_size 值|
+|learning_rate|本次训练的 learning_rate 值|
