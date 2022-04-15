@@ -43,7 +43,7 @@ def user_cude(cuda=True):
     使用 cuda gpu 还是 cpu 运算
 
     Args:
-        cuda (bool, optional): cuda, 默认 True.
+        cuda (bool, optional): cuda, 默认 True
     """
     paddle.device.set_device(
         "gpu:0") if cuda else paddle.device.set_device("cpu")
@@ -69,7 +69,7 @@ def train_dataset(transform: pptf.Compose):
     Returns:
         MNIST: MNIST 手写数据集解析
     """
-    return mod.dataset.MNIST(image_path=TRAIN_DATA_PATH, label_path=TRAIN_LABEL_PATH, transform=transform)
+    return mod.dataset.MNIST(images_path=TRAIN_DATA_PATH, labels_path=TRAIN_LABEL_PATH, transform=transform)
 
 
 def test_dataset(transform):
@@ -82,7 +82,7 @@ def test_dataset(transform):
     Returns:
         MNIST: MNIST 手写数据集解析
     """
-    return mod.dataset.MNIST(image_path=TEST_DATA_PATH, label_path=TEST_LABLE_PATH, transform=transform)
+    return mod.dataset.MNIST(images_path=TEST_DATA_PATH, labels_path=TEST_LABLE_PATH, transform=transform)
 
 
 def net(num_classes=10):
@@ -90,7 +90,7 @@ def net(num_classes=10):
     获取网络模型
 
     Args:
-        num_classes (int, optional): 分类数量, 默认 10.
+        num_classes (int, optional): 分类数量, 默认 10
 
     Returns:
         LeNet: LeNet 网络模型
@@ -104,8 +104,8 @@ def save_model(model, save_dir=SAVE_DIR, save_prefix=SAVE_PREFIX):
 
     Args:
         model (paddle.Model): 网络模型
-        save_dir (str, optional): 保存模型的文件夹, 默认 SAVE_DIR.
-        save_prefix (str, optional): 保存模型的前缀, 默认 SAVE_PREFIX.
+        save_dir (str, optional): 保存模型的文件夹, 默认 SAVE_DIR
+        save_prefix (str, optional): 保存模型的前缀, 默认 SAVE_PREFIX
 
     Returns:
         save_path (str): 保存的路径
@@ -123,9 +123,9 @@ def load_model(model, loda_dir="", save_prefix=SAVE_PREFIX, reset_optimizer=Fals
 
     Args:
         model (paddle.Model): 网络模型
-        loda_dir (str, optional): 读取模型的文件夹, 默认 "".
-        save_prefix (str, optional): 保存模型的前缀, 默认 SAVE_PREFIX.
-        reset_optimizer (bool, optional): 重置 optimizer 参数, 默认 False 不重置.
+        loda_dir (str, optional): 读取模型的文件夹, 默认 ""
+        save_prefix (str, optional): 保存模型的前缀, 默认 SAVE_PREFIX
+        reset_optimizer (bool, optional): 重置 optimizer 参数, 默认 False 不重置
     """
     load_path = SAVE_DIR + loda_dir + "/"
     mod.utils.check_path(load_path)
@@ -139,8 +139,8 @@ def save_report(save_path: str, id: str, args=None, eval_result=None):
     Args:
         save_path (str): 保存的路径
         id (str): 报表 id
-        args (_type_, optional): 命令行参数, Defaults to None.
-        eval_result (list, optional): 评估结果, 默认 None.
+        args (_type_, optional): 命令行参数, Defaults to None
+        eval_result (list, optional): 评估结果, 默认 None
 
     Raises:
         Exception: eval_result 不能为 None
