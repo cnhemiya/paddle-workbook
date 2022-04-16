@@ -57,4 +57,4 @@ get_all_file_data(){
 }
 
 get_all_zip_data
-# get_all_file_data
+get_all_file_data
