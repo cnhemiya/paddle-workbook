@@ -15,11 +15,12 @@ t10k-labels-idx1-ubyte.gz
 # 解压缩文件
 unzip_file(){
     file="$1"
+    dir="$2"
     ext="${file##*.}"
     if [ -f "$file" ]; then
         echo "解压文件: $file"
         if [ $ext == "zip" ]; then
-            unzip -oq "$file"
+            unzip -oq "$file" -d "$dir"
         elif [ $ext == "gz" ]; then
             gzip -dqkfN "$file"
         fi
@@ -37,7 +38,7 @@ get_data(){
         mv "$ais_dataset_dir/$file" "$dataset_dir/$file"
     fi
     if [ "$2" == "zip" ]; then
-        unzip_file "$dataset_dir/$file"
+        unzip_file "$dataset_dir/$file" "$dataset_dir"
     fi
 }
 
@@ -59,3 +60,4 @@ get_all_file_data(){
 
 get_all_zip_data
 # get_all_file_data
+

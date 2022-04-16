@@ -3,23 +3,22 @@
 # 获取数据到 dataset 目录下
 
 dataset_dir="./dataset"
-ais_dataset_dir="../data/data65"
+ais_dataset_dir="../data/data138865"
 zip_files="
-train-images-idx3-ubyte.gz
-train-labels-idx1-ubyte.gz
-t10k-images-idx3-ubyte.gz
-t10k-labels-idx1-ubyte.gz
+ichallenge-train-images.zip
+ichallenge-test-images.zip
 "
-# data_files="train-images-labels.txt test-images-labels.txt"
+data_files="train-images-labels.txt test-images-labels.txt"
 
 # 解压缩文件
 unzip_file(){
     file="$1"
+    dir="$2"
     ext="${file##*.}"
     if [ -f "$file" ]; then
         echo "解压文件: $file"
         if [ $ext == "zip" ]; then
-            unzip -oq "$file"
+            unzip -oq "$file" -d "$dir"
         elif [ $ext == "gz" ]; then
             gzip -dqkfN "$file"
         fi
@@ -37,7 +36,7 @@ get_data(){
         mv "$ais_dataset_dir/$file" "$dataset_dir/$file"
     fi
     if [ "$2" == "zip" ]; then
-        unzip_file "$dataset_dir/$file"
+        unzip_file "$dataset_dir/$file" "$dataset_dir"
     fi
 }
 
