@@ -7,11 +7,12 @@ DATE:    2022-04-16 11:37
 """
 
 
-from typing import Any
 import paddle
 import os
-import struct
+import random
 import numpy as np
+from PIL import Image
+import paddle.vision as ppvs
 
 
 class ImageClass(paddle.io.Dataset):
@@ -51,13 +52,15 @@ class ImageClass(paddle.io.Dataset):
             image (float32): 图像
             label (int64): 标签
         """
-        image, label = self.images[idx], self.labels[idx]
-        # 这里 reshape 是2维 [28 ,28]
-        image = np.reshape(image, [28, 28])
+        image_path, label = self.images[idx], self.labels[idx]
+        self._check_path(image_path, "图像路径错误")
+        ppvs.set_image_backend("pil")
+        image = Image.open(image_path)
         if self.transform is not None:
             image = self.transform(image)
-        # label.astype 如果是整型，只能是 int64
-        return image.astype('float32'), label.astype('int64')
+        # 转换图像 HWC 转为 CHW
+        image = np.transpose(image, (2,0,1))
+        return image.astype("float32"), label
 
     def __len__(self):
         """
@@ -92,14 +95,16 @@ class ImageClass(paddle.io.Dataset):
             images_labels_txt_path (str): 图像和标签的文本路径
 
         Returns:
-            images: 图像集
-            labels: 标签集
+            images: 图像路径集
+            labels: 分类标签集
         """
         lines = []
         images = []
         labels = []
         with open(images_labels_txt_path, "r") as f:
             lines = f.readlines()
+        # 随机打乱数据
+        random.shuffle(lines)
         for i in lines:
             data = i.split(" ")
             images.append(os.path.join(dataset_path, data[0]))

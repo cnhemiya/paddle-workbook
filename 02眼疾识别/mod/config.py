@@ -7,7 +7,6 @@ DATE:    2022-04-16 11:37
 """
 
 
-
 import paddle
 import paddle.vision.transforms as pptf
 import argparse
@@ -20,13 +19,10 @@ import mod.report
 # 数据集路径
 DATA_DIR_PATH = "./dataset/"
 # 训练数据
-TRAIN_DATA_PATH = DATA_DIR_PATH + "train-images.idx3-ubyte"
-# 训练标签
-TRAIN_LABEL_PATH = DATA_DIR_PATH + "train-labels.idx1-ubyte"
+TRAIN_DATA_PATH = DATA_DIR_PATH + "train-images-labels.txt"
 # 测试数据
-TEST_DATA_PATH = DATA_DIR_PATH + "t10k-images.idx3-ubyte"
-# 测试标签
-TEST_LABLE_PATH = DATA_DIR_PATH + "t10k-labels.idx1-ubyte"
+TEST_DATA_PATH = DATA_DIR_PATH + "test-images-labels.txt"
+
 
 # 模型参数保存的文件夹
 SAVE_DIR = "./params/"
@@ -58,9 +54,8 @@ def transform():
         Compose: 转换数据的操作组合
     """
     # Resize: 调整图像大小, Normalize: 图像归一化处理
-    return pptf.Compose([pptf.Resize(224, 224), pptf.Normalize(mean=[127.5, 127.5, 127.5], 
+    return pptf.Compose([pptf.Resize(size=[224, 224]), pptf.Normalize(mean=[127.5, 127.5, 127.5], 
                          std=[127.5, 127.5, 127.5], data_format='HWC')])
-
 
 def train_dataset(transform: pptf.Compose):
     """
@@ -70,9 +65,9 @@ def train_dataset(transform: pptf.Compose):
         transform (Compose): 转换数据的操作组合
 
     Returns:
-        MNIST: MNIST 手写数据集解析
+        ImageClass: ImageClass 图像分类数据集解析
     """
-    return mod.dataset.MNIST(images_path=TRAIN_DATA_PATH, labels_path=TRAIN_LABEL_PATH, transform=transform)
+    return mod.dataset.ImageClass(dataset_path=DATA_DIR_PATH, images_labels_txt_path=TRAIN_DATA_PATH, transform=transform)
 
 
 def test_dataset(transform):
@@ -83,9 +78,9 @@ def test_dataset(transform):
         transform (Compose): 转换数据的操作组合
 
     Returns:
-        MNIST: MNIST 手写数据集解析
+        ImageClass: ImageClass 图像分类数据集解析
     """
-    return mod.dataset.MNIST(images_path=TEST_DATA_PATH, labels_path=TEST_LABLE_PATH, transform=transform)
+    return mod.dataset.ImageClass(dataset_path=DATA_DIR_PATH, images_labels_txt_path=TEST_DATA_PATH, transform=transform)
 
 
 def net(num_classes=2, pool_kernel_size=2, conv1_paddling=2, fc1_in_features=9216):
@@ -179,8 +174,8 @@ def train_args():
                            dest="learning_rate", metavar="", help="学习率，默认 0.001")
     arg_parse.add_argument("--epochs", type=int, default=2,
                            dest="epochs", metavar="", help="训练几轮，默认 2 轮")
-    arg_parse.add_argument("--batch-size", type=int, default=128,
-                           dest="batch_size", metavar="", help="一批次数量，默认 128")
+    arg_parse.add_argument("--batch-size", type=int, default=2,
+                           dest="batch_size", metavar="", help="一批次数量，默认 2")
     arg_parse.add_argument("--num-workers", type=int, default=2,
                            dest="num_workers", metavar="", help="线程数量，默认 2")
     arg_parse.add_argument("--no-save", action="store_true",
@@ -202,8 +197,8 @@ def test_args():
     arg_parse = argparse.ArgumentParser()
     arg_parse.add_argument("--cpu", action="store_true",
                            dest="cpu", help="是否使用 cpu 计算，默认使用 CUDA")
-    arg_parse.add_argument("--batch-size", type=int, default=128,
-                           dest="batch_size", metavar="", help="一批次数量，默认 128")
+    arg_parse.add_argument("--batch-size", type=int, default=2,
+                           dest="batch_size", metavar="", help="一批次数量，默认 2")
     arg_parse.add_argument("--num-workers", type=int, default=2,
                            dest="num_workers", metavar="", help="线程数量，默认 2")
     arg_parse.add_argument("--load-dir", dest="load_dir", default="best",

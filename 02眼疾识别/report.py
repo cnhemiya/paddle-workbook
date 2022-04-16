@@ -27,7 +27,7 @@ def get_print_str(report: mod.report.Report):
     """
     获取打印 Report 的字符串
     """
-    return "id: {},  loss: {:<.19f},  acc: {},  EP: {},  BS: {},  LR: {}".format(
+    return "id: {},  loss: {:<.19f},  acc: {:<.4f},  EP: {},  BS: {},  LR: {}".format(
         report.id, report.loss, report.acc, report.epochs, report.batch_size, report.learning_rate)
 
 def get_first_str():
