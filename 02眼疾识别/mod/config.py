@@ -2,16 +2,17 @@
 """
 LICENSE: MulanPSL2
 AUTHOR:  cnhemiya@qq.com
-DATE:    2022-04-08 21:52
+DATE:    2022-04-16 11:37
 文档说明: 配置
 """
+
 
 
 import paddle
 import paddle.vision.transforms as pptf
 import argparse
 import mod.dataset
-import mod.lenet
+import mod.alexnet
 import mod.utils
 import mod.report
 
@@ -56,7 +57,9 @@ def transform():
     Returns:
         Compose: 转换数据的操作组合
     """
-    return pptf.Compose([pptf.Normalize(mean=[127.5], std=[127.5], data_format='CHW')])
+    # Resize: 调整图像大小, Normalize: 图像归一化处理
+    return pptf.Compose([pptf.Resize(224, 224), pptf.Normalize(mean=[127.5, 127.5, 127.5], 
+                         std=[127.5, 127.5, 127.5], data_format='HWC')])
 
 
 def train_dataset(transform: pptf.Compose):
@@ -85,17 +88,22 @@ def test_dataset(transform):
     return mod.dataset.MNIST(images_path=TEST_DATA_PATH, labels_path=TEST_LABLE_PATH, transform=transform)
 
 
-def net(num_classes=10):
+def net(num_classes=2, pool_kernel_size=2, conv1_paddling=2, fc1_in_features=9216):
     """
     获取网络模型
 
     Args:
-        num_classes (int, optional): 分类数量, 默认 10
+        num_classes (int, optional): 分类数量, 默认 2
+        pool_kernel_size (int, optional): 池化层核大小, 默认 2
+        conv1_paddling (int, optional): 第一层卷积层填充, 默认 2,
+            输入图像大小为 224 x 224 填充 2
+        fc1_in_features (int, optional): 第一层全连接层输入特征数量, 默认 9216, 
 
     Returns:
-        LeNet: LeNet 网络模型
+        AlexNet: AlexNet 网络模型
     """
-    return mod.lenet.LeNet(num_classes=num_classes)
+    return mod.alexnet.AlexNet(num_classes=num_classes, pool_kernel_size=pool_kernel_size,
+                               conv1_paddling=conv1_paddling, fc1_in_features=fc1_in_features)
 
 
 def save_model(model, save_dir=SAVE_DIR, save_prefix=SAVE_PREFIX):

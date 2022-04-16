@@ -11,7 +11,7 @@ DATE:    2022-04-08 21:52
 import paddle
 import paddle.metric
 import mod.config as config
-
+import mod.dataset
 
 def train(net):
     # 解析命令行参数
@@ -50,19 +50,20 @@ def train(net):
 
 
 def main():
-    # 解析命令行参数
-    args = config.train_args()
-    # 使用 cuda gpu 还是 cpu 运算
-    config.user_cude(not args.cpu)
+    # # 解析命令行参数
+    # args = config.train_args()
+    # # 使用 cuda gpu 还是 cpu 运算
+    # config.user_cude(not args.cpu)
     # 网络模型
-    net = config.net()
+    # net = config.net()
     # 网络模型信息
-    if (args.summary):
-        params_info = paddle.summary(net, (1, 1, 28, 28))
-        print(params_info)
-    else:
-        # 训练
-        train(net)
+    # if (args.summary):
+    # params_info = paddle.summary(net, (1, 3, 224, 224))
+    # print(params_info)
+    # else:
+    #     # 训练
+    #     train(net)
+    mod.dataset.ImageClass.parse_dataset("./dataset", "./dataset/train-images-labels.txt")
 
 
 if __name__ == '__main__':

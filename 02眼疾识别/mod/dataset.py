@@ -2,42 +2,43 @@
 """
 LICENSE: MulanPSL2
 AUTHOR:  cnhemiya@qq.com
-DATE:    2022-04-08 21:52
-文档说明: MNIST 手写数据集解析
+DATE:    2022-04-16 11:37
+文档说明: ImageClass 图像分类数据集解析
 """
 
 
+from typing import Any
 import paddle
 import os
 import struct
 import numpy as np
 
 
-class MNIST(paddle.io.Dataset):
+class ImageClass(paddle.io.Dataset):
     """
-    MNIST 手写数据集解析, 继承 paddle.io.Dataset 类
+    ImageClass 图像分类数据集解析, 继承 paddle.io.Dataset 类
     """
 
     def __init__(self,
-                 images_path: str,
-                 labels_path: str,
+                 dataset_path: str,
+                 images_labels_txt_path: str,
                  transform=None,
                  ):
         """
         构造函数，定义数据集大小
 
         Args:
-            images_path (str): 图像集路径
-            labels_path (str): 标签集路径
+            dataset_path (str): 数据集路径
+            images_labels_txt_path (str): 图像和标签的文本路径
             transform (Compose, optional): 转换数据的操作组合, 默认 None
         """
-        super(MNIST, self).__init__()
-        self.images_path = images_path
-        self.labels_path = labels_path
-        self._check_path(images_path, "数据路径错误")
-        self._check_path(labels_path, "标签路径错误")
+        super(ImageClass, self).__init__()
+        self.dataset_path = dataset_path
+        self.images_labels_txt_path = images_labels_txt_path
+        self._check_path(dataset_path, "数据集路径错误")
+        self._check_path(images_labels_txt_path, "图像和标签的文本路径错误")
         self.transform = transform
-        self.images, self.labels = self.parse_dataset(images_path, labels_path)
+        self.images, self.labels = self.parse_dataset(dataset_path, images_labels_txt_path)
 
     def __getitem__(self, idx):
         """
@@ -82,26 +83,25 @@ class MNIST(paddle.io.Dataset):
             raise Exception("{}: {}".format(msg, path))
 
     @staticmethod
-    def parse_dataset(images_path: str, labels_path: str):
+    def parse_dataset(dataset_path: str, images_labels_txt_path: str):
         """
         数据集解析
 
         Args:
-            images_path (str): 图像集路径
-            labels_path (str): 标签集路径
+            dataset_path (str): 数据集路径
+            images_labels_txt_path (str): 图像和标签的文本路径
 
         Returns:
             images: 图像集
             labels: 标签集
         """
-        with open(images_path, 'rb') as imgpath:
-            # 解析图像集
-            magic, num, rows, cols = struct.unpack('>IIII', imgpath.read(16))
-            # 这里 reshape 是1维 [786]
-            images = np.fromfile(
-                imgpath, dtype=np.uint8).reshape(num, rows * cols)
-        with open(labels_path, 'rb') as lbpath:
-            # 解析标签集
-            magic, n = struct.unpack('>II', lbpath.read(8))
-            labels = np.fromfile(lbpath, dtype=np.uint8)
+        lines = []
+        images = []
+        labels = []
+        with open(images_labels_txt_path, "r") as f:
+            lines = f.readlines()
+        for i in lines:
+            data = i.split(" ")
+            images.append(os.path.join(dataset_path, data[0]))
+            labels.append(int(data[1]))
         return images, labels
