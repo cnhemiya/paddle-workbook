@@ -39,7 +39,7 @@ class ImageClass(paddle.io.Dataset):
         self._check_path(dataset_path, "数据集路径错误")
         self._check_path(images_labels_txt_path, "图像和标签的文本路径错误")
         self.transform = transform
-        self.images, self.labels = self.parse_dataset(dataset_path, images_labels_txt_path)
+        self.image_paths, self.labels = self.parse_dataset(dataset_path, images_labels_txt_path)
 
     def __getitem__(self, idx):
         """
@@ -50,14 +50,35 @@ class ImageClass(paddle.io.Dataset):
 
         Returns:
             image (float32): 图像
-            label (int64): 标签
+            label (int): 标签
         """
-        image_path, label = self.images[idx], self.labels[idx]
-        self._check_path(image_path, "图像路径错误")
+        image_path, label = self.image_paths[idx], self.labels[idx]
         ppvs.set_image_backend("pil")
         image = Image.open(image_path)
         if self.transform is not None:
             image = self.transform(image)
+        # 转换图像 HWC 转为 CHW
+        image = np.transpose(image, (2,0,1))
+        return image.astype("float32"), label
+        
+
+    def get_item(image_path: str, label: int, transform = None):
+        """
+        获取单个数据和标签
+
+        Args:
+            image_path (str): 图像路径
+            label (int): 标签
+            transform (Compose, optional): 转换数据的操作组合, 默认 None
+
+        Returns:
+            image (float32): 图像
+            label (int): 标签
+        """
+        ppvs.set_image_backend("pil")
+        image = Image.open(image_path)
+        if transform is not None:
+            image = transform(image)
         # 转换图像 HWC 转为 CHW
         image = np.transpose(image, (2,0,1))
         return image.astype("float32"), label
@@ -95,11 +116,11 @@ class ImageClass(paddle.io.Dataset):
             images_labels_txt_path (str): 图像和标签的文本路径
 
         Returns:
-            images: 图像路径集
+            image_paths: 图像路径集
             labels: 分类标签集
         """
         lines = []
-        images = []
+        image_paths = []
         labels = []
         with open(images_labels_txt_path, "r") as f:
             lines = f.readlines()
@@ -107,6 +128,6 @@ class ImageClass(paddle.io.Dataset):
         random.shuffle(lines)
         for i in lines:
             data = i.split(" ")
-            images.append(os.path.join(dataset_path, data[0]))
+            image_paths.append(os.path.join(dataset_path, data[0]))
             labels.append(int(data[1]))
-        return images, labels
+        return image_paths, labels

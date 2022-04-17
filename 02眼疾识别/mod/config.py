@@ -54,8 +54,21 @@ def transform():
         Compose: 转换数据的操作组合
     """
     # Resize: 调整图像大小, Normalize: 图像归一化处理
-    return pptf.Compose([pptf.Resize(size=[224, 224]), pptf.Normalize(mean=[127.5, 127.5, 127.5], 
-                         std=[127.5, 127.5, 127.5], data_format='HWC')])
+    return pptf.Compose([pptf.Resize(size=[224, 224]), pptf.Normalize(mean=[127.5, 127.5, 127.5],
+                                                                      std=[127.5, 127.5, 127.5], data_format='HWC')])
+
+
+def image_to_tensor(image):
+    """
+    图像数据转 tensor
+
+    Returns:
+        tensor: 转换后的 tensor 数据
+    """
+    # 图像数据格式 CHW
+    data = image.reshape([1, 3, 224, 224]).astype("float32")
+    return paddle.to_tensor(data)
+
 
 def train_dataset(transform: pptf.Compose):
     """

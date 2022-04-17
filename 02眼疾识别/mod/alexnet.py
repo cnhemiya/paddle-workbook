@@ -77,15 +77,15 @@ class AlexNet(nn.Layer):
         x = self.conv5(x)
         x = F.relu(x)
         x = self.max_pool3(x)
-        # flatten 根据给定的start_axis 和 stop_axis 将连续的维度展平
+        # flatten 根据给定的 start_axis 和 stop_axis 将连续的维度展平
         x = paddle.flatten(x, start_axis=1, stop_axis=-1)
         x = self.fc1(x)
         x = F.relu(x)
-        # 在全连接之后使用dropout抑制过拟合
+        # 在全连接之后使用 dropout 抑制过拟合
         x = self.drop1(x)
         x = self.fc2(x)
         x = F.relu(x)
-        # 在全连接之后使用dropout抑制过拟合
+        # 在全连接之后使用 dropout 抑制过拟合
         x = self.drop2(x)
         x = self.fc3(x)
         return x
