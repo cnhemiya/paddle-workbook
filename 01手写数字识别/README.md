@@ -2,7 +2,7 @@
 
 ## 简介
 
-小熊百度飞桨练习项目，01手写数字识别，本项目开发和测试均在 Ubuntu20.04 系统下进行。  
+小熊百度飞桨练习项目，01手写数字识别，本项目开发和测试均在 Ubuntu 20.04 系统下进行。  
 项目最新代码查看主页：[小熊飞桨练习册](https://gitee.com/cnhemiya/paddle-workbook)  
 百度飞桨 AI Studio 主页：[小熊飞桨练习册-01手写数字识别](https://aistudio.baidu.com/aistudio/projectdetail/3796241)  
 Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https://my.oschina.net/hemiya/blog/5509991)
