@@ -26,7 +26,7 @@ class ImageClass(paddle.io.Dataset):
                  transform=None,
                  ):
         """
-        构造函数，定义数据集大小
+        构造函数，定义数据集
 
         Args:
             dataset_path (str): 数据集路径
@@ -53,15 +53,9 @@ class ImageClass(paddle.io.Dataset):
             label (int): 标签
         """
         image_path, label = self.image_paths[idx], self.labels[idx]
-        ppvs.set_image_backend("pil")
-        image = Image.open(image_path)
-        if self.transform is not None:
-            image = self.transform(image)
-        # 转换图像 HWC 转为 CHW
-        image = np.transpose(image, (2,0,1))
-        return image.astype("float32"), label
+        return self.get_item(image_path, label, self.transform)
         
-
+    @staticmethod
     def get_item(image_path: str, label: int, transform = None):
         """
         获取单个数据和标签

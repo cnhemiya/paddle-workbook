@@ -7,6 +7,7 @@ DATE:    2022-04-17 20:42
 """
 
 
+from gi.repository import Gtk
 import paddle.nn.functional as F
 import random
 import os
@@ -16,7 +17,6 @@ import paddle.nn.layer
 import paddle
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
 
 
 test_ui_str = """
@@ -152,11 +152,17 @@ class TestWindow(Gtk.Window):
         Gtk.main()
 
     def init_net(self):
+        """
+        初始化模型
+        """
         mod.config.user_cude(True)
         net = mod.config.net()
         return net
 
     def test_net(self):
+        """
+        模型测试
+        """
         self.net.eval()
         idx = random.randint(0, len(self.test_image_paths))
         self.test_img.set_from_file(self.test_image_paths[idx])

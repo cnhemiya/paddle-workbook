@@ -1,10 +1,10 @@
-# 小熊飞桨练习册-01手写数字识别
+# 小熊飞桨练习册-02眼疾识别
 
 ## 简介
 
-小熊百度飞桨练习项目，01手写数字识别，本项目开发和测试均在 Ubuntu20.04 系统下进行。  
+小熊百度飞桨练习项目，02眼疾识别，本项目开发和测试均在 Ubuntu 20.04 系统下进行。  
 项目最新代码查看主页：[小熊飞桨练习册](https://gitee.com/cnhemiya/paddle-workbook)  
-百度飞桨 AI Studio 主页：[小熊飞桨练习册-01手写数字识别](https://aistudio.baidu.com/aistudio/projectdetail/3796241)  
+百度飞桨 AI Studio 主页：[小熊飞桨练习册-02眼疾识别](https://aistudio.baidu.com/aistudio/projectdetail/3830855)  
 Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https://my.oschina.net/hemiya/blog/5509991)
 
 ## 文件说明
@@ -13,11 +13,12 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 |--|--|
 |train.py|训练程序|
 |test.py|测试程序|
+|test-gtk.py|测试程序 GTK 界面|
 |report.py|报表程序|
 |get-data.sh|获取数据到 dataset 目录下|
 |check-data.sh|检查 dataset 目录下的数据是否存在|
-|mod/lenet.py|LeNet 网络模型|
-|mod/dataset.py|MNIST 手写数据集解析|
+|mod/alexnet.py|AlexNet 网络模型|
+|mod/dataset.py|ImageClass 图像分类数据集解析|
 |mod/utils.py|杂项|
 |mod/config.py|配置|
 |mod/report.py|结果报表|
@@ -26,7 +27,7 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 
 ## 数据集
 
-数据集来源于百度飞桨公共数据集：[经典MNIST数据集](https://aistudio.baidu.com/aistudio/datasetdetail/65)
+数据集来源于百度飞桨公共数据集：[眼疾识别数据集iChallenge-整理版](https://aistudio.baidu.com/aistudio/datasetdetail/138865)
 
 ### 获取数据
 
@@ -47,8 +48,8 @@ bash check-data.sh
 
 ## 网络模型
 
-网络模型使用 **LeNet 网络模型** 来源百度飞桨教程和网络  
-**LeNet 网络模型** 参考： [百度飞桨教程](https://www.paddlepaddle.org.cn/tutorials/projectdetail/3106582)
+网络模型使用 **AlexNet 网络模型** 来源百度飞桨教程和网络。  
+**AlexNet 网络模型** 参考： [百度飞桨教程](https://www.paddlepaddle.org.cn/tutorials/projectdetail/3106582)
 
 ```python
 import paddle
@@ -56,23 +57,56 @@ import paddle.nn as nn
 import paddle.nn.functional as F
 
 
-# LeNet 网络模型
-class LeNet(nn.Layer):
-    def __init__(self, num_classes=10):
-        super(LeNet, self).__init__()
-        if num_classes < 1:
-            raise Exception("分类数量 num_classes 必须大于 0: {}".format(num_classes))
+# AlexNet 网络模型
+class AlexNet(nn.Layer):
+    """
+    AlexNet 网络模型
+
+    输入图像大小为 224 x 224
+    池化层 kernel_size = 2, 第一层卷积层填充 paddling = 2
+    """
+    def __init__(self, num_classes=10, pool_kernel_size=2, conv1_paddling=2, fc1_in_features=9216):
+        """
+        AlexNet 网络模型
+
+        Args:
+            num_classes (int, optional): 分类数量, 默认 10
+            pool_kernel_size (int, optional): 池化层核大小, 默认 2
+            conv1_paddling (int, optional): 第一层卷积层填充, 默认 2,
+                输入图像大小为 224 x 224 填充 2
+            fc1_in_features (int, optional): 第一层全连接层输入特征数量, 默认 9216, 
+                根据 max_pool3 输出结果, 计算得出 256*6*6 = 9216
+
+        Raises:
+            Exception: 分类数量 num_classes 必须大于等于 2
+        """        
+        super(AlexNet, self).__init__()
+        if num_classes < 2:
+            raise Exception("分类数量 num_classes 必须大于等于 2: {}".format(num_classes))
         self.num_classes = num_classes
+        self.pool_kernel_size = pool_kernel_size
+        self.fc1_in_features = fc1_in_features
         self.conv1 = nn.Conv2D(
-            in_channels=1, out_channels=6, kernel_size=5, stride=1)
-        self.max_pool1 = nn.MaxPool2D(kernel_size=2, stride=2)
+            in_channels=3, out_channels=96, kernel_size=11, stride=4, padding=conv1_paddling)
+        self.max_pool1 = nn.MaxPool2D(kernel_size=pool_kernel_size, stride=2)
         self.conv2 = nn.Conv2D(
-            in_channels=6, out_channels=16, kernel_size=5, stride=1)
-        self.max_pool2 = nn.MaxPool2D(kernel_size=2, stride=2)
+            in_channels=96, out_channels=256, kernel_size=5, stride=1, padding=2)
+        self.max_pool2 = nn.MaxPool2D(kernel_size=pool_kernel_size, stride=2)
         self.conv3 = nn.Conv2D(
-            in_channels=16, out_channels=120, kernel_size=4, stride=1)
-        self.fc1 = nn.Linear(in_features=120, out_features=64)
-        self.fc2 = nn.Linear(in_features=64, out_features=num_classes)
+            in_channels=256, out_channels=384, kernel_size=3, stride=1, padding=1)
+        self.conv4 = nn.Conv2D(
+            in_channels=384, out_channels=384, kernel_size=3, stride=1, padding=1)
+        self.conv5 = nn.Conv2D(
+            in_channels=384, out_channels=256, kernel_size=3, stride=1, padding=1)
+        self.max_pool3 = nn.MaxPool2D(kernel_size=pool_kernel_size, stride=2)
+        # in_features 9216 = max_pool3 输出 256*6*6
+        self.fc1 = nn.Linear(in_features=fc1_in_features, out_features=4096)
+        self.drop_ratio1 = 0.5
+        self.drop1 = nn.Dropout(self.drop_ratio1)
+        self.fc2 = nn.Linear(in_features=4096, out_features=4096)
+        self.drop_ratio2 = 0.5
+        self.drop2 = nn.Dropout(self.drop_ratio2)
+        self.fc3 = nn.Linear(in_features=4096, out_features=num_classes)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -83,49 +117,63 @@ class LeNet(nn.Layer):
         x = self.max_pool2(x)
         x = self.conv3(x)
         x = F.relu(x)
+        x = self.conv4(x)
+        x = F.relu(x)
+        x = self.conv5(x)
+        x = F.relu(x)
+        x = self.max_pool3(x)
+        # flatten 根据给定的 start_axis 和 stop_axis 将连续的维度展平
         x = paddle.flatten(x, start_axis=1, stop_axis=-1)
         x = self.fc1(x)
         x = F.relu(x)
+        # 在全连接之后使用 dropout 抑制过拟合
+        x = self.drop1(x)
         x = self.fc2(x)
+        x = F.relu(x)
+        # 在全连接之后使用 dropout 抑制过拟合
+        x = self.drop2(x)
+        x = self.fc3(x)
         return x
 ```
 
 ## 数据集解析
 
-数据集解析方法来源百度飞桨教程和网络，和百度飞桨 MNIST 数据集稍有不同
+数据集解析，主要是解析 **图像路径和标签的文本** ，然后根据图像路径读取图像和标签。
 
 ```python
 import paddle
 import os
-import struct
+import random
 import numpy as np
+from PIL import Image
+import paddle.vision as ppvs
 
 
-class MNIST(paddle.io.Dataset):
+class ImageClass(paddle.io.Dataset):
     """
-    MNIST 手写数据集解析, 继承 paddle.io.Dataset 类
+    ImageClass 图像分类数据集解析, 继承 paddle.io.Dataset 类
     """
 
     def __init__(self,
-                 images_path: str,
-                 labels_path: str,
+                 dataset_path: str,
+                 images_labels_txt_path: str,
                  transform=None,
                  ):
         """
-        构造函数，定义数据集大小
+        构造函数，定义数据集
 
         Args:
-            images_path (str): 图像集路径
-            labels_path (str): 标签集路径
+            dataset_path (str): 数据集路径
+            images_labels_txt_path (str): 图像和标签的文本路径
             transform (Compose, optional): 转换数据的操作组合, 默认 None
         """
-        super(MNIST, self).__init__()
-        self.images_path = images_path
-        self.labels_path = labels_path
-        self._check_path(images_path, "数据路径错误")
-        self._check_path(labels_path, "标签路径错误")
+        super(ImageClass, self).__init__()
+        self.dataset_path = dataset_path
+        self.images_labels_txt_path = images_labels_txt_path
+        self._check_path(dataset_path, "数据集路径错误")
+        self._check_path(images_labels_txt_path, "图像和标签的文本路径错误")
         self.transform = transform
-        self.images, self.labels = self.parse_dataset(images_path, labels_path)
+        self.image_paths, self.labels = self.parse_dataset(dataset_path, images_labels_txt_path)
 
     def __getitem__(self, idx):
         """
@@ -136,15 +184,32 @@ class MNIST(paddle.io.Dataset):
 
         Returns:
             image (float32): 图像
-            label (int64): 标签
+            label (int): 标签
         """
-        image, label = self.images[idx], self.labels[idx]
-        # 这里 reshape 是2维 [28 ,28]
-        image = np.reshape(image, [28, 28])
-        if self.transform is not None:
-            image = self.transform(image)
-        # label.astype 如果是整型，只能是 int64
-        return image.astype('float32'), label.astype('int64')
+        image_path, label = self.image_paths[idx], self.labels[idx]
+        return self.get_item(image_path, label, self.transform)
+        
+    @staticmethod
+    def get_item(image_path: str, label: int, transform = None):
+        """
+        获取单个数据和标签
+
+        Args:
+            image_path (str): 图像路径
+            label (int): 标签
+            transform (Compose, optional): 转换数据的操作组合, 默认 None
+
+        Returns:
+            image (float32): 图像
+            label (int): 标签
+        """
+        ppvs.set_image_backend("pil")
+        image = Image.open(image_path)
+        if transform is not None:
+            image = transform(image)
+        # 转换图像 HWC 转为 CHW
+        image = np.transpose(image, (2,0,1))
+        return image.astype("float32"), label
 
     def __len__(self):
         """
@@ -170,29 +235,30 @@ class MNIST(paddle.io.Dataset):
             raise Exception("{}: {}".format(msg, path))
 
     @staticmethod
-    def parse_dataset(images_path: str, labels_path: str):
+    def parse_dataset(dataset_path: str, images_labels_txt_path: str):
         """
         数据集解析
 
         Args:
-            images_path (str): 图像集路径
-            labels_path (str): 标签集路径
+            dataset_path (str): 数据集路径
+            images_labels_txt_path (str): 图像和标签的文本路径
 
         Returns:
-            images: 图像集
-            labels: 标签集
+            image_paths: 图像路径集
+            labels: 分类标签集
         """
-        with open(images_path, 'rb') as imgpath:
-            # 解析图像集
-            magic, num, rows, cols = struct.unpack('>IIII', imgpath.read(16))
-            # 这里 reshape 是1维 [786]
-            images = np.fromfile(
-                imgpath, dtype=np.uint8).reshape(num, rows * cols)
-        with open(labels_path, 'rb') as lbpath:
-            # 解析标签集
-            magic, n = struct.unpack('>II', lbpath.read(8))
-            labels = np.fromfile(lbpath, dtype=np.uint8)
-        return images, labels
+        lines = []
+        image_paths = []
+        labels = []
+        with open(images_labels_txt_path, "r") as f:
+            lines = f.readlines()
+        # 随机打乱数据
+        random.shuffle(lines)
+        for i in lines:
+            data = i.split(" ")
+            image_paths.append(os.path.join(dataset_path, data[0]))
+            labels.append(int(data[1]))
+        return image_paths, labels
 ```
 
 ## 配置模块
@@ -211,7 +277,7 @@ python3 train.py
   --cpu             是否使用 cpu 计算，默认使用 CUDA
   --learning-rate   学习率，默认 0.001
   --epochs          训练几轮，默认 2 轮
-  --batch-size      一批次数量，默认 128
+  --batch-size      一批次数量，默认 2
   --num-workers     线程数量，默认 2
   --no-save         是否保存模型参数，默认保存, 选择后不保存模型参数
   --load-dir        读取模型参数，读取 params 目录下的子文件夹, 默认不读取
@@ -228,10 +294,30 @@ python3 test.py
 
 ```bash
   --cpu           是否使用 cpu 计算，默认使用 CUDA
-  --batch-size    一批次数量，默认 128
+  --batch-size    一批次数量，默认 2
   --num-workers   线程数量，默认 2
   --load-dir      读取模型参数，读取 params 目录下的子文件夹, 默认 best 目录
 ```
+
+## 测试模型 GTK 界面
+
+运行 **test-gtk.py** 文件，此程序依赖 GTK 库，只能运行在本地计算机。
+
+```bash
+python3 test.py
+```
+
+### GTK 库安装
+
+```bash
+python3 -m pip install pygobject
+```
+
+### 使用手册
+
+- 1、点击 **选择模型** 按钮。
+- 2、弹出的文件对话框选择模型，模型在 **params** 目录下的子目录的 **model.pdparams** 文件。
+- 3、点击 **随机测试** 按钮，就可以看到测试的图像，预测结果和实际结果。 
 
 ## 查看结果报表
 
