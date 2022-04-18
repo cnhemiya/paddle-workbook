@@ -7,7 +7,6 @@ DATE:    2022-04-17 20:42
 """
 
 
-from gi.repository import Gtk
 import paddle.nn.functional as F
 import random
 import os
@@ -17,6 +16,7 @@ import paddle.nn.layer
 import paddle
 import gi
 gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
 
 
 test_ui_str = """
