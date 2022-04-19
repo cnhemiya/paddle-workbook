@@ -424,7 +424,8 @@ python3 report.py
 ## VisualDL 可视化分析工具
 
 - 安装和使用说明参考：[VisualDL](https://gitee.com/paddlepaddle/VisualDL)
-- 在本地计算机运行，训练的时候加上参数 **--log**
+- 训练的时候加上参数 **--log**
+- 如果是 **AI Studio** 环境训练的把 **log** 目录下载下来，解压缩后放到本地项目目录下 **log** 目录
 - 在项目目录下运行下面命令
 - 然后根据提示的网址，打开浏览器访问提示的网址即可
 
