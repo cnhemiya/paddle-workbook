@@ -24,6 +24,7 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 |mod/report.py|结果报表|
 |dataset|数据集目录|
 |params|模型参数保存目录|
+|log|VisualDL 日志保存目录|
 
 ## 数据集
 
@@ -158,6 +159,7 @@ class ImageClass(paddle.io.Dataset):
                  dataset_path: str,
                  images_labels_txt_path: str,
                  transform=None,
+                 shuffle=True
                  ):
         """
         构造函数，定义数据集
@@ -166,14 +168,17 @@ class ImageClass(paddle.io.Dataset):
             dataset_path (str): 数据集路径
             images_labels_txt_path (str): 图像和标签的文本路径
             transform (Compose, optional): 转换数据的操作组合, 默认 None
+            shuffle (bool, True): 随机打乱数据, 默认 True
         """
+
         super(ImageClass, self).__init__()
         self.dataset_path = dataset_path
         self.images_labels_txt_path = images_labels_txt_path
         self._check_path(dataset_path, "数据集路径错误")
         self._check_path(images_labels_txt_path, "图像和标签的文本路径错误")
         self.transform = transform
-        self.image_paths, self.labels = self.parse_dataset(dataset_path, images_labels_txt_path)
+        self.image_paths, self.labels = self.parse_dataset(
+            dataset_path, images_labels_txt_path, shuffle)
 
     def __getitem__(self, idx):
         """
@@ -188,9 +193,9 @@ class ImageClass(paddle.io.Dataset):
         """
         image_path, label = self.image_paths[idx], self.labels[idx]
         return self.get_item(image_path, label, self.transform)
-        
+
     @staticmethod
-    def get_item(image_path: str, label: int, transform = None):
+    def get_item(image_path: str, label: int, transform=None):
         """
         获取单个数据和标签
 
@@ -208,7 +213,7 @@ class ImageClass(paddle.io.Dataset):
         if transform is not None:
             image = transform(image)
         # 转换图像 HWC 转为 CHW
-        image = np.transpose(image, (2,0,1))
+        image = np.transpose(image, (2, 0, 1))
         return image.astype("float32"), label
 
     def __len__(self):
@@ -235,7 +240,7 @@ class ImageClass(paddle.io.Dataset):
             raise Exception("{}: {}".format(msg, path))
 
     @staticmethod
-    def parse_dataset(dataset_path: str, images_labels_txt_path: str):
+    def parse_dataset(dataset_path: str, images_labels_txt_path: str, shuffle: bool):
         """
         数据集解析
 
@@ -253,7 +258,8 @@ class ImageClass(paddle.io.Dataset):
         with open(images_labels_txt_path, "r") as f:
             lines = f.readlines()
         # 随机打乱数据
-        random.shuffle(lines)
+        if (shuffle):
+            random.shuffle(lines)
         for i in lines:
             data = i.split(" ")
             image_paths.append(os.path.join(dataset_path, data[0]))
@@ -281,6 +287,7 @@ python3 train.py
   --num-workers     线程数量，默认 2
   --no-save         是否保存模型参数，默认保存, 选择后不保存模型参数
   --load-dir        读取模型参数，读取 params 目录下的子文件夹, 默认不读取
+  --log             是否输出 VisualDL 日志，默认不输出
   --summary         输出网络模型信息，默认不输出，选择后只输出信息，不会开启训练
 ```
 
@@ -304,7 +311,7 @@ python3 test.py
 运行 **test-gtk.py** 文件，此程序依赖 GTK 库，只能运行在本地计算机。
 
 ```bash
-python3 test.py
+python3 test-gtk.py
 ```
 
 ### GTK 库安装
@@ -332,9 +339,21 @@ python3 report.py
 
 |键名|说明|
 |--|--|
-|id|根据模型保存的时间生成的 id|
+|id|根据时间生成的字符串 ID|
 |loss|本次训练的 loss 值|
 |acc|本次训练的 acc 值|
 |epochs|本次训练的 epochs 值|
 |batch_size|本次训练的 batch_size 值|
 |learning_rate|本次训练的 learning_rate 值|
+
+## VisualDL 可视化分析工具
+
+- 安装和使用说明参考：[VisualDL](https://gitee.com/paddlepaddle/VisualDL)
+- 训练的时候加上参数 **--log**
+- 如果是 **AI Studio** 环境训练的把 **log** 目录下载下来，解压缩后放到本地项目目录下 **log** 目录
+- 在项目目录下运行下面命令
+- 然后根据提示的网址，打开浏览器访问提示的网址即可
+
+```bash
+visualdl --logdir ./log
+```

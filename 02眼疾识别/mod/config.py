@@ -7,9 +7,10 @@ DATE:    2022-04-16 11:37
 """
 
 
+import os
+import argparse
 import paddle
 import paddle.vision.transforms as pptf
-import argparse
 import mod.dataset
 import mod.alexnet
 import mod.utils
@@ -31,8 +32,19 @@ SAVE_BAST_DIR = "base"
 # 模型参数保存的前缀
 SAVE_PREFIX = "model"
 
+# 日志保存的路径
+LOG_DIR = "./log"
+
 # report 文件名
 REPORT_FILE = "report.json"
+
+# 图像高
+IMAGE_H = 224
+# 图像宽
+IMAGE_W = 224
+
+# 分类文本, 按照标签排列
+CLASS_TXT = ["非眼疾", "眼疾"]
 
 
 def user_cude(cuda=True):
@@ -54,8 +66,8 @@ def transform():
         Compose: 转换数据的操作组合
     """
     # Resize: 调整图像大小, Normalize: 图像归一化处理
-    return pptf.Compose([pptf.Resize(size=[224, 224]), pptf.Normalize(mean=[127.5, 127.5, 127.5],
-                                                                      std=[127.5, 127.5, 127.5], data_format='HWC')])
+    return pptf.Compose([pptf.Resize(size=[IMAGE_H, IMAGE_W]), pptf.Normalize(mean=[127.5, 127.5, 127.5],
+                                                                              std=[127.5, 127.5, 127.5], data_format='HWC')])
 
 
 def image_to_tensor(image):
@@ -66,7 +78,7 @@ def image_to_tensor(image):
         tensor: 转换后的 tensor 数据
     """
     # 图像数据格式 CHW
-    data = image.reshape([1, 3, 224, 224]).astype("float32")
+    data = image.reshape([1, 3, IMAGE_H, IMAGE_W]).astype("float32")
     return paddle.to_tensor(data)
 
 
@@ -114,23 +126,36 @@ def net(num_classes=2, pool_kernel_size=2, conv1_paddling=2, fc1_in_features=921
                                conv1_paddling=conv1_paddling, fc1_in_features=fc1_in_features)
 
 
-def save_model(model, save_dir=SAVE_DIR, save_prefix=SAVE_PREFIX):
+def get_log_dir(log_dir=LOG_DIR, time_id=mod.utils.time_id()):
+    """
+    获取 VisualDL 日志文件夹
+
+    Args:
+        log_dir (str, optional): 日志文件夹, 默认 LOG_DIR
+        time_id (str, optional): 根据时间生成的字符串 ID
+
+    Returns:
+        str : VisualDL 日志文件夹
+    """
+    return os.path.join(log_dir, time_id)
+
+
+def save_model(model, save_dir=SAVE_DIR, time_id = mod.utils.time_id(), save_prefix=SAVE_PREFIX):
     """
     保存模型参数
 
     Args:
         model (paddle.Model): 网络模型
         save_dir (str, optional): 保存模型的文件夹, 默认 SAVE_DIR
+        time_id (str): 根据时间生成的字符串 ID
         save_prefix (str, optional): 保存模型的前缀, 默认 SAVE_PREFIX
-
+    
     Returns:
         save_path (str): 保存的路径
-        time_str (str): 时间 id
     """
-    time_str = mod.utils.time_str()
-    save_path = save_dir + time_str
-    model.save(save_path + "/" + save_prefix)
-    return save_path, time_str
+    save_path = os.path.join(save_dir, time_id)
+    model.save(os.path.join(save_path, save_prefix))
+    return save_path
 
 
 def load_model(model, loda_dir="", save_prefix=SAVE_PREFIX, reset_optimizer=False):
@@ -195,6 +220,8 @@ def train_args():
                            dest="no_save", help="是否保存模型参数，默认保存, 选择后不保存模型参数")
     arg_parse.add_argument("--load-dir", dest="load_dir", default="",
                            metavar="", help="读取模型参数，读取 params 目录下的子文件夹, 默认不读取")
+    arg_parse.add_argument("--log", action="store_true",
+                           dest="log", help="是否输出 VisualDL 日志，默认不输出")
     arg_parse.add_argument("--summary", action="store_true",
                            dest="summary", help="输出网络模型信息，默认不输出，选择后只输出信息，不会开启训练")
     return arg_parse.parse_args()

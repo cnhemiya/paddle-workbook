@@ -10,6 +10,8 @@ DATE:    2022-04-08 21:52
 
 import paddle
 import paddle.metric
+import paddle.callbacks
+import mod.utils
 import mod.config as config
 
 
@@ -34,9 +36,15 @@ def train(net):
     if args.load_dir != "":
         config.load_model(model=model, loda_dir=args.load_dir,
                           reset_optimizer=False)
+    # 时间 ID
+    time_id = mod.utils.time_id()
+    # 输出 VisualDL 日志
+    callback = None
+    if (args.log):
+        callback = paddle.callbacks.VisualDL(log_dir=config.get_log_dir(time_id=time_id))
     # 训练模型
     model.fit(train_data=train_dataset, epochs=args.epochs,
-              batch_size=args.batch_size, num_workers=args.num_workers, verbose=1)
+              batch_size=args.batch_size, num_workers=args.num_workers, verbose=1, callbacks=callback)
     # 评估模型
     result = model.evaluate(eval_data=test_dataset,
                             batch_size=args.batch_size, num_workers=args.num_workers, verbose=1)
@@ -44,8 +52,8 @@ def train(net):
     print(result)
     # 保存模型参数和模型结果
     if not args.no_save:
-        save_path, time_str = config.save_model(model)
-        config.save_report(save_path=save_path, id=time_str,
+        save_path = config.save_model(model, time_id=time_id)
+        config.save_report(save_path=save_path, id=time_id,
                            args=args, eval_result=result)
 
 
@@ -58,7 +66,7 @@ def main():
     net = config.net()
     # 网络模型信息
     if (args.summary):
-        params_info = paddle.summary(net, (1, 3, 224, 224))
+        params_info = paddle.summary(net, (1, 3, config.IMAGE_H, config.IMAGE_W))
         print(params_info)
     else:
         # 训练
