@@ -414,7 +414,7 @@ python3 report.py
 
 |键名|说明|
 |--|--|
-|id|根据模型保存的时间生成的 id|
+|id|根据时间生成的字符串 ID|
 |loss|本次训练的 loss 值|
 |acc|本次训练的 acc 值|
 |epochs|本次训练的 epochs 值|
