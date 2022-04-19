@@ -24,6 +24,7 @@ class ImageClass(paddle.io.Dataset):
                  dataset_path: str,
                  images_labels_txt_path: str,
                  transform=None,
+                 shuffle=True
                  ):
         """
         构造函数，定义数据集
@@ -32,14 +33,17 @@ class ImageClass(paddle.io.Dataset):
             dataset_path (str): 数据集路径
             images_labels_txt_path (str): 图像和标签的文本路径
             transform (Compose, optional): 转换数据的操作组合, 默认 None
+            shuffle (bool, True): 随机打乱数据, 默认 True
         """
+
         super(ImageClass, self).__init__()
         self.dataset_path = dataset_path
         self.images_labels_txt_path = images_labels_txt_path
         self._check_path(dataset_path, "数据集路径错误")
         self._check_path(images_labels_txt_path, "图像和标签的文本路径错误")
         self.transform = transform
-        self.image_paths, self.labels = self.parse_dataset(dataset_path, images_labels_txt_path)
+        self.image_paths, self.labels = self.parse_dataset(
+            dataset_path, images_labels_txt_path, shuffle)
 
     def __getitem__(self, idx):
         """
@@ -54,9 +58,9 @@ class ImageClass(paddle.io.Dataset):
         """
         image_path, label = self.image_paths[idx], self.labels[idx]
         return self.get_item(image_path, label, self.transform)
-        
+
     @staticmethod
-    def get_item(image_path: str, label: int, transform = None):
+    def get_item(image_path: str, label: int, transform=None):
         """
         获取单个数据和标签
 
@@ -74,7 +78,7 @@ class ImageClass(paddle.io.Dataset):
         if transform is not None:
             image = transform(image)
         # 转换图像 HWC 转为 CHW
-        image = np.transpose(image, (2,0,1))
+        image = np.transpose(image, (2, 0, 1))
         return image.astype("float32"), label
 
     def __len__(self):
@@ -101,7 +105,7 @@ class ImageClass(paddle.io.Dataset):
             raise Exception("{}: {}".format(msg, path))
 
     @staticmethod
-    def parse_dataset(dataset_path: str, images_labels_txt_path: str):
+    def parse_dataset(dataset_path: str, images_labels_txt_path: str, shuffle: bool):
         """
         数据集解析
 
@@ -119,7 +123,8 @@ class ImageClass(paddle.io.Dataset):
         with open(images_labels_txt_path, "r") as f:
             lines = f.readlines()
         # 随机打乱数据
-        random.shuffle(lines)
+        if (shuffle):
+            random.shuffle(lines)
         for i in lines:
             data = i.split(" ")
             image_paths.append(os.path.join(dataset_path, data[0]))

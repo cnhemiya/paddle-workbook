@@ -42,14 +42,20 @@ bash get-data.sh
 
 ### 生成图像路径和标签的文本文件
 
-获取数据后，运行下面脚本，生成图像路径和标签的文本文件，包含：
+获取数据后，在项目目录下运行下面脚本，生成图像路径和标签的文本文件，包含：
 
 - 训练集 train-images-labels.txt
 - 测试集 test-images-labels.txt
 
 ```bash
-python3 make-images-labels.py
+python3 make-images-labels.py ./dataset rps-cv-images/rock 0 rps-cv-images/scissors 1 rps-cv-images/paper 2
 ```
+
+### 分类标签
+
+- 石头 0
+- 剪子 1
+- 布 2
 
 ### 检查数据
 
@@ -65,6 +71,144 @@ bash check-data.sh
 **VGG 网络模型** 参考： [百度飞桨教程](https://www.paddlepaddle.org.cn/tutorials/projectdetail/3106582)
 
 ```python
+import paddle
+import paddle.nn as nn
+import paddle.nn.functional as F
+
+
+# VGG 网络模型
+class VGG(nn.Layer):
+    """
+    VGG 网络模型
+
+    输入图像大小为 224 x 224
+    """
+
+    def __init__(self, num_classes=10, fc1_in_features=25088):
+        """
+        VGG 网络模型
+
+        Args:
+            num_classes (int, optional): 分类数量, 默认 10
+            fc1_in_features (int, optional): 第一层全连接层输入特征数量, 默认 25088, 
+                根据 max_pool5 输出结果, 计算得出 512*7*7 = 25088
+
+        Raises:
+            Exception: 分类数量 num_classes 必须大于等于 2
+        """
+        super(VGG, self).__init__()
+        if num_classes < 2:
+            raise Exception(
+                "分类数量 num_classes 必须大于等于 2: {}".format(num_classes))
+        self.num_classes = num_classes
+        self.fc1_in_features = fc1_in_features
+
+        # 处理块 1
+        self.conv1_1 = nn.Conv2D(
+            in_channels=3, out_channels=64, kernel_size=3, stride=1, padding=1)
+        self.conv1_2 = nn.Conv2D(
+            in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1)
+        self.max_pool1 = nn.MaxPool2D(kernel_size=2, stride=2)
+
+        # 处理块 2
+        self.conv2_1 = nn.Conv2D(
+            in_channels=64, out_channels=128, kernel_size=3, stride=1, padding=1)
+        self.conv2_2 = nn.Conv2D(
+            in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1)
+        self.max_pool2 = nn.MaxPool2D(kernel_size=2, stride=2)
+
+        # 处理块 3
+        self.conv3_1 = nn.Conv2D(
+            in_channels=128, out_channels=256, kernel_size=3, stride=1, padding=1)
+        self.conv3_2 = nn.Conv2D(
+            in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1)
+        self.conv3_3 = nn.Conv2D(
+            in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1)
+        self.max_pool3 = nn.MaxPool2D(kernel_size=2, stride=2)
+
+        # 处理块 4
+        self.conv4_1 = nn.Conv2D(
+            in_channels=256, out_channels=512, kernel_size=3, stride=1, padding=1)
+        self.conv4_2 = nn.Conv2D(
+            in_channels=512, out_channels=512, kernel_size=3, stride=1, padding=1)
+        self.conv4_3 = nn.Conv2D(
+            in_channels=512, out_channels=512, kernel_size=3, stride=1, padding=1)
+        self.max_pool4 = nn.MaxPool2D(kernel_size=2, stride=2)
+
+        # 处理块 5
+        self.conv5_1 = nn.Conv2D(
+            in_channels=512, out_channels=512, kernel_size=3, stride=1, padding=1)
+        self.conv5_2 = nn.Conv2D(
+            in_channels=512, out_channels=512, kernel_size=3, stride=1, padding=1)
+        self.conv5_3 = nn.Conv2D(
+            in_channels=512, out_channels=512, kernel_size=3, stride=1, padding=1)
+        self.max_pool5 = nn.MaxPool2D(kernel_size=2, stride=2)
+
+        # 全连接层 in_features 25088 = max_pool5 输出 512*7*7
+        self.fc1 = nn.Linear(in_features=fc1_in_features, out_features=4096)
+        self.drop_ratio1 = 0.5
+        self.drop1 = nn.Dropout(self.drop_ratio1)
+        self.fc2 = nn.Linear(in_features=4096, out_features=4096)
+        self.drop_ratio2 = 0.5
+        self.drop2 = nn.Dropout(self.drop_ratio2)
+        self.fc3 = nn.Linear(in_features=4096, out_features=num_classes)
+
+    def forward(self, x):
+        # 处理块 1
+        x = self.conv1_1(x)
+        x = F.relu(x)
+        x = self.conv1_2(x)
+        x = F.relu(x)
+        x = self.max_pool1(x)
+
+        # 处理块 2
+        x = self.conv2_1(x)
+        x = F.relu(x)
+        x = self.conv2_2(x)
+        x = F.relu(x)
+        x = self.max_pool2(x)
+
+        # 处理块 3
+        x = self.conv3_1(x)
+        x = F.relu(x)
+        x = self.conv3_2(x)
+        x = F.relu(x)
+        x = self.conv3_3(x)
+        x = F.relu(x)
+        x = self.max_pool3(x)
+
+        # 处理块 4
+        x = self.conv4_1(x)
+        x = F.relu(x)
+        x = self.conv4_2(x)
+        x = F.relu(x)
+        x = self.conv4_3(x)
+        x = F.relu(x)
+        x = self.max_pool4(x)
+
+        # 处理块 5
+        x = self.conv5_1(x)
+        x = F.relu(x)
+        x = self.conv5_2(x)
+        x = F.relu(x)
+        x = self.conv5_3(x)
+        x = F.relu(x)
+        x = self.max_pool5(x)
+
+        # 全连接层
+        # flatten 根据给定的 start_axis 和 stop_axis 将连续的维度展平
+        x = paddle.flatten(x, start_axis=1, stop_axis=-1)
+        x = self.fc1(x)
+        x = F.relu(x)
+        # 在全连接之后使用 dropout 抑制过拟合
+        x = self.drop1(x)
+        x = self.fc2(x)
+        x = F.relu(x)
+        # 在全连接之后使用 dropout 抑制过拟合
+        x = self.drop2(x)
+        x = self.fc3(x)
+
+        return x
 
 ```
 
@@ -90,6 +234,7 @@ class ImageClass(paddle.io.Dataset):
                  dataset_path: str,
                  images_labels_txt_path: str,
                  transform=None,
+                 shuffle=True
                  ):
         """
         构造函数，定义数据集
@@ -98,14 +243,17 @@ class ImageClass(paddle.io.Dataset):
             dataset_path (str): 数据集路径
             images_labels_txt_path (str): 图像和标签的文本路径
             transform (Compose, optional): 转换数据的操作组合, 默认 None
+            shuffle (bool, True): 随机打乱数据, 默认 True
         """
+
         super(ImageClass, self).__init__()
         self.dataset_path = dataset_path
         self.images_labels_txt_path = images_labels_txt_path
         self._check_path(dataset_path, "数据集路径错误")
         self._check_path(images_labels_txt_path, "图像和标签的文本路径错误")
         self.transform = transform
-        self.image_paths, self.labels = self.parse_dataset(dataset_path, images_labels_txt_path)
+        self.image_paths, self.labels = self.parse_dataset(
+            dataset_path, images_labels_txt_path, shuffle)
 
     def __getitem__(self, idx):
         """
@@ -120,9 +268,9 @@ class ImageClass(paddle.io.Dataset):
         """
         image_path, label = self.image_paths[idx], self.labels[idx]
         return self.get_item(image_path, label, self.transform)
-        
+
     @staticmethod
-    def get_item(image_path: str, label: int, transform = None):
+    def get_item(image_path: str, label: int, transform=None):
         """
         获取单个数据和标签
 
@@ -140,7 +288,7 @@ class ImageClass(paddle.io.Dataset):
         if transform is not None:
             image = transform(image)
         # 转换图像 HWC 转为 CHW
-        image = np.transpose(image, (2,0,1))
+        image = np.transpose(image, (2, 0, 1))
         return image.astype("float32"), label
 
     def __len__(self):
@@ -167,7 +315,7 @@ class ImageClass(paddle.io.Dataset):
             raise Exception("{}: {}".format(msg, path))
 
     @staticmethod
-    def parse_dataset(dataset_path: str, images_labels_txt_path: str):
+    def parse_dataset(dataset_path: str, images_labels_txt_path: str, shuffle: bool):
         """
         数据集解析
 
@@ -185,7 +333,8 @@ class ImageClass(paddle.io.Dataset):
         with open(images_labels_txt_path, "r") as f:
             lines = f.readlines()
         # 随机打乱数据
-        random.shuffle(lines)
+        if (shuffle):
+            random.shuffle(lines)
         for i in lines:
             data = i.split(" ")
             image_paths.append(os.path.join(dataset_path, data[0]))
@@ -271,3 +420,14 @@ python3 report.py
 |epochs|本次训练的 epochs 值|
 |batch_size|本次训练的 batch_size 值|
 |learning_rate|本次训练的 learning_rate 值|
+
+## VisualDL 可视化分析工具
+
+- 安装和使用说明参考：[VisualDL](https://gitee.com/paddlepaddle/VisualDL)
+- 在本地计算机运行，训练的时候加上参数 **--log**
+- 在项目目录下运行下面命令
+- 然后根据提示的网址，打开浏览器访问提示的网址即可
+
+```bash
+visualdl --logdir ./log
+```
