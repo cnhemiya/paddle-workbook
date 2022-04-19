@@ -2,18 +2,17 @@
 """
 LICENSE: MulanPSL2
 AUTHOR:  cnhemiya@qq.com
-DATE:    2022-04-17 20:42
+DATE:    2022-04-19 15:50
 文档说明: 测试, GTK 界面
 """
 
 
-import paddle.nn.functional as F
-import random
 import os
+import random
+import paddle
 import mod.dataset
 import mod.config
-import paddle.nn.layer
-import paddle
+import mod.utils
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -164,17 +163,16 @@ class TestWindow(Gtk.Window):
         模型测试
         """
         self.net.eval()
-        idx = random.randint(0, len(self.test_image_paths))
+        idx = random.randint(0, len(self.test_image_paths)-1)
         self.test_img.set_from_file(self.test_image_paths[idx])
         image, label = mod.dataset.ImageClass.get_item(
             self.test_image_paths[idx], self.test_labels[idx], mod.config.transform())
-        eval_result = self.net(mod.config.image_to_tensor(image))
-        result_list = F.softmax(eval_result[0]).tolist()
-        result_idx = result_list.index(max(result_list))
-        result_txt = "眼疾" if result_idx == 1 else "非眼疾"
-        label_txt = "眼疾" if label == 1 else "非眼疾"
+        predict_result = self.net(mod.config.image_to_tensor(image))
+        class_id = mod.utils.predict_to_class(predict_result)
+        result_txt = mod.config.CLASS_TXT[class_id]
+        label_txt = mod.config.CLASS_TXT[label]
         self.result_lbe.set_text("预测分类:  {}    {},        实际分类:  {}    {}".format(
-            result_idx, result_txt, label, label_txt))
+            class_id, result_txt, label, label_txt))
 
     def choose_file(self, filename: str):
         if str == "":

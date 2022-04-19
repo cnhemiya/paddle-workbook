@@ -38,6 +38,13 @@ LOG_DIR = "./log"
 # report 文件名
 REPORT_FILE = "report.json"
 
+# 图像高
+IMAGE_H = 224
+# 图像宽
+IMAGE_W = 224
+
+# 分类文本, 按照标签排列
+CLASS_TXT = ["石头", "剪子", "布"]
 
 def user_cude(cuda=True):
     """
@@ -58,7 +65,7 @@ def transform():
         Compose: 转换数据的操作组合
     """
     # Resize: 调整图像大小, Normalize: 图像归一化处理
-    return pptf.Compose([pptf.Resize(size=[224, 224]), pptf.Normalize(mean=[127.5, 127.5, 127.5],
+    return pptf.Compose([pptf.Resize(size=[IMAGE_H, IMAGE_W]), pptf.Normalize(mean=[127.5, 127.5, 127.5],
                                                                       std=[127.5, 127.5, 127.5], data_format='HWC')])
 
 
@@ -70,7 +77,7 @@ def image_to_tensor(image):
         tensor: 转换后的 tensor 数据
     """
     # 图像数据格式 CHW
-    data = image.reshape([1, 3, 224, 224]).astype("float32")
+    data = image.reshape([1, 3, IMAGE_H, IMAGE_W]).astype("float32")
     return paddle.to_tensor(data)
 
 
@@ -107,7 +114,7 @@ def net(num_classes=3, fc1_in_features=25088):
     Args:
         num_classes (int, optional): 分类数量, 默认 10
         fc1_in_features (int, optional): 第一层全连接层输入特征数量, 默认 25088, 
-            根据 max_pool3 输出结果, 计算得出 512*7*7 = 25088
+            根据 max_pool5 输出结果, 计算得出 512*7*7 = 25088
 
     Returns:
         VGG: VGG 网络模型

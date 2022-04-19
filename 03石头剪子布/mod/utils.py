@@ -9,6 +9,7 @@ DATE:    2022-04-08 21:52
 
 import os
 import time
+import paddle.nn.functional as F
 
 
 def check_path(path: str, msg="路径错误"):
@@ -37,3 +38,18 @@ def time_id(format="%Y-%m-%d_%H-%M-%S"):
         str: 根据时间生成的字符串 ID
     """    
     return time.strftime(format)
+
+
+def predict_to_class(predict_result):
+    """
+    预测转分类标签
+
+    Args:
+        predict_result (tensor): tensor 数据
+
+    Returns:
+        int: 分类标签 id
+    """
+    result_list = F.softmax(predict_result[0]).tolist()
+    result_idx = result_list.index(max(result_list))
+    return result_idx
