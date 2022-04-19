@@ -386,7 +386,7 @@ python3 test.py
 运行 **test-gtk.py** 文件，此程序依赖 GTK 库，只能运行在本地计算机。
 
 ```bash
-python3 test.py
+python3 test-gtk.py
 ```
 
 ### GTK 库安装
