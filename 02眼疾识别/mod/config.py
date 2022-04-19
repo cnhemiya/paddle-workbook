@@ -38,6 +38,8 @@ LOG_DIR = "./log"
 # report 文件名
 REPORT_FILE = "report.json"
 
+# 图像通道 彩色 3, 灰度 1
+IMAGE_C = 3
 # 图像高
 IMAGE_H = 224
 # 图像宽
@@ -78,7 +80,7 @@ def image_to_tensor(image):
         tensor: 转换后的 tensor 数据
     """
     # 图像数据格式 CHW
-    data = image.reshape([1, 3, IMAGE_H, IMAGE_W]).astype("float32")
+    data = image.reshape([1, IMAGE_C, IMAGE_H, IMAGE_W]).astype("float32")
     return paddle.to_tensor(data)
 
 

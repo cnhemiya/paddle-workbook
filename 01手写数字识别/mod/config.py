@@ -38,6 +38,8 @@ SAVE_PREFIX = "model"
 # report 文件名
 REPORT_FILE = "report.json"
 
+# 图像通道 彩色 3, 灰度 1
+IMAGE_C = 1
 # 图像高
 IMAGE_H = 28
 # 图像宽
@@ -63,6 +65,18 @@ def transform():
         Compose: 转换数据的操作组合
     """
     return pptf.Compose([pptf.Normalize(mean=[127.5], std=[127.5], data_format='CHW')])
+
+
+def image_to_tensor(image):
+    """
+    图像数据转 tensor
+
+    Returns:
+        tensor: 转换后的 tensor 数据
+    """
+    # 图像数据格式 CHW
+    data = image.reshape([1, IMAGE_C, IMAGE_H, IMAGE_W]).astype("float32")
+    return paddle.to_tensor(data)
 
 
 def train_dataset(transform: pptf.Compose):

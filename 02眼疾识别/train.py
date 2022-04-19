@@ -66,7 +66,7 @@ def main():
     net = config.net()
     # 网络模型信息
     if (args.summary):
-        params_info = paddle.summary(net, (1, 3, config.IMAGE_H, config.IMAGE_W))
+        params_info = paddle.summary(net, (1, config.IMAGE_W, config.IMAGE_H, config.IMAGE_W))
         print(params_info)
     else:
         # 训练
