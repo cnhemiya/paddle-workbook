@@ -23,6 +23,7 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 |mod/report.py|结果报表|
 |dataset|数据集目录|
 |params|模型参数保存目录|
+|log|VisualDL 日志保存目录|
 
 ## 数据集
 
@@ -215,6 +216,7 @@ python3 train.py
   --num-workers     线程数量，默认 2
   --no-save         是否保存模型参数，默认保存, 选择后不保存模型参数
   --load-dir        读取模型参数，读取 params 目录下的子文件夹, 默认不读取
+  --log             是否输出 VisualDL 日志，默认不输出
   --summary         输出网络模型信息，默认不输出，选择后只输出信息，不会开启训练
 ```
 
@@ -246,9 +248,21 @@ python3 report.py
 
 |键名|说明|
 |--|--|
-|id|根据模型保存的时间生成的 id|
+|id|根据时间生成的字符串 ID|
 |loss|本次训练的 loss 值|
 |acc|本次训练的 acc 值|
 |epochs|本次训练的 epochs 值|
 |batch_size|本次训练的 batch_size 值|
 |learning_rate|本次训练的 learning_rate 值|
+
+## VisualDL 可视化分析工具
+
+- 安装和使用说明参考：[VisualDL](https://gitee.com/paddlepaddle/VisualDL)
+- 训练的时候加上参数 **--log**
+- 如果是 **AI Studio** 环境训练的把 **log** 目录下载下来，解压缩后放到本地项目目录下 **log** 目录
+- 在项目目录下运行下面命令
+- 然后根据提示的网址，打开浏览器访问提示的网址即可
+
+```bash
+visualdl --logdir ./log
+```

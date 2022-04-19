@@ -7,9 +7,10 @@ DATE:    2022-04-08 21:52
 """
 
 
+import os
+import argparse
 import paddle
 import paddle.vision.transforms as pptf
-import argparse
 import mod.dataset
 import mod.lenet
 import mod.utils
@@ -36,6 +37,11 @@ SAVE_PREFIX = "model"
 
 # report 文件名
 REPORT_FILE = "report.json"
+
+# 图像高
+IMAGE_H = 28
+# 图像宽
+IMAGE_W = 28
 
 
 def user_cude(cuda=True):
@@ -98,23 +104,22 @@ def net(num_classes=10):
     return mod.lenet.LeNet(num_classes=num_classes)
 
 
-def save_model(model, save_dir=SAVE_DIR, save_prefix=SAVE_PREFIX):
+def save_model(model, save_dir=SAVE_DIR, time_id=mod.utils.time_id(), save_prefix=SAVE_PREFIX):
     """
     保存模型参数
 
     Args:
         model (paddle.Model): 网络模型
         save_dir (str, optional): 保存模型的文件夹, 默认 SAVE_DIR
+        time_id (str): 根据时间生成的字符串 ID
         save_prefix (str, optional): 保存模型的前缀, 默认 SAVE_PREFIX
 
     Returns:
         save_path (str): 保存的路径
-        time_str (str): 时间 id
     """
-    time_str = mod.utils.time_str()
-    save_path = save_dir + time_str
-    model.save(save_path + "/" + save_prefix)
-    return save_path, time_str
+    save_path = os.path.join(save_dir, time_id)
+    model.save(os.path.join(save_path, save_prefix))
+    return save_path
 
 
 def load_model(model, loda_dir="", save_prefix=SAVE_PREFIX, reset_optimizer=False):
@@ -179,6 +184,8 @@ def train_args():
                            dest="no_save", help="是否保存模型参数，默认保存, 选择后不保存模型参数")
     arg_parse.add_argument("--load-dir", dest="load_dir", default="",
                            metavar="", help="读取模型参数，读取 params 目录下的子文件夹, 默认不读取")
+    arg_parse.add_argument("--log", action="store_true",
+                           dest="log", help="是否输出 VisualDL 日志，默认不输出")
     arg_parse.add_argument("--summary", action="store_true",
                            dest="summary", help="输出网络模型信息，默认不输出，选择后只输出信息，不会开启训练")
     return arg_parse.parse_args()
