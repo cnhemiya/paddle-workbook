@@ -18,7 +18,7 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 |get-data.sh|获取数据到 dataset 目录下|
 |make-images-labels.py|生成图像路径和标签的文本文件|
 |check-data.sh|检查 dataset 目录下的数据是否存在|
-|mod/VGG.py|VGG 网络模型|
+|mod/vgg.py|VGG 网络模型|
 |mod/dataset.py|ImageClass 图像分类数据集解析|
 |mod/utils.py|杂项|
 |mod/config.py|配置|
