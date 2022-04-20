@@ -34,8 +34,10 @@ def train(net):
                   metrics=paddle.metric.Accuracy())
     # 读取模型参数
     if args.load_dir != "":
+        print("读取模型参数。。。")
         config.load_model(model=model, loda_dir=args.load_dir,
                           reset_optimizer=False)
+        print("模型参数读取完毕！")
     # 时间 ID
     time_id = mod.utils.time_id()
     # 输出 VisualDL 日志
@@ -52,9 +54,11 @@ def train(net):
     print(result)
     # 保存模型参数和模型结果
     if not args.no_save:
+        print("保存模型参数。。。")
         save_path = config.save_model(model, time_id=time_id)
         config.save_report(save_path=save_path, id=time_id,
                            args=args, eval_result=result)
+        print("模型参数保存完毕！")
 
 
 def main():

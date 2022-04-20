@@ -144,7 +144,7 @@ class TestWindow(Gtk.Window):
         self.model_filename = ""
         self.net = self.init_net()
         self.test_image_paths, self.test_labels = mod.dataset.ImageClass.parse_dataset(
-            mod.config.DATA_DIR_PATH, mod.config.TEST_DATA_PATH)
+            mod.config.DATASET_PATH, mod.config.TEST_DATA_PATH)
 
     def run(self):
         self.main_wnd.show_all()

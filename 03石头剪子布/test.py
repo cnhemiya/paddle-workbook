@@ -26,8 +26,10 @@ def test(net):
     model.prepare(loss=paddle.nn.CrossEntropyLoss(),
                   metrics=paddle.metric.Accuracy())
     # 读取模型参数
+    print("读取模型参数。。。")
     config.load_model(model=model, loda_dir=args.load_dir,
                       reset_optimizer=True)
+    print("模型参数读取完毕！")
     # 评估模型
     result = model.evaluate(eval_data=test_dataset,
                             batch_size=args.batch_size, num_workers=args.num_workers, verbose=1)

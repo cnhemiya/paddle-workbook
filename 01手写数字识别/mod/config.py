@@ -12,31 +12,10 @@ import argparse
 import paddle
 import paddle.vision.transforms as pptf
 import mod.dataset
-import mod.lenet
 import mod.utils
 import mod.report
+import mod.lenet
 
-
-# 数据集路径
-DATA_DIR_PATH = "./dataset/"
-# 训练数据
-TRAIN_DATA_PATH = DATA_DIR_PATH + "train-images.idx3-ubyte"
-# 训练标签
-TRAIN_LABEL_PATH = DATA_DIR_PATH + "train-labels.idx1-ubyte"
-# 测试数据
-TEST_DATA_PATH = DATA_DIR_PATH + "t10k-images.idx3-ubyte"
-# 测试标签
-TEST_LABLE_PATH = DATA_DIR_PATH + "t10k-labels.idx1-ubyte"
-
-# 模型参数保存的文件夹
-SAVE_DIR = "./params/"
-# 最佳参数保存的文件夹
-SAVE_BAST_DIR = "base"
-# 模型参数保存的前缀
-SAVE_PREFIX = "model"
-
-# report 文件名
-REPORT_FILE = "report.json"
 
 # 图像通道 彩色 3, 灰度 1
 IMAGE_C = 1
@@ -45,16 +24,44 @@ IMAGE_H = 28
 # 图像宽
 IMAGE_W = 28
 
+# 数据集路径
+DATASET_PATH = "./dataset/"
+# 训练数据
+TRAIN_DATA_PATH = DATASET_PATH + "train-images.idx3-ubyte"
+# 训练标签
+TRAIN_LABEL_PATH = DATASET_PATH + "train-labels.idx1-ubyte"
+# 测试数据
+TEST_DATA_PATH = DATASET_PATH + "t10k-images.idx3-ubyte"
+# 测试标签
+TEST_LABLE_PATH = DATASET_PATH + "t10k-labels.idx1-ubyte"
 
-def user_cude(cuda=True):
+# 模型参数保存的文件夹
+SAVE_DIR = "./params/"
+# 最佳参数保存的文件夹
+SAVE_BAST_DIR = "best"
+# 最佳参数保存的路径
+SAVE_BEST_PATH = SAVE_DIR + SAVE_BAST_DIR + "/"
+# 模型参数保存的前缀
+SAVE_PREFIX = "model"
+
+# 日志保存的路径
+LOG_DIR = "./log"
+
+# report 文件名
+REPORT_FILE = "report.json"
+
+
+def net(num_classes=10):
     """
-    使用 cuda gpu 还是 cpu 运算
+    获取网络模型
 
     Args:
-        cuda (bool, optional): cuda, 默认 True
+        num_classes (int, optional): 分类数量, 默认 10
+
+    Returns:
+        LeNet: LeNet 网络模型
     """
-    paddle.device.set_device(
-        "gpu:0") if cuda else paddle.device.set_device("cpu")
+    return mod.lenet.LeNet(num_classes=num_classes)
 
 
 def transform():
@@ -105,17 +112,18 @@ def test_dataset(transform):
     return mod.dataset.MNIST(images_path=TEST_DATA_PATH, labels_path=TEST_LABLE_PATH, transform=transform)
 
 
-def net(num_classes=10):
+def get_log_dir(log_dir=LOG_DIR, time_id=mod.utils.time_id()):
     """
-    获取网络模型
+    获取 VisualDL 日志文件夹
 
     Args:
-        num_classes (int, optional): 分类数量, 默认 10
+        log_dir (str, optional): 日志文件夹, 默认 LOG_DIR
+        time_id (str, optional): 根据时间生成的字符串 ID
 
     Returns:
-        LeNet: LeNet 网络模型
+        str : VisualDL 日志文件夹
     """
-    return mod.lenet.LeNet(num_classes=num_classes)
+    return os.path.join(log_dir, time_id)
 
 
 def save_model(model, save_dir=SAVE_DIR, time_id=mod.utils.time_id(), save_prefix=SAVE_PREFIX):
@@ -146,9 +154,10 @@ def load_model(model, loda_dir="", save_prefix=SAVE_PREFIX, reset_optimizer=Fals
         save_prefix (str, optional): 保存模型的前缀, 默认 SAVE_PREFIX
         reset_optimizer (bool, optional): 重置 optimizer 参数, 默认 False 不重置
     """
-    load_path = SAVE_DIR + loda_dir + "/"
+    load_path = os.path.join(SAVE_DIR, loda_dir)
     mod.utils.check_path(load_path)
-    model.load(path=load_path + save_prefix, reset_optimizer=reset_optimizer)
+    load_path = os.path.join(load_path, save_prefix)
+    model.load(path=load_path, reset_optimizer=reset_optimizer)
 
 
 def save_report(save_path: str, id: str, args=None, eval_result=None):
@@ -173,7 +182,7 @@ def save_report(save_path: str, id: str, args=None, eval_result=None):
     report.epochs = args.epochs
     report.batch_size = args.batch_size
     report.learning_rate = float(args.learning_rate)
-    report.save(save_path + "/" + REPORT_FILE)
+    report.save(os.path.join(save_path, REPORT_FILE))
 
 
 def train_args():
@@ -222,3 +231,14 @@ def test_args():
     arg_parse.add_argument("--load-dir", dest="load_dir", default="best",
                            metavar="", help="读取模型参数，读取 params 目录下的子文件夹, 默认 best 目录")
     return arg_parse.parse_args()
+
+
+def user_cude(cuda=True):
+    """
+    使用 cuda gpu 还是 cpu 运算
+
+    Args:
+        cuda (bool, optional): cuda, 默认 True
+    """
+    paddle.device.set_device(
+        "gpu:0") if cuda else paddle.device.set_device("cpu")

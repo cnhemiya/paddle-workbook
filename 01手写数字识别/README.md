@@ -237,8 +237,8 @@ python3 test.py
 
 ## 查看结果报表
 
-运行 **report.py** 文件，可以显示 **params** 目录下所有子目录的 **report.json**，  
-然后根据 **loss** 最小的模型参数保存在 **best** 子目录下。
+运行 **report.py** 文件，可以显示 **params** 目录下所有子目录的 **report.json**。  
+加参数 **--best** 根据 **loss** 最小的模型参数保存在 **best** 子目录下。
 
 ```bash
 python3 report.py

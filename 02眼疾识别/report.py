@@ -9,18 +9,10 @@ DATE:    2022-04-09 22:57
 
 
 import os
+import sys
 import shutil
 import mod.report
-
-
-# 报表基本路径
-BASE_PATH = "./params/"
-# 最佳参数结果目录
-BEST_DIR = "best"
-# 最佳参数结果路径
-BEST_PATH = BASE_PATH + BEST_DIR + "/"
-# 报表文件名
-REPORT_FILE = "report.json"
+import mod.config as config
 
 
 def get_print_str(report: mod.report.Report):
@@ -30,22 +22,24 @@ def get_print_str(report: mod.report.Report):
     return "id: {},  loss: {:<.19f},  acc: {:<.4f},  EP: {},  BS: {},  LR: {}".format(
         report.id, report.loss, report.acc, report.epochs, report.batch_size, report.learning_rate)
 
+
 def get_first_str():
     return "EP = epochs,  BS = batch_size,  LR = learning_rate\n"
+
 
 def save_best(report: mod.report.Report):
     """
     保存最佳参数结果到 best 目录
     """
-    if not os.path.exists(BEST_PATH):
-        os.mkdir(BEST_PATH)
-    old_dir = BASE_PATH + report.id
+    if not os.path.exists(config.SAVE_BEST_PATH):
+        os.mkdir(config.SAVE_BEST_PATH)
+    old_dir = os.path.join(config.SAVE_DIR, report.id)
     files = os.listdir(old_dir)
     for file in files:
         if not os.path.isfile(os.path.join(old_dir, file)):
             continue
         src_file = os.path.join(old_dir, file)
-        dst_file = os.path.join(BEST_PATH, file)
+        dst_file = os.path.join(config.SAVE_BEST_PATH, file)
         shutil.copyfile(src_file, dst_file)
 
 
@@ -53,13 +47,17 @@ def print_report():
     """
     打印 Report 列表, 返回最佳结果，没有最佳返回 None
     """
-    dirs = os.listdir(BASE_PATH)
+    dirs = os.listdir(config.SAVE_DIR)
     report_list = []
     for dir in dirs:
-        if (not os.path.isdir(BASE_PATH + dir)) or (dir == BEST_DIR):
+        sub_dir = os.path.join(config.SAVE_DIR, dir)
+        if (not os.path.isdir(sub_dir)) or (dir == config.SAVE_BAST_DIR):
+            continue
+        report_file = os.path.join(sub_dir, config.REPORT_FILE)
+        if not os.path.exists(report_file):
             continue
         report = mod.report.Report()
-        report.load(os.path.join(BASE_PATH + dir, REPORT_FILE))
+        report.load(report_file)
         report_list.append(report)
     best = None
     if (len(report_list) > 0):
@@ -74,8 +72,12 @@ def print_report():
 
 def main():
     best = print_report()
-    if (best != None):
+    if (best != None) and (len(sys.argv) > 1) and (sys.argv[1] == "--best"):
+        print("保存模型参数。。。")
         save_best(best)
+        print("模型参数保存完毕！")
+    else:
+        print("加参数 --best 保存最佳模型参数到 best 目录: report.py --best")
 
 
 if __name__ == "__main__":
