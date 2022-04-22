@@ -76,6 +76,8 @@ def main():
         dataset, image_dir_label = arg_parse()
         make_images_labels(dataset=dataset, image_dir_label=image_dir_label,
                            train_file=TRAIN_TXT_FILE, test_file=TEST_TXT_FILE)
+        print("生成训练集: {}".format(os.path.join(dataset, TRAIN_TXT_FILE)))
+        print("生成测试集: {}".format(os.path.join(dataset, TEST_TXT_FILE)))
 
 
 if __name__ == "__main__":
