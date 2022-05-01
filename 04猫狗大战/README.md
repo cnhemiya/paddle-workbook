@@ -15,10 +15,12 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 |test.py|测试程序|
 |test-gtk.py|测试程序 GTK 界面|
 |report.py|报表程序|
+|onekey.sh|一键获取数据到 dataset 目录下|
 |get-data.sh|获取数据到 dataset 目录下|
-|make-images-labels.py|生成图像路径和标签的文本文件|
+|make-images-labels.py|生成集图像路径和标签的文本文件|
+|make-test.py|生成测试集图像路径和标签的文本文件|
 |check-data.sh|检查 dataset 目录下的数据是否存在|
-|mod/vgg.py|VGG 网络模型|
+|mod/googlenet.py|GoogLeNet 网络模型|
 |mod/dataset.py|ImageClass 图像分类数据集解析|
 |mod/utils.py|杂项|
 |mod/config.py|配置|
@@ -30,6 +32,17 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 ## 数据集
 
 数据集来源于百度飞桨公共数据集：[猫狗大战-学习](https://aistudio.baidu.com/aistudio/datasetdetail/20743)
+
+### 一键获取数据
+
+- 运行脚本，包含以下步骤：获取数据，生成图像路径和标签的文本文件，检查数据
+
+如果运行在本地计算机，下载完数据，文件放到 **dataset** 目录下，在项目目录下运行下面脚本。  
+如果运行在百度 **AI Studio** 环境，查看 **data** 目录是否有数据，在项目目录下运行下面脚本。
+
+```bash
+bash onekey.sh
+```
 
 ### 获取数据
 

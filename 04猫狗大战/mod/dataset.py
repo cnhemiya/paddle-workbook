@@ -73,6 +73,8 @@ class ImageClass(paddle.io.Dataset):
             image (float32): 图像
             label (int): 标签
         """
+        if not os.path.exists(image_path):
+            raise Exception("{}: {}".format("图像路径错误", image_path))
         ppvs.set_image_backend("pil")
         # 统一转为 3 通道, png 是 4通道
         image = Image.open(image_path).convert("RGB")
@@ -132,5 +134,5 @@ class ImageClass(paddle.io.Dataset):
             if (len(data) >= 2):
                 labels.append(int(data[1]))
             else:
-                raise Exception("数据集解析错误，数据格式少于 2")
+                raise Exception("数据集解析错误，数据少于 2")
         return image_paths, labels

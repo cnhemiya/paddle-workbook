@@ -55,7 +55,7 @@ def make_images_labels(dataset: str, test_label: str, test_file: str):
 def main():
     make_images_labels(dataset=DATASET_DIR,
                        test_label=TEST_LABEL, test_file=TEST_TXT_FILE)
-
+    print("生成测试集: {}".format(os.path.join(DATASET_DIR, TEST_TXT_FILE)))
 
 if __name__ == "__main__":
     main()
