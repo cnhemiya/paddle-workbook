@@ -1,10 +1,10 @@
-# 小熊飞桨练习册-03石头剪刀布
+# 小熊飞桨练习册-04猫狗大战
 
 ## 简介
 
-小熊飞桨练习册-03石头剪刀布，本项目开发和测试均在 Ubuntu 20.04 系统下进行。  
+小熊飞桨练习册-04猫狗大战，本项目开发和测试均在 Ubuntu 20.04 系统下进行。  
 项目最新代码查看主页：[小熊飞桨练习册](https://gitee.com/cnhemiya/paddle-workbook)  
-百度飞桨 AI Studio 主页：[小熊飞桨练习册-03石头剪刀布](https://aistudio.baidu.com/aistudio/projectdetail/3839895)  
+百度飞桨 AI Studio 主页：[小熊飞桨练习册-04猫狗大战](https://aistudio.baidu.com/aistudio/projectdetail/3925261)  
 Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https://my.oschina.net/hemiya/blog/5509991)
 
 ## 文件说明
@@ -29,7 +29,7 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 
 ## 数据集
 
-数据集来源于百度飞桨公共数据集：[石头剪刀布](https://aistudio.baidu.com/aistudio/datasetdetail/75404)
+数据集来源于百度飞桨公共数据集：[猫狗大战-学习](https://aistudio.baidu.com/aistudio/datasetdetail/20743)
 
 ### 获取数据
 
@@ -48,14 +48,14 @@ bash get-data.sh
 - 测试集 test-images-labels.txt
 
 ```bash
-python3 make-images-labels.py ./dataset rps-cv-images/rock 0 rps-cv-images/scissors 1 rps-cv-images/paper 2
+python3 make-images-labels.py train ./dataset catVSdog/train/cat 0 catVSdog/train/dog 1
+python3 make-test.py
 ```
 
 ### 分类标签
 
-- 石头 0
-- 剪子 1
-- 布 2
+- 猫 0
+- 狗 1
 
 ### 检查数据
 
@@ -76,139 +76,7 @@ import paddle.nn as nn
 import paddle.nn.functional as F
 
 
-# VGG 网络模型
-class VGG(nn.Layer):
-    """
-    VGG 网络模型
-
-    输入图像大小为 224 x 224
-    """
-
-    def __init__(self, num_classes=10, fc1_in_features=25088):
-        """
-        VGG 网络模型
-
-        Args:
-            num_classes (int, optional): 分类数量, 默认 10
-            fc1_in_features (int, optional): 第一层全连接层输入特征数量, 默认 25088, 
-                根据 max_pool5 输出结果, 计算得出 512*7*7 = 25088
-
-        Raises:
-            Exception: 分类数量 num_classes 必须大于等于 2
-        """
-        super(VGG, self).__init__()
-        if num_classes < 2:
-            raise Exception(
-                "分类数量 num_classes 必须大于等于 2: {}".format(num_classes))
-        self.num_classes = num_classes
-        self.fc1_in_features = fc1_in_features
-
-        # 处理块 1
-        self.conv1_1 = nn.Conv2D(
-            in_channels=3, out_channels=64, kernel_size=3, stride=1, padding=1)
-        self.conv1_2 = nn.Conv2D(
-            in_channels=64, out_channels=64, kernel_size=3, stride=1, padding=1)
-        self.max_pool1 = nn.MaxPool2D(kernel_size=2, stride=2)
-
-        # 处理块 2
-        self.conv2_1 = nn.Conv2D(
-            in_channels=64, out_channels=128, kernel_size=3, stride=1, padding=1)
-        self.conv2_2 = nn.Conv2D(
-            in_channels=128, out_channels=128, kernel_size=3, stride=1, padding=1)
-        self.max_pool2 = nn.MaxPool2D(kernel_size=2, stride=2)
-
-        # 处理块 3
-        self.conv3_1 = nn.Conv2D(
-            in_channels=128, out_channels=256, kernel_size=3, stride=1, padding=1)
-        self.conv3_2 = nn.Conv2D(
-            in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1)
-        self.conv3_3 = nn.Conv2D(
-            in_channels=256, out_channels=256, kernel_size=3, stride=1, padding=1)
-        self.max_pool3 = nn.MaxPool2D(kernel_size=2, stride=2)
-
-        # 处理块 4
-        self.conv4_1 = nn.Conv2D(
-            in_channels=256, out_channels=512, kernel_size=3, stride=1, padding=1)
-        self.conv4_2 = nn.Conv2D(
-            in_channels=512, out_channels=512, kernel_size=3, stride=1, padding=1)
-        self.conv4_3 = nn.Conv2D(
-            in_channels=512, out_channels=512, kernel_size=3, stride=1, padding=1)
-        self.max_pool4 = nn.MaxPool2D(kernel_size=2, stride=2)
-
-        # 处理块 5
-        self.conv5_1 = nn.Conv2D(
-            in_channels=512, out_channels=512, kernel_size=3, stride=1, padding=1)
-        self.conv5_2 = nn.Conv2D(
-            in_channels=512, out_channels=512, kernel_size=3, stride=1, padding=1)
-        self.conv5_3 = nn.Conv2D(
-            in_channels=512, out_channels=512, kernel_size=3, stride=1, padding=1)
-        self.max_pool5 = nn.MaxPool2D(kernel_size=2, stride=2)
-
-        # 全连接层 in_features 25088 = max_pool5 输出 512*7*7
-        self.fc1 = nn.Linear(in_features=fc1_in_features, out_features=4096)
-        self.drop_ratio1 = 0.5
-        self.drop1 = nn.Dropout(self.drop_ratio1)
-        self.fc2 = nn.Linear(in_features=4096, out_features=4096)
-        self.drop_ratio2 = 0.5
-        self.drop2 = nn.Dropout(self.drop_ratio2)
-        self.fc3 = nn.Linear(in_features=4096, out_features=num_classes)
-
-    def forward(self, x):
-        # 处理块 1
-        x = self.conv1_1(x)
-        x = F.relu(x)
-        x = self.conv1_2(x)
-        x = F.relu(x)
-        x = self.max_pool1(x)
-
-        # 处理块 2
-        x = self.conv2_1(x)
-        x = F.relu(x)
-        x = self.conv2_2(x)
-        x = F.relu(x)
-        x = self.max_pool2(x)
-
-        # 处理块 3
-        x = self.conv3_1(x)
-        x = F.relu(x)
-        x = self.conv3_2(x)
-        x = F.relu(x)
-        x = self.conv3_3(x)
-        x = F.relu(x)
-        x = self.max_pool3(x)
-
-        # 处理块 4
-        x = self.conv4_1(x)
-        x = F.relu(x)
-        x = self.conv4_2(x)
-        x = F.relu(x)
-        x = self.conv4_3(x)
-        x = F.relu(x)
-        x = self.max_pool4(x)
-
-        # 处理块 5
-        x = self.conv5_1(x)
-        x = F.relu(x)
-        x = self.conv5_2(x)
-        x = F.relu(x)
-        x = self.conv5_3(x)
-        x = F.relu(x)
-        x = self.max_pool5(x)
-
-        # 全连接层
-        # flatten 根据给定的 start_axis 和 stop_axis 将连续的维度展平
-        x = paddle.flatten(x, start_axis=1, stop_axis=-1)
-        x = self.fc1(x)
-        x = F.relu(x)
-        # 在全连接之后使用 dropout 抑制过拟合
-        x = self.drop1(x)
-        x = self.fc2(x)
-        x = F.relu(x)
-        # 在全连接之后使用 dropout 抑制过拟合
-        x = self.drop2(x)
-        x = self.fc3(x)
-
-        return x
+# GoogLeNet 网络模型
 
 ```
 
@@ -284,11 +152,12 @@ class ImageClass(paddle.io.Dataset):
             label (int): 标签
         """
         ppvs.set_image_backend("pil")
-        image = Image.open(image_path)
+        # 统一转为 3 通道, png 是 4通道
+        image = Image.open(image_path).convert("RGB")
         if transform is not None:
             image = transform(image)
         # 转换图像 HWC 转为 CHW
-        image = np.transpose(image, (2, 0, 1))
+        # image = np.transpose(image, (2, 0, 1))
         return image.astype("float32"), label
 
     def __len__(self):
@@ -338,7 +207,10 @@ class ImageClass(paddle.io.Dataset):
         for i in lines:
             data = i.split(" ")
             image_paths.append(os.path.join(dataset_path, data[0]))
-            labels.append(int(data[1]))
+            if (len(data) >= 2):
+                labels.append(int(data[1]))
+            else:
+                raise Exception("数据集解析错误，数据格式少于 2")
         return image_paths, labels
 ```
 
