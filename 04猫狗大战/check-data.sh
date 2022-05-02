@@ -11,6 +11,9 @@ data_dirs="
 $dataset_dir/catVSdog/train/cat
 $dataset_dir/catVSdog/train/dog
 $dataset_dir/catVSdog/test
+./dataset
+./params
+./log
 "
 
 # 检查文件

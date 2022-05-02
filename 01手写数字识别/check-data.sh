@@ -9,7 +9,11 @@ $dataset_dir/train-labels.idx1-ubyte
 $dataset_dir/t10k-images.idx3-ubyte
 $dataset_dir/t10k-labels.idx1-ubyte
 "
-# data_dirs="$dataset_dir/train-images $dataset_dir/test-images"
+data_dirs="
+./dataset
+./params
+./log
+"
 
 # 检查文件
 check_files() {

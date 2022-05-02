@@ -11,6 +11,9 @@ data_dirs="
 $dataset_dir/rps-cv-images/rock
 $dataset_dir/rps-cv-images/scissors
 $dataset_dir/rps-cv-images/paper
+./dataset
+./params
+./log
 "
 
 # 检查文件

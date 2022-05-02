@@ -10,6 +10,9 @@ $dataset_dir/test-images-labels.txt
 data_dirs="
 $dataset_dir/ichallenge-train-images
 $dataset_dir/ichallenge-test-images
+./dataset
+./params
+./log
 "
 
 # 检查文件
