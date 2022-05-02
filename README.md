@@ -22,3 +22,10 @@
 - 依赖：[百度飞桨](https://www.paddlepaddle.org.cn/)
 - GITEE 主页：[小熊飞桨练习册-03石头剪刀布](https://gitee.com/cnhemiya/paddle-workbook/tree/master/03%E7%9F%B3%E5%A4%B4%E5%89%AA%E5%AD%90%E5%B8%83)
 - AI Studio 主页：[小熊飞桨练习册-03石头剪刀布](https://aistudio.baidu.com/aistudio/projectdetail/3839895)
+
+## 04猫狗大战
+
+- 学习 **GoogLeNet 网络模型**，进行图像分类
+- 依赖：[百度飞桨](https://www.paddlepaddle.org.cn/)
+- GITEE 主页：[小熊飞桨练习册-04猫狗大战](https://gitee.com/cnhemiya/paddle-workbook/tree/master/04%E7%8C%AB%E7%8B%97%E5%A4%A7%E6%88%98)
+- AI Studio 主页：[小熊飞桨练习册-04猫狗大战](https://aistudio.baidu.com/aistudio/projectdetail/3925261)

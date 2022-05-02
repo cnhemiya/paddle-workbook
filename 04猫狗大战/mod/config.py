@@ -58,19 +58,17 @@ REPORT_FILE = "report.json"
 PREDICT_PATH = "./result/"
 
 
-def net(num_classes=2, fc1_in_features=25088):
+def net(num_classes=2):
     """
     获取网络模型
 
     Args:
         num_classes (int, optional): 分类数量, 默认 10
-        fc1_in_features (int, optional): 第一层全连接层输入特征数量, 默认 25088, 
-            根据 max_pool5 输出结果, 计算得出 512*7*7 = 25088
 
     Returns:
-        VGG: VGG 网络模型
+        GoogLeNet: GoogLeNet 网络模型
     """
-    return mod.googlenet.GoogLeNet(num_classes=num_classes, fc1_in_features=fc1_in_features)
+    return mod.googlenet.GoogLeNet(num_classes=num_classes)
 
 
 def transform():

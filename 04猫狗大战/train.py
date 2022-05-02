@@ -28,8 +28,8 @@ def train(net):
     test_dataset = config.test_dataset(transform)
     # net 转为 paddle.Model 模型
     model = paddle.Model(net)
-    # 优化器  Adam Adadelta Adagrad
-    optim = paddle.optimizer.SGD(
+    # 优化器  SGD Adam Adadelta Adagrad
+    optim = paddle.optimizer.Adam(
         learning_rate=args.learning_rate, parameters=model.parameters())
     # 配置模型
     model.prepare(optimizer=optim, loss=paddle.nn.CrossEntropyLoss(),

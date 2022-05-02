@@ -130,9 +130,8 @@ class ImageClass(paddle.io.Dataset):
             random.shuffle(lines)
         for i in lines:
             data = i.split(" ")
-            image_paths.append(os.path.join(dataset_path, data[0]))
-            if (len(data) >= 2):
-                labels.append(int(data[1]))
-            else:
+            if (len(data) < 2):
                 raise Exception("数据集解析错误，数据少于 2")
+            image_paths.append(os.path.join(dataset_path, data[0]))
+            labels.append(int(data[1]))
         return image_paths, labels
