@@ -58,7 +58,7 @@ REPORT_FILE = "report.json"
 PREDICT_PATH = "./result/"
 
 
-def net(num_classes=2):
+def net(num_classes=NUM_CLASSES):
     """
     获取网络模型
 
