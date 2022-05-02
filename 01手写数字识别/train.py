@@ -16,6 +16,8 @@ import mod.config as config
 
 
 def train(net):
+    # 打印分类信息
+    config.print_num_classes()
     # 解析命令行参数
     args = config.train_args()
     # 使用transform对数据集做归一化
@@ -26,7 +28,7 @@ def train(net):
     test_dataset = config.test_dataset(transform)
     # net 转为 paddle.Model 模型
     model = paddle.Model(net)
-    # 优化器
+    # 优化器  SGD Adam Adadelta Adagrad
     optim = paddle.optimizer.Adam(
         learning_rate=args.learning_rate, parameters=model.parameters())
     # 配置模型
@@ -34,10 +36,8 @@ def train(net):
                   metrics=paddle.metric.Accuracy())
     # 读取模型参数
     if args.load_dir != "":
-        print("读取模型参数。。。")
         config.load_model(model=model, loda_dir=args.load_dir,
-                          reset_optimizer=False)
-        print("模型参数读取完毕！")
+                          reset_optimizer=False)    
     # 时间 ID
     time_id = mod.utils.time_id()
     # 输出 VisualDL 日志
@@ -54,11 +54,9 @@ def train(net):
     print(result)
     # 保存模型参数和模型结果
     if not args.no_save:
-        print("保存模型参数。。。")
         save_path = config.save_model(model, time_id=time_id)
         config.save_report(save_path=save_path, id=time_id,
                            args=args, eval_result=result)
-        print("模型参数保存完毕！")
 
 
 def main():
@@ -70,7 +68,8 @@ def main():
     net = config.net()
     # 网络模型信息
     if (args.summary):
-        params_info = paddle.summary(net, (1, config.IMAGE_C, config.IMAGE_H, config.IMAGE_W))
+        params_info = paddle.summary(
+            net, (1, config.IMAGE_C, config.IMAGE_H, config.IMAGE_W))
         print(params_info)
     else:
         # 训练

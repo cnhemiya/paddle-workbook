@@ -14,6 +14,7 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 |train.py|训练程序|
 |test.py|测试程序|
 |report.py|报表程序|
+|onekey.sh|一键获取数据到 dataset 目录下|
 |get-data.sh|获取数据到 dataset 目录下|
 |check-data.sh|检查 dataset 目录下的数据是否存在|
 |mod/lenet.py|LeNet 网络模型|
@@ -29,7 +30,18 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 
 数据集来源于百度飞桨公共数据集：[经典MNIST数据集](https://aistudio.baidu.com/aistudio/datasetdetail/65)
 
-### 获取数据
+### 一键获取数据
+
+- 运行脚本，包含以下步骤：获取数据，检查数据。
+
+如果运行在本地计算机，下载完数据，文件放到 **dataset** 目录下，在项目目录下运行下面脚本。  
+如果运行在百度 **AI Studio** 环境，查看 **data** 目录是否有数据，在项目目录下运行下面脚本。
+
+```bash
+bash onekey.sh
+```
+
+#### 获取数据
 
 如果运行在本地计算机，下载完数据，文件放到 **dataset** 目录下，在项目目录下运行下面脚本。  
 如果运行在百度 **AI Studio** 环境，查看 **data** 目录是否有数据，在项目目录下运行下面脚本。
@@ -38,7 +50,7 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 bash get-data.sh
 ```
 
-### 检查数据
+#### 检查数据
 
 获取数据完毕后，在项目目录下运行下面脚本，检查 dataset 目录下的数据是否存在。
 

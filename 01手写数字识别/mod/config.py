@@ -17,6 +17,12 @@ import mod.report
 import mod.lenet
 
 
+# 分类文本, 按照标签排列
+CLASS_TXT = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+# 分类数量
+NUM_CLASSES = 10
+
 # 图像通道 彩色 3, 灰度 1
 IMAGE_C = 1
 # 图像高
@@ -47,11 +53,14 @@ SAVE_PREFIX = "model"
 # 日志保存的路径
 LOG_DIR = "./log"
 
-# report 文件名
+# 报表文件名
 REPORT_FILE = "report.json"
 
+# 预测结果路径
+PREDICT_PATH = "./result/"
 
-def net(num_classes=10):
+
+def net(num_classes=NUM_CLASSES):
     """
     获取网络模型
 
@@ -71,6 +80,7 @@ def transform():
     Returns:
         Compose: 转换数据的操作组合
     """
+    # Normalize: 图像归一化处理
     return pptf.Compose([pptf.Normalize(mean=[127.5], std=[127.5], data_format='CHW')])
 
 
@@ -126,6 +136,38 @@ def get_log_dir(log_dir=LOG_DIR, time_id=mod.utils.time_id()):
     return os.path.join(log_dir, time_id)
 
 
+def get_result_file(result_dir=PREDICT_PATH, time_id=mod.utils.time_id()):
+    """
+    获取预测结果文件
+
+    Args:
+        result_dir (str, optional): 预测结果文件夹, 默认 PREDICT_PATH
+        time_id (str, optional): 根据时间生成的字符串 ID
+
+    Returns:
+        str : 预测结果文件
+    """
+    return os.path.join(result_dir, time_id + ".txt")
+
+
+def save_result(data: list, result: list, result_file: str):
+    """
+    保存预测结果
+
+    Args:
+        data (list): 数据列表
+        result (list): paddle.Model.predict 结果类表
+        result_file (str): 预测结果保存的文件
+    """
+    lines = []
+    for dat, res in zip(data, result):
+        pre_idx = res.index(max(res))
+        dat = dat[len(DATASET_PATH):]
+        lines.append("{} {}\n".format(dat, pre_idx))
+    with open(result_file, "w") as f:
+        f.writelines(lines)
+
+
 def save_model(model, save_dir=SAVE_DIR, time_id=mod.utils.time_id(), save_prefix=SAVE_PREFIX):
     """
     保存模型参数
@@ -140,7 +182,9 @@ def save_model(model, save_dir=SAVE_DIR, time_id=mod.utils.time_id(), save_prefi
         save_path (str): 保存的路径
     """
     save_path = os.path.join(save_dir, time_id)
+    print("保存模型参数。。。")
     model.save(os.path.join(save_path, save_prefix))
+    print("模型参数保存完毕！")
     return save_path
 
 
@@ -157,7 +201,13 @@ def load_model(model, loda_dir="", save_prefix=SAVE_PREFIX, reset_optimizer=Fals
     load_path = os.path.join(SAVE_DIR, loda_dir)
     mod.utils.check_path(load_path)
     load_path = os.path.join(load_path, save_prefix)
+    print("读取模型参数。。。")
     model.load(path=load_path, reset_optimizer=reset_optimizer)
+    print("模型参数读取完毕！")
+
+
+def print_num_classes():
+    print("分类数量:  {},  分类文本数量:  {}".format(NUM_CLASSES, len(CLASS_TXT)))
 
 
 def save_report(save_path: str, id: str, args=None, eval_result=None):
@@ -230,6 +280,27 @@ def test_args():
                            dest="num_workers", metavar="", help="线程数量，默认 2")
     arg_parse.add_argument("--load-dir", dest="load_dir", default="best",
                            metavar="", help="读取模型参数，读取 params 目录下的子文件夹, 默认 best 目录")
+    return arg_parse.parse_args()
+
+
+def predict_args():
+    """
+    返回预测命令行参数
+
+    Returns:
+        argparse: 命令行参数
+    """
+    arg_parse = argparse.ArgumentParser()
+    arg_parse.add_argument("--cpu", action="store_true",
+                           dest="cpu", help="是否使用 cpu 计算，默认使用 CUDA")
+    arg_parse.add_argument("--batch-size", type=int, default=128,
+                           dest="batch_size", metavar="", help="一批次数量，默认 128")
+    arg_parse.add_argument("--num-workers", type=int, default=2,
+                           dest="num_workers", metavar="", help="线程数量，默认 2")
+    arg_parse.add_argument("--load-dir", dest="load_dir", default="best",
+                           metavar="", help="读取模型参数，读取 params 目录下的子文件夹, 默认 best 目录")
+    arg_parse.add_argument("--no-save", action="store_true",
+                           dest="no_save", help="是否保存预测结果，默认保存, 选择后不保存预测结果")
     return arg_parse.parse_args()
 
 
