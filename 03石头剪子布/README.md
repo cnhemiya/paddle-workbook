@@ -60,7 +60,7 @@ bash get-data.sh
 - 测试集 test-images-labels.txt
 
 ```bash
-python3 make-images-labels.py ./dataset rps-cv-images/rock 0 rps-cv-images/scissors 1 rps-cv-images/paper 2
+python3 make-images-labels.py all ./dataset rps-cv-images/rock 0 rps-cv-images/scissors 1 rps-cv-images/paper 2
 ```
 
 #### 分类标签
