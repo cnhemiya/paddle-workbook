@@ -2,13 +2,24 @@
 
 # 获取数据到 dataset 目录下
 
+dir_list="./dataset ./params ./log"
 dataset_dir="./dataset"
 ais_dataset_dir="../data/data20743"
 zip_files="catVSdog.zip"
 # data_files="train-images-labels.txt test-images-labels.txt"
 
+# 创建文件夹
+make_dir_list() {
+    for i in $dir_list; do
+        if [ ! -d "$i" ]; then
+            mkdir "$i"
+            touch "$i/.keep"
+        fi
+    done
+}
+
 # 解压缩文件
-unzip_file(){
+unzip_file() {
     file="$1"
     dir="$2"
     ext="${file##*.}"
@@ -23,7 +34,7 @@ unzip_file(){
 }
 
 # 获取数据
-get_data(){
+get_data() {
     file="$1"
     if [ -f "$dataset_dir/$file" ]; then
         echo "找到文件: $dataset_dir/$file"
@@ -38,21 +49,19 @@ get_data(){
 }
 
 # 获取全部压缩文件数据
-get_all_zip_data(){
-    for i in $zip_files
-    do
+get_all_zip_data() {
+    for i in $zip_files; do
         get_data "$i" "zip"
     done
 }
 
 # 获取全部文件数据
-get_all_file_data(){
-    for i in $data_files
-    do
+get_all_file_data() {
+    for i in $data_files; do
         get_data "$i"
     done
 }
 
+make_dir_list
 get_all_zip_data
 # get_all_file_data
-

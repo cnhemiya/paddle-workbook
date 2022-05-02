@@ -12,10 +12,9 @@ $dataset_dir/t10k-labels.idx1-ubyte
 # data_dirs="$dataset_dir/train-images $dataset_dir/test-images"
 
 # 检查文件
-check_files(){
+check_files() {
     paths=$@
-    for i in $paths
-    do
+    for i in $paths; do
         if [ -f "$i" ]; then
             echo "检查文件: $i  --  存在"
         else
@@ -25,10 +24,9 @@ check_files(){
 }
 
 # 检查文件夹
-check_dirs(){
+check_dirs() {
     paths=$@
-    for i in $paths
-    do
+    for i in $paths; do
         if [ -d "$i" ]; then
             echo "检查文件夹: $i  --  存在"
         else
