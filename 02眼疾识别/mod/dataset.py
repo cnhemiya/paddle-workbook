@@ -2,7 +2,7 @@
 """
 LICENSE: MulanPSL2
 AUTHOR:  cnhemiya@qq.com
-DATE:    2022-04-16 11:37
+DATE:    2022-05-01 18:42
 文档说明: ImageClass 图像分类数据集解析
 """
 
@@ -73,12 +73,15 @@ class ImageClass(paddle.io.Dataset):
             image (float32): 图像
             label (int): 标签
         """
+        if not os.path.exists(image_path):
+            raise Exception("{}: {}".format("图像路径错误", image_path))
         ppvs.set_image_backend("pil")
-        image = Image.open(image_path)
+        # 统一转为 3 通道, png 是 4通道
+        image = Image.open(image_path).convert("RGB")
         if transform is not None:
             image = transform(image)
         # 转换图像 HWC 转为 CHW
-        image = np.transpose(image, (2, 0, 1))
+        # image = np.transpose(image, (2, 0, 1))
         return image.astype("float32"), label
 
     def __len__(self):
@@ -127,6 +130,8 @@ class ImageClass(paddle.io.Dataset):
             random.shuffle(lines)
         for i in lines:
             data = i.split(" ")
+            if (len(data) < 2):
+                raise Exception("数据集解析错误，数据少于 2")
             image_paths.append(os.path.join(dataset_path, data[0]))
             labels.append(int(data[1]))
         return image_paths, labels

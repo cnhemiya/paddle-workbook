@@ -15,6 +15,7 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 |test.py|测试程序|
 |test-gtk.py|测试程序 GTK 界面|
 |report.py|报表程序|
+|onekey.sh|一键获取数据到 dataset 目录下|
 |get-data.sh|获取数据到 dataset 目录下|
 |check-data.sh|检查 dataset 目录下的数据是否存在|
 |mod/alexnet.py|AlexNet 网络模型|
@@ -30,7 +31,18 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 
 数据集来源于百度飞桨公共数据集：[眼疾识别数据集iChallenge-整理版](https://aistudio.baidu.com/aistudio/datasetdetail/138865)
 
-### 获取数据
+### 一键获取数据
+
+- 运行脚本，包含以下步骤：获取数据，检查数据。
+
+如果运行在本地计算机，下载完数据，文件放到 **dataset** 目录下，在项目目录下运行下面脚本。  
+如果运行在百度 **AI Studio** 环境，查看 **data** 目录是否有数据，在项目目录下运行下面脚本。
+
+```bash
+bash onekey.sh
+```
+
+#### 获取数据
 
 如果运行在本地计算机，下载完数据，文件放到 **dataset** 目录下，在项目目录下运行下面脚本。  
 如果运行在百度 **AI Studio** 环境，查看 **data** 目录是否有数据，在项目目录下运行下面脚本。
@@ -39,12 +51,12 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 bash get-data.sh
 ```
 
-### 分类标签
+#### 分类标签
 
 - 非眼疾 0
 - 眼疾 1
 
-### 检查数据
+#### 检查数据
 
 获取数据完毕后，在项目目录下运行下面脚本，检查 dataset 目录下的数据是否存在。
 
@@ -213,12 +225,15 @@ class ImageClass(paddle.io.Dataset):
             image (float32): 图像
             label (int): 标签
         """
+        if not os.path.exists(image_path):
+            raise Exception("{}: {}".format("图像路径错误", image_path))
         ppvs.set_image_backend("pil")
-        image = Image.open(image_path)
+        # 统一转为 3 通道, png 是 4通道
+        image = Image.open(image_path).convert("RGB")
         if transform is not None:
             image = transform(image)
         # 转换图像 HWC 转为 CHW
-        image = np.transpose(image, (2, 0, 1))
+        # image = np.transpose(image, (2, 0, 1))
         return image.astype("float32"), label
 
     def __len__(self):
@@ -267,6 +282,8 @@ class ImageClass(paddle.io.Dataset):
             random.shuffle(lines)
         for i in lines:
             data = i.split(" ")
+            if (len(data) < 2):
+                raise Exception("数据集解析错误，数据少于 2")
             image_paths.append(os.path.join(dataset_path, data[0]))
             labels.append(int(data[1]))
         return image_paths, labels

@@ -32,8 +32,8 @@ get_data(){
         echo "找到文件: $dataset_dir/$file"
     elif [ -f "$ais_dataset_dir/$file" ]; then
         echo "找到文件: $ais_dataset_dir/$file"
-        echo "移动文件到: $dataset_dir/$file"
-        mv "$ais_dataset_dir/$file" "$dataset_dir/$file"
+        echo "复制文件到: $dataset_dir/$file"
+        cp "$ais_dataset_dir/$file" "$dataset_dir/$file"
     fi
     if [ "$2" == "zip" ]; then
         unzip_file "$dataset_dir/$file" "$dataset_dir"
