@@ -1,4 +1,4 @@
-# AlexNet 网络模型
+# AlexNet 网络模型介绍
 
 ## 介绍
 
