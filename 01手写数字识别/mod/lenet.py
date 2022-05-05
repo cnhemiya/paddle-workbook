@@ -21,10 +21,10 @@ class LeNet(nn.Layer):
         self.num_classes = num_classes
         self.conv1 = nn.Conv2D(
             in_channels=1, out_channels=6, kernel_size=5, stride=1)
-        self.max_pool1 = nn.MaxPool2D(kernel_size=2, stride=2)
+        self.avg_pool1 = nn.AvgPool2D(kernel_size=2, stride=2)
         self.conv2 = nn.Conv2D(
             in_channels=6, out_channels=16, kernel_size=5, stride=1)
-        self.max_pool2 = nn.MaxPool2D(kernel_size=2, stride=2)
+        self.avg_pool2 = nn.AvgPool2D(kernel_size=2, stride=2)
         self.conv3 = nn.Conv2D(
             in_channels=16, out_channels=120, kernel_size=4, stride=1)
         self.fc1 = nn.Linear(in_features=120, out_features=64)
@@ -33,10 +33,10 @@ class LeNet(nn.Layer):
     def forward(self, x):
         x = self.conv1(x)
         x = F.relu(x)
-        x = self.max_pool1(x)
+        x = self.avg_pool1(x)
         x = self.conv2(x)
         x = F.relu(x)
-        x = self.max_pool2(x)
+        x = self.avg_pool2(x)
         x = self.conv3(x)
         x = F.relu(x)
         x = paddle.flatten(x, start_axis=1, stop_axis=-1)
@@ -55,10 +55,10 @@ class LeNet_SEQ(nn.Layer):
         self.features = nn.Sequential(
             nn.Conv2D(in_channels=1, out_channels=6, kernel_size=5, stride=1),
             nn.ReLU(),
-            nn.MaxPool2D(kernel_size=2,  stride=2),
+            nn.AvgPool1D(kernel_size=2,  stride=2),
             nn.Conv2D(in_channels=6, out_channels=16, kernel_size=5, stride=1),
             nn.ReLU(),
-            nn.MaxPool2D(kernel_size=2, stride=2),
+            nn.AvgPool1D(kernel_size=2, stride=2),
             nn.Conv2D(in_channels=16, out_channels=120, kernel_size=4, stride=1),
             nn.ReLU(),
             nn.Flatten(),
