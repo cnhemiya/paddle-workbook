@@ -8,6 +8,7 @@
 - [AlexNet 网络模型介绍](https://gitee.com/cnhemiya/paddle-workbook/blob/master/%E7%AC%94%E8%AE%B0/alexnet.md)
 - [VGG 网络模型介绍](https://gitee.com/cnhemiya/paddle-workbook/blob/master/%E7%AC%94%E8%AE%B0/vgg.md)
 - [GoogLeNet 网络模型介绍](https://gitee.com/cnhemiya/paddle-workbook/blob/master/%E7%AC%94%E8%AE%B0/googlenet.md)
+- [ResNet 网络模型介绍](https://gitee.com/cnhemiya/paddle-workbook/blob/master/%E7%AC%94%E8%AE%B0/resnet.md)
 
 ## 01手写数字识别
 
