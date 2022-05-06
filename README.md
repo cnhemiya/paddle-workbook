@@ -4,10 +4,10 @@
 
 ## 笔记
 
-- [LetNet 网络模型介绍](https://gitee.com/cnhemiya/paddle-workbook/blob/master/00%E7%AC%94%E8%AE%B0/letnet.md)
-- [AlexNet 网络模型介绍](https://gitee.com/cnhemiya/paddle-workbook/blob/master/00%E7%AC%94%E8%AE%B0/alexnet.md)
-- [VGG 网络模型介绍](https://gitee.com/cnhemiya/paddle-workbook/blob/master/00%E7%AC%94%E8%AE%B0/vgg.md)
-- [GoogLeNet 网络模型介绍](https://gitee.com/cnhemiya/paddle-workbook/blob/master/00%E7%AC%94%E8%AE%B0/googlenet.md)
+- [LetNet 网络模型介绍](https://gitee.com/cnhemiya/paddle-workbook/blob/master/%E7%AC%94%E8%AE%B0/letnet.md)
+- [AlexNet 网络模型介绍](https://gitee.com/cnhemiya/paddle-workbook/blob/master/%E7%AC%94%E8%AE%B0/alexnet.md)
+- [VGG 网络模型介绍](https://gitee.com/cnhemiya/paddle-workbook/blob/master/%E7%AC%94%E8%AE%B0/vgg.md)
+- [GoogLeNet 网络模型介绍](https://gitee.com/cnhemiya/paddle-workbook/blob/master/%E7%AC%94%E8%AE%B0/googlenet.md)
 
 ## 01手写数字识别
 
