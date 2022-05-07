@@ -14,7 +14,7 @@ import paddle.vision.transforms as pptf
 import mod.dataset
 import mod.utils
 import mod.report
-import mod.googlenet
+import mod.resnet
 
 
 # 分类文本, 按照标签排列
@@ -66,9 +66,9 @@ def net(num_classes=NUM_CLASSES):
         num_classes (int, optional): 分类数量, 默认 10
 
     Returns:
-        GoogLeNet: GoogLeNet 网络模型
+        ResNet: ResNet 网络模型
     """
-    return mod.googlenet.GoogLeNet(num_classes=num_classes)
+    return mod.resnet.resnet50(num_classes=num_classes)
 
 
 def transform():

@@ -94,7 +94,7 @@ class GoogLeNet(nn.Layer):
                 "分类数量 num_classes 必须大于等于 2: {}".format(num_classes))
         self.num_classes = num_classes
 
-        # 数据输入处理块
+        # 数据输入模块
         self.block0 = nn.Sequential(
             nn.Conv2D(in_channels=3, out_channels=64,
                       kernel_size=7, stride=2, padding=3),
