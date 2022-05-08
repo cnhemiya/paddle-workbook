@@ -37,13 +37,14 @@ def train(net):
     # 读取模型参数
     if args.load_dir != "":
         config.load_model(model=model, loda_dir=args.load_dir,
-                          reset_optimizer=False)    
+                          reset_optimizer=False)
     # 时间 ID
     time_id = mod.utils.time_id()
     # 输出 VisualDL 日志
     callback = None
     if (args.log):
-        callback = paddle.callbacks.VisualDL(log_dir=config.get_log_dir(time_id=time_id))
+        callback = paddle.callbacks.VisualDL(
+            log_dir=config.get_log_dir(time_id=time_id))
     # 训练模型
     model.fit(train_data=train_dataset, epochs=args.epochs,
               batch_size=args.batch_size, num_workers=args.num_workers, verbose=1, callbacks=callback)

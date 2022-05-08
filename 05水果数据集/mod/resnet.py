@@ -158,22 +158,31 @@ class ResNet(nn.Layer):
                               is_sample=is_first_block, is_simple=self.is_simple)
         return net
 
+def get_resnet(num_classes: int, resnet=50):
+    """
+    获取 ResNet 网络模型
 
-def resnet18(num_classes: int):
-    return ResNet([2, 2, 2, 2], num_classes, is_simple=True)
+    Args:
+        num_classes (int, optional): 分类数量
+        resnet (int, optional): ResNet模型选项, 默认 50, 可选 18, 34, 50, 101, 152
 
+    Returns:
+        ResNet: ResNet 网络模型
+    """
+    if resnet not in [18, 34, 50, 101, 152]:
+        raise Exception(
+            "resnet 可选 18, 34, 50, 101, 152, 实际: {}".format(resnet))
 
-def resnet34(num_classes: int):
-    return ResNet([3, 4, 6, 3], num_classes, is_simple=True)
+    net = None
+    if resnet == 18:
+        net = ResNet([2, 2, 2, 2], num_classes, is_simple=True)
+    elif resnet == 34:
+        net = ResNet([3, 4, 6, 3], num_classes, is_simple=True)
+    elif resnet == 50:
+        net = ResNet([3, 4, 6, 3], num_classes, is_simple=False)
+    elif resnet == 101:
+        net = ResNet([3, 4, 23, 3], num_classes, is_simple=False)
+    elif resnet == 152:
+        net = ResNet([3, 8, 36, 3], num_classes, is_simple=False)
 
-
-def resnet50(num_classes: int):
-    return ResNet([3, 4, 6, 3], num_classes, is_simple=False)
-
-
-def resnet101(num_classes: int):
-    return ResNet([3, 4, 23, 3], num_classes, is_simple=False)
-
-
-def resnet152(num_classes: int):
-    return ResNet([3, 8, 36, 3], num_classes, is_simple=False)
+    return net
