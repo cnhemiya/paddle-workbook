@@ -30,16 +30,17 @@ class ResNetBlock(nn.Layer):
         """
         super(ResNetBlock, self).__init__()
 
-        self.is_sample = is_sample
-        self.is_simple = is_simple
+        self.is_sample = is_sample  # 是否采样模块
+        self.is_simple = is_simple  # 是否简易模块
 
-        in_channels = channels[0]
-        mid_channels = channels[1]
-        out_channels = channels[2]
+        in_channels = channels[0]   # 输入通道
+        mid_channels = channels[1]  # 中间通道
+        out_channels = channels[2]  # 输出通道
 
-        # 残差块
+        # 残差模块
         self.block = nn.Sequential()
         if (is_simple):
+            # 简易模块
             self.block = nn.Sequential(
                 nn.Conv2D(in_channels=in_channels, out_channels=mid_channels,
                           kernel_size=3, stride=stride, padding=1),
@@ -50,6 +51,7 @@ class ResNetBlock(nn.Layer):
                 nn.BatchNorm(num_channels=out_channels)
             )
         else:
+            # 正常模块
             self.block = nn.Sequential(
                 nn.Conv2D(in_channels=in_channels, out_channels=mid_channels,
                           kernel_size=1, stride=1, padding=0),
@@ -65,6 +67,7 @@ class ResNetBlock(nn.Layer):
             )
 
         if (is_sample):
+            # 采样模块
             self.sample_block = nn.Sequential(
                 nn.Conv2D(in_channels=in_channels, out_channels=out_channels,
                           kernel_size=1, stride=sample_stride, padding=0),
@@ -82,19 +85,39 @@ class ResNetBlock(nn.Layer):
 
 
 class ResNet(nn.Layer):
+    """
+    ResNet 网络模型
+
+    输入图像大小为 224 x 224
+    """
+
     def __init__(self, blocks, num_classes=10, is_simple=False):
+        """
+        ResNet 网络模型
+
+        Args:
+            blocks (list|tuple): 每模块数量
+            num_classes (int, optional): 分类数量, 默认 10
+            is_simple (bool, optional): 是否简易模块，默认 False, 默认 不是简易模块
+
+        Raises:
+            Exception: 分类数量 num_classes < 2
+        """
         super(ResNet, self).__init__()
         if num_classes < 2:
             raise Exception(
                 "分类数量 num_classes 必须大于等于 2: {}".format(num_classes))
-                
-        self.num_classes = num_classes
-        self.is_simple = is_simple
 
+        self.num_classes = num_classes  # 分类数量
+        self.is_simple = is_simple  # 是否简易模块
+
+        # 简易模块通道, [0输入通道, 1中间通道, 2输出通道]
         self.simple_channels = [[64, 64, 128],
                                 [128, 128, 256],
                                 [256, 256, 512],
                                 [512, 512, 512]]
+
+        # 正常模块通道, [0输入通道, 1中间通道, 2输出通道]
         self.base_channels = [[64, 64, 256],
                               [256, 128, 512],
                               [512, 256, 1024],
@@ -127,6 +150,15 @@ class ResNet(nn.Layer):
         return x
 
     def make_blocks(self, blocks):
+        """
+        生成所有模块
+
+        Args:
+            blocks (list|tuple): 每模块数量
+
+        Returns:
+            paddle.nn.Sequential : 所有模块顺序连接
+        """
         seq = []
         is_in_block = True
         for block_index in range(len(blocks)):
@@ -139,6 +171,17 @@ class ResNet(nn.Layer):
         return nn.Sequential(*seq)
 
     def make_one_block(self, block_index: int, is_in_block: bool, is_first_block: bool):
+        """
+        生成一个模块
+
+        Args:
+            block_index (int): 模块索引
+            is_in_block (bool): 是否残差输入模块
+            is_first_block (bool): 是否第一模块
+
+        Returns:
+            ResNetBlock: 残差模块
+        """
         net = None
         stride = 1
         sample_stride = 2
@@ -157,6 +200,7 @@ class ResNet(nn.Layer):
             net = ResNetBlock(channels=channels2, stride=stride, sample_stride=sample_stride,
                               is_sample=is_first_block, is_simple=self.is_simple)
         return net
+
 
 def get_resnet(num_classes: int, resnet=50):
     """

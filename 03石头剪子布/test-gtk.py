@@ -144,7 +144,7 @@ class TestWindow(Gtk.Window):
         self.model_filename = ""
         self.net = self.init_net()
         self.test_image_paths, self.test_labels = mod.dataset.ImageClass.parse_dataset(
-            mod.config.DATASET_PATH, mod.config.TEST_DATA_PATH)
+            mod.config.DATASET_PATH, mod.config.TEST_DATA_PATH, True)
 
     def run(self):
         self.main_wnd.show_all()
@@ -182,7 +182,9 @@ class TestWindow(Gtk.Window):
             base_name = os.path.basename(filename)
             self.model_path_lbe.set_text(base_name)
             self.model_filename = filename
+            print("读取模型参数。。。")
             self.net.set_state_dict(paddle.load(filename))
+            print("模型参数读取完毕！")
 
     def on_choose_btn_clicked(self, widget):
         dialog = Gtk.FileChooserDialog("请选择模型文件", self,
