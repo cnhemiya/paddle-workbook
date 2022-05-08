@@ -42,5 +42,5 @@
 
 - 学习 **GoogLeNet 网络模型**，进行图像分类
 - 依赖：[百度飞桨](https://www.paddlepaddle.org.cn/)
-- GITEE 主页：[小熊飞桨练习册-04猫狗大战](https://gitee.com/cnhemiya/paddle-workbook/tree/master/05%E6%B0%B4%E6%9E%9C%E6%95%B0%E6%8D%AE%E9%9B%86)
+- GITEE 主页：[小熊飞桨练习册-05水果数据集](https://gitee.com/cnhemiya/paddle-workbook/tree/master/05%E6%B0%B4%E6%9E%9C%E6%95%B0%E6%8D%AE%E9%9B%86)
 - AI Studio 主页：[小熊飞桨练习册-05水果数据集](https://aistudio.baidu.com/aistudio/projectdetail/3949838)
