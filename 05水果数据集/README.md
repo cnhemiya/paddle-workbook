@@ -17,7 +17,7 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 |report.py|报表程序|
 |onekey.sh|一键获取数据到 dataset 目录下|
 |get-data.sh|获取数据到 dataset 目录下|
-|make-images-labels.py|生成训练集图像路径和标签的文本文件|
+|make-images-labels.py|生成训练集和测试集图像路径和标签的文本文件|
 |check-data.sh|检查 dataset 目录下的数据是否存在|
 |mod/resnet.py|ResNet 网络模型|
 |mod/dataset.py|ImageClass 图像分类数据集解析|
