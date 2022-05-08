@@ -58,17 +58,34 @@ REPORT_FILE = "report.json"
 PREDICT_PATH = "./result/"
 
 
-def net(num_classes=NUM_CLASSES):
+def net(num_classes=NUM_CLASSES, resnet=50):
     """
     获取网络模型
 
     Args:
         num_classes (int, optional): 分类数量, 默认 10
+        resnet (int, optional): ResNet模型选项, 默认 50, 可选 18, 34, 50, 101, 152
 
     Returns:
         ResNet: ResNet 网络模型
     """
-    return mod.resnet.resnet50(num_classes=num_classes)
+    if resnet not in [18, 34, 50, 101, 152]:
+        raise Exception(
+            "resnet 可选 18, 34, 50, 101, 152, 实际: {}".format(resnet))
+
+    net = None
+    if resnet == 18:
+        net = mod.resnet.resnet18(num_classes=num_classes)
+    elif resnet == 34:
+        net = mod.resnet.resnet34(num_classes=num_classes)
+    elif resnet == 50:
+        net = mod.resnet.resnet50(num_classes=num_classes)
+    elif resnet == 101:
+        net = mod.resnet.resnet101(num_classes=num_classes)
+    elif resnet == 152:
+        net = mod.resnet.resnet152(num_classes=num_classes)
+
+    return net
 
 
 def transform():

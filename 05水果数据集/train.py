@@ -60,25 +60,25 @@ def train(net):
 
 
 def main():
-    # # 解析命令行参数
-    # args = config.train_args()
-    # # 使用 cuda gpu 还是 cpu 运算
-    # config.user_cude(not args.cpu)
-    # # 网络模型
-    # net = config.net()
-    # # 网络模型信息
-    # if (args.summary):
-    #     params_info = paddle.summary(
-    #         net, (1, config.IMAGE_C, config.IMAGE_H, config.IMAGE_W))
-    #     print(params_info)
-    # else:
-    #     # 训练
-    #     train(net)
-    config.user_cude(False)
+    # 解析命令行参数
+    args = config.train_args()
+    # 使用 cuda gpu 还是 cpu 运算
+    config.user_cude(not args.cpu)
+    # 网络模型
     net = config.net()
-    params_info = paddle.summary(
-    net, (1, config.IMAGE_C, config.IMAGE_H, config.IMAGE_W))
-    print(params_info)
+    # 网络模型信息
+    if (args.summary):
+        params_info = paddle.summary(
+            net, (1, config.IMAGE_C, config.IMAGE_H, config.IMAGE_W))
+        print(params_info)
+    else:
+        # 训练
+        train(net)
+    # config.user_cude(False)
+    # net = config.net()
+    # params_info = paddle.summary(
+    # net, (1, config.IMAGE_C, config.IMAGE_H, config.IMAGE_W))
+    # print(params_info)
 
 
 if __name__ == '__main__':

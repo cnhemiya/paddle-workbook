@@ -87,13 +87,18 @@ class ResNet(nn.Layer):
         if num_classes < 2:
             raise Exception(
                 "分类数量 num_classes 必须大于等于 2: {}".format(num_classes))
+                
         self.num_classes = num_classes
         self.is_simple = is_simple
 
-        self.simple_channels = [[64, 64, 128], [
-            128, 128, 256], [256, 256, 512], [512, 512, 512]]
-        self.base_channels = [[64, 64, 256], [256, 128, 512], [
-            512, 256, 1024], [1024, 512, 2048]]
+        self.simple_channels = [[64, 64, 128],
+                                [128, 128, 256],
+                                [256, 256, 512],
+                                [512, 512, 512]]
+        self.base_channels = [[64, 64, 256],
+                              [256, 128, 512],
+                              [512, 256, 1024],
+                              [1024, 512, 2048]]
 
         # 输入模块
         self.in_block = nn.Sequential(
@@ -105,7 +110,7 @@ class ResNet(nn.Layer):
         )
 
         # 处理模块
-        self.block = self.make_block(blocks)
+        self.block = self.make_blocks(blocks)
 
         # 输出模块
         self.avg_pool = nn.AvgPool2D(kernel_size=7, stride=1)
@@ -121,39 +126,45 @@ class ResNet(nn.Layer):
         x = self.fc(x)
         return x
 
-    def make_block(self, blocks):
+    def make_blocks(self, blocks):
         seq = []
         is_in_block = True
-        for blk_i in range(len(blocks)):
+        for block_index in range(len(blocks)):
             is_first_block = True
-            for i in range(blocks[blk_i]):
-                stride = 1
-                sample_stride = 2
-                if is_in_block:
-                    stride = 1 if is_first_block else 1
-                    sample_stride = 1 if is_first_block else 2
-                else:
-                    stride = 2 if is_first_block else 1
-                    sample_stride = 2
-                channels1 = self.base_channels[blk_i]
-                if is_first_block:
-                    seq.append(ResNetBlock(channels=channels1, stride=stride, sample_stride=sample_stride,
-                                           is_sample=is_first_block, is_simple=self.is_simple))
-                else:
-                    channels2 = [channels1[2], channels1[1], channels1[2]]
-                    seq.append(ResNetBlock(channels=channels2, stride=stride, sample_stride=sample_stride,
-                                           is_sample=is_first_block, is_simple=self.is_simple))
+            for i in range(blocks[block_index]):
+                seq.append(self.make_one_block(block_index=block_index,
+                                               is_in_block=is_in_block, is_first_block=is_first_block))
                 is_first_block = False
             is_in_block = False
         return nn.Sequential(*seq)
 
+    def make_one_block(self, block_index: int, is_in_block: bool, is_first_block: bool):
+        net = None
+        stride = 1
+        sample_stride = 2
+        if is_in_block:
+            stride = 1 if is_first_block else 1
+            sample_stride = 1 if is_first_block else 2
+        else:
+            stride = 2 if is_first_block else 1
+            sample_stride = 2
+        channels1 = self.simple_channels[block_index] if self.is_simple else self.base_channels[block_index]
+        if is_first_block:
+            net = ResNetBlock(channels=channels1, stride=stride, sample_stride=sample_stride,
+                              is_sample=is_first_block, is_simple=self.is_simple)
+        else:
+            channels2 = [channels1[2], channels1[1], channels1[2]]
+            net = ResNetBlock(channels=channels2, stride=stride, sample_stride=sample_stride,
+                              is_sample=is_first_block, is_simple=self.is_simple)
+        return net
 
-# def resnet18(num_classes: int):
-#     return ResNet([2, 2, 2, 2], num_classes, is_simple=True)
+
+def resnet18(num_classes: int):
+    return ResNet([2, 2, 2, 2], num_classes, is_simple=True)
 
 
-# def resnet34(num_classes: int):
-#     return ResNet([3, 4, 6, 3], num_classes, is_simple=True)
+def resnet34(num_classes: int):
+    return ResNet([3, 4, 6, 3], num_classes, is_simple=True)
 
 
 def resnet50(num_classes: int):
