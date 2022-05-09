@@ -33,12 +33,13 @@ IMAGE_W = 224
 DATASET_PATH = "./dataset/"
 # 训练数据
 TRAIN_LIST_PATH = DATASET_PATH + "train_list.txt"
+# 评估数据
+EVAL_LIST_PATH = DATASET_PATH + "eval_list.txt"
 # 测试数据
 TEST_LIST_PATH = DATASET_PATH + "test_list.txt"
 # 标签数据
 LABEL_LIST_PATH = DATASET_PATH + "labels.txt"
-# 推理数据
-INFER_LIST_PATH = DATASET_PATH + "infer_list.txt"
+
 
 # 模型参数保存的文件夹
 SAVE_DIR = "./output/"
@@ -435,12 +436,10 @@ def test_args():
     arg_parse = argparse.ArgumentParser()
     arg_parse.add_argument("--cpu", action="store_true",
                            dest="cpu", help="是否使用 cpu 计算，默认使用 CUDA")
-    arg_parse.add_argument("--batch-size", type=int, default=2,
-                           dest="batch_size", metavar="", help="一批次数量，默认 2")
-    arg_parse.add_argument("--num-workers", type=int, default=2,
-                           dest="num_workers", metavar="", help="线程数量，默认 2")
-    arg_parse.add_argument("--load-dir", dest="load_dir", default="best",
-                           metavar="", help="读取模型参数，读取 params 目录下的子文件夹, 默认 best 目录")
+    arg_parse.add_argument("--model", dest="model", default="",
+                           metavar="", help="从文件加载模型")
+    arg_parse.add_argument("--epochs", type=int, default=10,
+                           dest="epochs", metavar="", help="测试几轮，默认 10 轮")
     return arg_parse.parse_args()
 
 

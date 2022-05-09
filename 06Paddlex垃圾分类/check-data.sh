@@ -5,6 +5,7 @@
 dataset_dir="./dataset"
 data_files="
 $dataset_dir/train_list.txt
+$dataset_dir/eval_list.txt
 $dataset_dir/test_list.txt
 $dataset_dir/labels.txt
 "

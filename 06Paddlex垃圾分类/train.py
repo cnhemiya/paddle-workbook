@@ -15,6 +15,25 @@ import mod.utils
 import mod.config as config
 
 
+# 默认优化器的学习率衰减轮数。默认为[30, 60, 90]。
+LR_DECAY_EPOCHS = [4, 8, 12]
+
+# 默认优化器的学习率衰减率。默认为0.1。
+LR_DECAY_GAMMA = 0.1
+
+# 模型保存间隔（单位：迭代轮数）。默认为1。
+SAVE_INTERVAL_EPOCHS = 1
+
+# 训练 transforms 图像大小
+TRAIN_IMAGE_SIZE = 224
+
+# 评估 transforms 图像大小
+EVAL_IMAGE_SIZE = 256
+
+# 测试 transforms 图像大小
+TEST_IMAGE_SIZE = 224
+
+
 def train():
     # 解析命令行参数
     args = config.train_args()
@@ -24,15 +43,14 @@ def train():
     # 定义训练和验证时的 transforms
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/transforms/transforms.md
     train_transforms = T.Compose([
-        T.RandomCrop(crop_size=224),
+        T.RandomCrop(crop_size=TRAIN_IMAGE_SIZE),
         T.RandomHorizontalFlip(),
         T.Normalize()])
 
     eval_transforms = T.Compose([
-        T.ResizeByShort(short_size=256),
-        T.CenterCrop(crop_size=224),
-        T.Normalize()
-    ])
+        T.ResizeByShort(short_size=EVAL_IMAGE_SIZE),
+        T.CenterCrop(crop_size=TRAIN_IMAGE_SIZE),
+        T.Normalize()])
 
     # 定义训练和验证所用的数据集
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/datasets.md
@@ -45,7 +63,7 @@ def train():
 
     eval_dataset = pdx.datasets.ImageNet(
         data_dir=config.DATASET_PATH,
-        file_list=config.TEST_LIST_PATH,
+        file_list=config.EVAL_LIST_PATH,
         label_list=config.LABEL_LIST_PATH,
         transforms=eval_transforms)
 
@@ -73,7 +91,6 @@ def train():
         pretrain_weights = None
         resume_dir = args.resume
 
-
     print("开始训练。。。")
 
     # 模型训练
@@ -84,10 +101,12 @@ def train():
                 train_dataset=train_dataset,
                 train_batch_size=args.batch_size,
                 eval_dataset=eval_dataset,
-                learning_rate=args.learning_rate,
-                lr_decay_epochs=[4, 6, 8],
+                save_interval_epochs=SAVE_INTERVAL_EPOCHS,
                 save_dir=save_dir,
                 pretrain_weights=pretrain_weights,
+                learning_rate=args.learning_rate,
+                lr_decay_epochs=LR_DECAY_EPOCHS,
+                lr_decay_gamma=LR_DECAY_GAMMA,
                 resume_checkpoint=resume_dir,
                 use_vdl=True)
 
