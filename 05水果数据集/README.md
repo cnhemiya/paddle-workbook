@@ -235,7 +235,7 @@ class ResNet(nn.Layer):
             blocks (list|tuple): 每模块数量
 
         Returns:
-            paddle.nn.Sequential : 所有模块顺序连接
+            paddle.nn.Sequential: 所有模块顺序连接
         """
         seq = []
         is_in_block = True
