@@ -425,12 +425,14 @@ def train_args():
                            metavar="", help="数据集目录，默认 dataset")
     arg_parse.add_argument("--model", dest="model", default="",
                            metavar="", help="PaddleX 模型名称")
-    arg_parse.add_argument("--weights", dest="weights", default="",
-                           metavar="", help="从文件加载模型权重")
+    arg_parse.add_argument("--weights", dest="weights", default="IMAGENET",
+                           metavar="", help="从文件加载模型权重，默认 IMAGENET 自动下载 ImageNet 预训练的模型权重")
     arg_parse.add_argument("--resume", dest="resume", default="",
                            metavar="", help="恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练")
     arg_parse.add_argument("--model_list", action="store_true", dest="model_list",
                            help="输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练")
+    arg_parse.add_argument("--time_id", action="store_true", dest="time_id",
+                           help="模型参数保存的目录加上时间 ID，默认不加，目录加上时间 ID")
     return arg_parse.parse_args()
 
 

@@ -16,7 +16,7 @@ TRAIN_IMAGE_SIZE = 224
 EVAL_IMAGE_SIZE = 256
 
 # 测试 transforms 图像大小
-TEST_IMAGE_SIZE = 256
+TEST_IMAGE_SIZE = 224
 
 
 def main():
@@ -36,8 +36,7 @@ def main():
     # 定义训练和验证时的 transforms
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/transforms/transforms.md
     test_transforms = T.Compose([
-        T.ResizeByShort(short_size=TEST_IMAGE_SIZE),
-        T.CenterCrop(crop_size=TRAIN_IMAGE_SIZE),
+        T.ResizeByShort(short_size=TRAIN_IMAGE_SIZE),
         T.Normalize()])
 
     # 数据集解析

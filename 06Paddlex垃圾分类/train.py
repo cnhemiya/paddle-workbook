@@ -77,14 +77,19 @@ def train():
         model_name=args.model, num_classes=num_classes)
 
     # 时间 ID
-    time_id = mod.utils.time_id()
+    time_id = mod.utils.time_id() if args.time_id else ""
+
     # 输出保存的目录
     save_dir = config.get_save_dir(time_id=time_id)
 
     # 模型权重
-    pretrain_weights = "IMAGENET"
+    pretrain_weights = None
     # 加载模型权重
-    if (args.weights != ""):
+    if (args.weights == ""):
+        pretrain_weights = None
+    elif args.weights == "IMAGENET":
+        pretrain_weights = "IMAGENET"
+    else:
         mod.utils.check_path(args.weights)
         pretrain_weights = args.weights
 
