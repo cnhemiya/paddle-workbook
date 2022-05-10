@@ -3,6 +3,7 @@
 */params/*
 */log/*
 */output/*
+*/model-pretrain/*
 */demo.py
 !.keep
 
