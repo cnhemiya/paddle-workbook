@@ -32,13 +32,13 @@ IMAGE_W = 224
 # 数据集路径
 DATASET_PATH = "./dataset/"
 # 训练数据
-TRAIN_LIST_PATH = DATASET_PATH + "train_list.txt"
+TRAIN_LIST_PATH = "train_list.txt"
 # 评估数据
-EVAL_LIST_PATH = DATASET_PATH + "eval_list.txt"
+EVAL_LIST_PATH = "val_list.txt"
 # 测试数据
-TEST_LIST_PATH = DATASET_PATH + "test_list.txt"
+TEST_LIST_PATH = "test_list.txt"
 # 标签数据
-LABEL_LIST_PATH = DATASET_PATH + "labels.txt"
+LABEL_LIST_PATH = "labels.txt"
 
 
 # 模型参数保存的文件夹
@@ -411,17 +411,25 @@ def train_args():
                            dest="cpu", help="是否使用 cpu 计算，默认使用 CUDA")
     arg_parse.add_argument("--epochs", type=int, default=2,
                            dest="epochs", metavar="", help="训练几轮，默认 2 轮")
-    arg_parse.add_argument("--batch-size", type=int, default=2,
+    arg_parse.add_argument("--batch_size", type=int, default=2,
                            dest="batch_size", metavar="", help="一批次数量，默认 2")
-    arg_parse.add_argument("--learning-rate", type=float, default=0.025,
+    arg_parse.add_argument("--learning_rate", type=float, default=0.025,
                            dest="learning_rate", metavar="", help="学习率，默认 0.025")
+    arg_parse.add_argument("--lr_decay_epochs", dest="lr_decay_epochs", default="30 60 90",
+                           metavar="", help="默认优化器的学习率衰减轮数。默认为 30 60 90")
+    arg_parse.add_argument("--lr_decay_gamma", type=float, default=0.1,
+                           dest="lr_decay_gamma", metavar="", help="默认优化器的学习率衰减率。默认为0.1")
+    arg_parse.add_argument("--save_interval_epochs", type=int, default=1,
+                           dest="save_interval_epochs", metavar="", help="模型保存间隔(单位: 迭代轮数)。默认为1")
+    arg_parse.add_argument("--dataset", dest="dataset", default="",
+                           metavar="", help="数据集目录，默认 dataset")
     arg_parse.add_argument("--model", dest="model", default="",
                            metavar="", help="PaddleX 模型名称")
     arg_parse.add_argument("--weights", dest="weights", default="",
                            metavar="", help="从文件加载模型权重")
     arg_parse.add_argument("--resume", dest="resume", default="",
                            metavar="", help="恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练")
-    arg_parse.add_argument("--model-list", action="store_true", dest="model_list",
+    arg_parse.add_argument("--model_list", action="store_true", dest="model_list",
                            help="输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练")
     return arg_parse.parse_args()
 
@@ -436,6 +444,8 @@ def test_args():
     arg_parse = argparse.ArgumentParser()
     arg_parse.add_argument("--cpu", action="store_true",
                            dest="cpu", help="是否使用 cpu 计算，默认使用 CUDA")
+    arg_parse.add_argument("--dataset", dest="dataset", default="",
+                           metavar="", help="数据集目录，默认 dataset")
     arg_parse.add_argument("--model", dest="model", default="",
                            metavar="", help="从文件加载模型")
     arg_parse.add_argument("--epochs", type=int, default=10,

@@ -15,15 +15,6 @@ import mod.utils
 import mod.config as config
 
 
-# 默认优化器的学习率衰减轮数。默认为[30, 60, 90]。
-LR_DECAY_EPOCHS = [4, 8, 12]
-
-# 默认优化器的学习率衰减率。默认为0.1。
-LR_DECAY_GAMMA = 0.1
-
-# 模型保存间隔（单位：迭代轮数）。默认为1。
-SAVE_INTERVAL_EPOCHS = 1
-
 # 训练 transforms 图像大小
 TRAIN_IMAGE_SIZE = 224
 
@@ -40,6 +31,18 @@ def train():
     # 使用 cuda gpu 还是 cpu 运算
     config.user_cude(not args.cpu)
 
+    # 数据集目录和文件路径
+    dataset_path = config.DATASET_PATH
+    if (args.dataset != ""):
+        dataset_path = os.path.join(config.DATASET_PATH, args.dataset)
+    train_list_path = os.path.join(dataset_path, config.TRAIN_LIST_PATH)
+    eval_list_path = os.path.join(dataset_path, config.EVAL_LIST_PATH)
+    label_list_path = os.path.join(dataset_path, config.LABEL_LIST_PATH)
+    mod.utils.check_path(dataset_path)
+    mod.utils.check_path(train_list_path)
+    mod.utils.check_path(eval_list_path)
+    mod.utils.check_path(label_list_path)
+
     # 定义训练和验证时的 transforms
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/transforms/transforms.md
     train_transforms = T.Compose([
@@ -55,16 +58,16 @@ def train():
     # 定义训练和验证所用的数据集
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/datasets.md
     train_dataset = pdx.datasets.ImageNet(
-        data_dir=config.DATASET_PATH,
-        file_list=config.TRAIN_LIST_PATH,
-        label_list=config.LABEL_LIST_PATH,
+        data_dir=dataset_path,
+        file_list=train_list_path,
+        label_list=label_list_path,
         transforms=train_transforms,
         shuffle=True)
 
     eval_dataset = pdx.datasets.ImageNet(
-        data_dir=config.DATASET_PATH,
-        file_list=config.EVAL_LIST_PATH,
-        label_list=config.LABEL_LIST_PATH,
+        data_dir=dataset_path,
+        file_list=eval_list_path,
+        label_list=label_list_path,
         transforms=eval_transforms)
 
     # 分类数量
@@ -77,17 +80,19 @@ def train():
     time_id = mod.utils.time_id()
     # 输出保存的目录
     save_dir = config.get_save_dir(time_id=time_id)
+
     # 模型权重
     pretrain_weights = "IMAGENET"
-    # 恢复训练时指定上次训练保存的模型路径
-    resume_dir = None
-
     # 加载模型权重
     if (args.weights != ""):
-        pretrain_weights = os.path.join(args.weights, "model.pdparams")
+        mod.utils.check_path(args.weights)
+        pretrain_weights = args.weights
 
+    # 恢复训练时指定上次训练保存的模型路径
+    resume_dir = None
     # 恢复训练
     if (args.resume != ""):
+        mod.utils.check_path(args.resume)
         pretrain_weights = None
         resume_dir = args.resume
 
@@ -101,12 +106,12 @@ def train():
                 train_dataset=train_dataset,
                 train_batch_size=args.batch_size,
                 eval_dataset=eval_dataset,
-                save_interval_epochs=SAVE_INTERVAL_EPOCHS,
+                save_interval_epochs=args.save_interval_epochs,
                 save_dir=save_dir,
                 pretrain_weights=pretrain_weights,
                 learning_rate=args.learning_rate,
-                lr_decay_epochs=LR_DECAY_EPOCHS,
-                lr_decay_gamma=LR_DECAY_GAMMA,
+                lr_decay_epochs=mod.utils.str_to_list(args.lr_decay_epochs),
+                lr_decay_gamma=args.lr_decay_gamma,
                 resume_checkpoint=resume_dir,
                 use_vdl=True)
 

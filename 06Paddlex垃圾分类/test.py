@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
+import os
 import paddlex as pdx
 from paddlex import transforms as T
 import mod.config as config
@@ -24,6 +25,14 @@ def main():
     # 使用 cuda gpu 还是 cpu 运算
     config.user_cude(not args.cpu)
 
+    # 数据集目录和文件路径
+    dataset_path = config.DATASET_PATH
+    if (args.dataset != ""):
+        dataset_path = os.path.join(config.DATASET_PATH, args.dataset)
+    test_list_path = os.path.join(dataset_path, config.TEST_LIST_PATH)
+    mod.utils.check_path(dataset_path)
+    mod.utils.check_path(test_list_path)
+
     # 定义训练和验证时的 transforms
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/transforms/transforms.md
     test_transforms = T.Compose([
@@ -33,7 +42,7 @@ def main():
 
     # 数据集解析
     image_paths, labels = mod.utils.parse_dataset(
-        config.DATASET_PATH, dataset_list_path=config.TEST_LIST_PATH, shuffle=True)
+        dataset_path, dataset_list_path=test_list_path, shuffle=True)
 
     # 模型文件目录
     model_path = args.model

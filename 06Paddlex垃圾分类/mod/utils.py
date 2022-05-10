@@ -56,6 +56,35 @@ def predict_to_class(predict_result):
     return result_idx
 
 
+def str_to_list(str_arr: str, astype="int"):
+    """
+    数字字符串转列表
+
+    Args:
+        str_arr (str): 一组数字字符串，如："3 6 9"
+        astype (str, optional): 转为类型, 默认 "int"
+
+    Raises:
+        Exception: astype 错误
+
+    Returns:
+        _type_: astype 类型的列表
+    """
+    astype = astype.lower()
+
+    if astype not in ["int", "float"]:
+        raise Exception("astype 错误, 只能为: int, float")
+
+    arr = str_arr.split(" ")
+    result = []
+    for i in arr:
+        if (astype == "int"):
+            result.append(int(i))
+        elif (astype == "float"):
+            result.append(float(i))
+    return result
+
+
 def parse_dataset(dataset_path: str, dataset_list_path: str, shuffle: bool):
     """
     数据集解析
