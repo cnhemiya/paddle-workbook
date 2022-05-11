@@ -1,5 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+"""
+LICENSE: MulanPSL2
+AUTHOR:  cnhemiya@qq.com
+DATE:    2022-05-12 02:04
+文档说明: 测试
+"""
 
 
 import os
