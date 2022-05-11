@@ -44,3 +44,11 @@
 - 依赖：[百度飞桨](https://www.paddlepaddle.org.cn/)
 - GITEE 主页：[小熊飞桨练习册-05水果数据集](https://gitee.com/cnhemiya/paddle-workbook/tree/master/05%E6%B0%B4%E6%9E%9C%E6%95%B0%E6%8D%AE%E9%9B%86)
 - AI Studio 主页：[小熊飞桨练习册-05水果数据集](https://aistudio.baidu.com/aistudio/projectdetail/3949838)
+
+## 06Paddlex垃圾分类
+
+- 学习 **PaddleX 图像分类**，进行图像分类
+- 依赖：[百度飞桨](https://www.paddlepaddle.org.cn/)
+- 依赖：[PaddleX](https://gitee.com/paddlepaddle/PaddleX)
+- GITEE 主页：[小熊飞桨练习册-06Paddlex垃圾分类](https://gitee.com/cnhemiya/paddle-workbook/tree/master/06Paddlex%E5%9E%83%E5%9C%BE%E5%88%86%E7%B1%BB)
+- AI Studio 主页：[小熊飞桨练习册-06Paddlex垃圾分类](https://aistudio.baidu.com/aistudio/projectdetail/3966896)

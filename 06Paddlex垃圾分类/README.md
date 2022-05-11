@@ -23,6 +23,11 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 |dataset|数据集目录|
 |output|训练参数保存目录|
 
+## 环境依赖
+
+- [百度飞桨](https://www.paddlepaddle.org.cn/)
+- [PaddleX](https://gitee.com/paddlepaddle/PaddleX)
+
 ## 数据集
 
 数据集来源于百度飞桨公共数据集：[垃圾分类训练集](https://aistudio.baidu.com/aistudio/datasetdetail/33408)
