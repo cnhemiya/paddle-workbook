@@ -27,7 +27,7 @@ TEST_IMAGE_SIZE = 224
 
 def train():
     # 解析命令行参数
-    args = config.train_args()
+    args = config.train_args_x()
     # 使用 cuda gpu 还是 cpu 运算
     config.user_cude(not args.cpu)
 
@@ -129,7 +129,7 @@ def train():
 
 def main():
     # 解析命令行参数
-    args = config.train_args()
+    args = config.train_args_x()
     # PaddleX 模型名称
     if (args.model_list):
         model_list = config.pdx_cls_model_name()

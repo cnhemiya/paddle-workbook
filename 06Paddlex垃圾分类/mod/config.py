@@ -399,7 +399,7 @@ def save_report_x(save_dir: str, id: str, model: str, args=None):
     report.save(os.path.join(save_dir, REPORT_X_FILE))
 
 
-def train_args():
+def train_args_x():
     """
     返回训练命令行参数
 
@@ -436,7 +436,7 @@ def train_args():
     return arg_parse.parse_args()
 
 
-def test_args():
+def test_args_x():
     """
     返回测试命令行参数
 

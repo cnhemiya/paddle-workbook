@@ -21,7 +21,7 @@ TEST_IMAGE_SIZE = 224
 
 def main():
     # 解析命令行参数
-    args = config.test_args()
+    args = config.test_args_x()
     # 使用 cuda gpu 还是 cpu 运算
     config.user_cude(not args.cpu)
 
