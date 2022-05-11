@@ -421,6 +421,8 @@ def train_args_x():
                            dest="lr_decay_gamma", metavar="", help="默认优化器的学习率衰减率。默认为0.1")
     arg_parse.add_argument("--save_interval_epochs", type=int, default=1,
                            dest="save_interval_epochs", metavar="", help="模型保存间隔(单位: 迭代轮数)。默认为1")
+    arg_parse.add_argument("--save_dir", dest="save_dir", default="./output",
+                           metavar="", help="模型保存路径。默认为 output")
     arg_parse.add_argument("--dataset", dest="dataset", default="",
                            metavar="", help="数据集目录，默认 dataset")
     arg_parse.add_argument("--model", dest="model", default="",
@@ -431,8 +433,6 @@ def train_args_x():
                            metavar="", help="恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练")
     arg_parse.add_argument("--model_list", action="store_true", dest="model_list",
                            help="输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练")
-    arg_parse.add_argument("--time_id", action="store_true", dest="time_id",
-                           help="模型参数保存的目录加上时间 ID，默认不加，目录加上时间 ID")
     return arg_parse.parse_args()
 
 

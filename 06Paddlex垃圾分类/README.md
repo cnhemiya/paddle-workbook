@@ -73,12 +73,12 @@ python3 train.py --dataset train --epochs 16 \
   --lr_decay_gamma      默认优化器的学习率衰减率。默认为0.1
   --save_interval_epochs 
                         模型保存间隔(单位: 迭代轮数)。默认为1
+  --save_dir            模型保存路径。默认为 output
   --dataset             数据集目录，默认 dataset
   --model               PaddleX 模型名称
   --weights             从文件加载模型权重，默认 IMAGENET 自动下载 ImageNet 预训练的模型权重
   --resume              恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练
   --model_list          输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练
-  --time_id             模型参数保存的目录加上时间 ID，默认不加，目录加上时间 ID
 ```
 
 ## 查看支持的模型

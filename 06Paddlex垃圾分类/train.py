@@ -76,11 +76,8 @@ def train():
     model, model_name = config.pdx_cls_model(
         model_name=args.model, num_classes=num_classes)
 
-    # 时间 ID
-    time_id = mod.utils.time_id() if args.time_id else ""
-
     # 输出保存的目录
-    save_dir = config.get_save_dir(time_id=time_id)
+    save_dir = config.SAVE_DIR if args.save_dir == "" else args.save_dir
 
     # 模型权重
     pretrain_weights = None
@@ -121,7 +118,7 @@ def train():
                 use_vdl=True)
 
     # 保存报表
-    config.save_report_x(save_dir=save_dir, id=time_id,
+    config.save_report_x(save_dir=save_dir, id=mod.utils.time_id(),
                          model=model_name, args=args)
 
     print("结束训练。。。")
