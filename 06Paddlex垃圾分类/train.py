@@ -133,6 +133,7 @@ def main():
     # PaddleX 模型名称
     if (args.model_list):
         model_list = config.pdx_cls_model_name()
+        print("\nPaddleX 图像分类模型")
         print(model_list)
     else:
         # 训练

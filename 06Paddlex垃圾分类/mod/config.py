@@ -77,7 +77,7 @@ PDX_CLS_MODEL_NAME = ['PPLCNet', 'PPLCNet_ssld', 'ResNet18', 'ResNet18_vd', 'Res
                       'HRNet_W40_C', 'HRNet_W44_C', 'HRNet_W48_C', 'HRNet_W64_C', 'AlexNet']
 
 # PaddleX 图像分类模型小写名称
-PDX_CLS_MODEL_LOWER_NAME = ['pplcnet', 'pplcnet_ssld', 'resnet18', 'resnet18_vd', 'resnet34',
+PDX_CLS_MODEL_NAME_LOWER = ['pplcnet', 'pplcnet_ssld', 'resnet18', 'resnet18_vd', 'resnet34',
                             'resnet34_vd', 'resnet50', 'resnet50_vd', 'resnet50_vd_ssld', 'resnet101',
                             'resnet101_vd', 'resnet101_vd_ssld', 'resnet152', 'resnet152_vd', 'resnet200_vd',
                             'darknet53', 'mobilenetv1', 'mobilenetv2', 'mobilenetv3_small', 'mobilenetv3_small_ssld',
@@ -99,13 +99,13 @@ def pdx_cls_model(model_name: str, num_classes: int):
         model: 模型
         model_name: 模型名称
     """
-    model_list = PDX_CLS_MODEL_LOWER_NAME
+    model_list = PDX_CLS_MODEL_NAME_LOWER
     model_lower = model_name.lower()
     model = None
     if model_lower not in model_list:
         raise Exception("PaddleX 模型名称错误")
 
-    model_name = PDX_CLS_MODEL_NAME[PDX_CLS_MODEL_LOWER_NAME.index(
+    model_name = PDX_CLS_MODEL_NAME[PDX_CLS_MODEL_NAME_LOWER.index(
         model_lower)]
     if model_lower == "pplcnet":
         model = paddlex.cls.PPLCNet(num_classes=num_classes)

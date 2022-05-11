@@ -4,6 +4,7 @@
 LICENSE: MulanPSL2
 AUTHOR:  cnhemiya@qq.com
 DATE:    2022-05-01 18:38
+文档:     生成数据集列表
 """
 
 
@@ -12,7 +13,7 @@ import sys
 
 
 TRAIN_LIST_FILE = "train_list.txt"
-EVAL_LIST_FILE = "eval_list.txt"
+EVAL_LIST_FILE = "val_list.txt"
 TEST_LIST_FILE = "test_list.txt"
 
 
@@ -22,9 +23,9 @@ MAKE_EVAL = "eval"
 MAKE_TEST = "test"
 
 
-TRAIN_SIZE_RATIO = 0.7
-EVAL_SIZE_RATIO = 0.2
-TEST_SIZE_RATIO = 0.1
+TRAIN_SIZE_RATE = 0.7
+EVAL_SIZE_RATE = 0.2
+TEST_SIZE_RATE = 0.1
 
 
 HELP_DOC = """
@@ -32,12 +33,12 @@ HELP_DOC = """
 
 make-dataset.py all ./dataset img_dir1 0 img_dir2 1 img_dir3 2
 
-all: 生成图像标签文本, all 生成 train, eval, test.
+all: 生成数据集列表, all 生成 train, eval, test.
 train 生成 train, eval 生成 eval, test 生成 test
 
-./dataset: 数据集文件夹
+./dataset: 数据集目录
 img_dir: dataset 目录下的文件夹
-0 1 2: 是图像文件夹对应的分类标签
+0 1 2: 是图像目录对应的分类标签
 """
 
 
@@ -75,7 +76,7 @@ def arg_parse():
 def make_dataset(make: str, dataset: str, dataset_list, train_file: str, eval_file: str, test_file: str):
     if make not in ["all", "train", "eval", "test"]:
         raise Exception(
-            "生成图像标签文本参数错误，只能是 all, train, eval, test, 接收参数为: {}".format(make))
+            "生成数据集列表参数错误，只能是 all, train, eval, test, 接收参数为: {}".format(make))
     train_data = []
     eval_data = []
     test_data = []
@@ -83,8 +84,8 @@ def make_dataset(make: str, dataset: str, dataset_list, train_file: str, eval_fi
         data = dataset_list_data(
             dataset_dir=dataset, image_dir=i[0], label=int(i[1]))
         if make == MAKE_ALL:
-            train_size = int(len(data) * TRAIN_SIZE_RATIO)
-            eval_size = int(len(data) * EVAL_SIZE_RATIO)
+            train_size = int(len(data) * TRAIN_SIZE_RATE)
+            eval_size = int(len(data) * EVAL_SIZE_RATE)
             train_data.extend(data[:train_size])
             eval_data.extend(data[train_size:train_size + eval_size])
             test_data.extend(data[train_size + eval_size:])

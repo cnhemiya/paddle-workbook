@@ -37,6 +37,7 @@ def main():
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/transforms/transforms.md
     test_transforms = T.Compose([
         T.ResizeByShort(short_size=TRAIN_IMAGE_SIZE),
+        T.CenterCrop(crop_size=TRAIN_IMAGE_SIZE),
         T.Normalize()])
 
     # 数据集解析
@@ -60,13 +61,12 @@ def main():
         # 错误数量
         err_num = 0
         print("开始测试 。。。第 {} 轮".format(i + 1))
-        # 分类模型预测接口
-        result = model.predict(img_file=image_paths,
-                               transforms=test_transforms)
         # 计算结果
-        for i in range(len(result)):
-            data = result[i]
-            data = data[0]
+        for i in range(len(image_paths)):
+            # 分类模型预测接口
+            result = model.predict(img_file=image_paths[i],
+                               transforms=test_transforms)            
+            data = result[0]
             if data["category_id"] == labels[i]:
                 ok_num += 1
             else:
