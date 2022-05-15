@@ -30,7 +30,9 @@ CATEGORY_ID_KEY = "category_id"
 
 def main():
     # 解析命令行参数
-    args = mod.args.TestX()
+    args = mod.args.TrainX()
+    # 检查文件或目录是否存在
+    args.check()
     # 使用 cuda gpu 还是 cpu 运算
     config.user_cude(not args.cpu)
 

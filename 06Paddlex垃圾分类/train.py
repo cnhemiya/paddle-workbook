@@ -29,6 +29,8 @@ TEST_IMAGE_SIZE = 224
 def train():
     # 解析命令行参数
     args = mod.args.TrainX()
+    # 检查文件或目录是否存在
+    args.check()
     # 使用 cuda gpu 还是 cpu 运算
     config.user_cude(not args.cpu)
 
@@ -51,12 +53,14 @@ def train():
         file_list=args.train_list,
         label_list=args.label_list,
         transforms=train_transforms,
+        num_workers=args.num_workers,
         shuffle=True)
 
     eval_dataset = pdx.datasets.ImageNet(
         data_dir=args.dataset,
         file_list=args.eval_list,
         label_list=args.label_list,
+        num_workers=args.num_workers,
         transforms=eval_transforms)
 
     # 分类数量

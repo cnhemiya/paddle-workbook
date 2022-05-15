@@ -136,35 +136,33 @@ class TrainX():
                  eval_list_path=config.EVAL_LIST_PATH,
                  label_list_path=config.LABEL_LIST_PATH,
                  save_dir_path=config.SAVE_DIR_PATH):
-        self.args = self.parse() if args == None else args
-        self.cpu = args.cpu
-        self.num_workers = "auto" if args.num_workers == 0 else args.num_workers
-
-        self.epochs = args.epochs
-        self.batch_size = args.batch_size
-        self.learning_rate = args.learning_rate
-        self.lr_decay_epochs = mod.utils.str_to_list(args.lr_decay_epochs)
-        self.lr_decay_gamma = args.lr_decay_gamma
-        self.save_interval_epochs = args.save_interval_epochs
-        self.save_dir = save_dir_path if args.save_dir == "" else args.save_dir
-        self.dataset = dataset_path if args.dataset == "" else os.path.join(
-            dataset_path, args.dataset)
-        self.model = args.model
-        self.pretrain_weights = args.pretrain_weights
-        self.resume_checkpoint = args.resume_checkpoint
-
-        self.model_list = args.model_list
-        self.train_list = os.path.join(self.dataset, args.train_list)
-        self.eval_list = os.path.join(self.dataset, args.eval_list)
-        self.label_list = os.path.join(self.dataset, args.label_list)
-
         self.__dataset_path = dataset_path
         self.__train_list_path = train_list_path
         self.__eval_list_path = eval_list_path
         self.__label_list_path = label_list_path
         self.__save_dir_path = save_dir_path
 
-        self.check()
+        self.args = self.parse() if args == None else args
+        self.cpu = self.args.cpu
+        self.num_workers = "auto" if self.args.num_workers == 0 else self.args.num_workers
+
+        self.epochs = self.args.epochs
+        self.batch_size = self.args.batch_size
+        self.learning_rate = self.args.learning_rate
+        self.lr_decay_epochs = mod.utils.str_to_list(self.args.lr_decay_epochs)
+        self.lr_decay_gamma = self.args.lr_decay_gamma
+        self.save_interval_epochs = self.args.save_interval_epochs
+        self.save_dir = save_dir_path if self.args.save_dir == "" else self.args.save_dir
+        self.dataset = dataset_path if self.args.dataset == "" else os.path.join(
+            dataset_path, self.args.dataset)
+        self.model = self.args.model
+        self.pretrain_weights = self.args.pretrain_weights
+        self.resume_checkpoint = self.args.resume_checkpoint
+
+        self.model_list = self.args.model_list
+        self.train_list = os.path.join(self.dataset, self.args.train_list)
+        self.eval_list = os.path.join(self.dataset, self.args.eval_list)
+        self.label_list = os.path.join(self.dataset, self.args.label_list)
 
     def parse(self):
         """
@@ -243,19 +241,17 @@ class TestX():
 
     def __init__(self, args=None, dataset_path=config.DATASET_PATH,
                  test_list_path=config.TEST_LIST_PATH):
-        self.args = self.parse() if args == None else args
-        self.cpu = args.cpu
-        self.epochs = args.epochs
-
-        self.dataset = dataset_path if args.dataset == "" else os.path.join(
-            dataset_path, args.dataset)
-        self.test_list = os.path.join(self.dataset, args.test_list)
-        self.model_dir = args.model_dir
-
         self.__dataset_path = dataset_path
         self.__test_list_path = test_list_path
 
-        self.check()
+        self.args = self.parse() if args == None else args
+        self.cpu = self.args.cpu
+        self.epochs = self.args.epochs
+
+        self.dataset = dataset_path if self.args.dataset == "" else os.path.join(
+            dataset_path, self.args.dataset)
+        self.test_list = os.path.join(self.dataset, self.args.test_list)
+        self.model_dir = self.args.model_dir
 
     def parse(self):
         """
@@ -290,21 +286,19 @@ class PredictX():
 
     def __init__(self, args=None, dataset_path=config.DATASET_PATH,
                  infer_list_path=config.INFER_LIST_PATH):
-        self.args = self.parse() if args == None else args
-        self.cpu = args.cpu
-
-        self.dataset = dataset_path if args.dataset == "" else os.path.join(
-            dataset_path, args.dataset)
-        self.infer_list = os.path.join(self.dataset, args.infer_list)
-        self.model_dir = args.model_dir
-        self.result_info = args.result_info
-        self.result_path = args.result_path
-        self.split = args.split
-
         self.__dataset_path = dataset_path
         self.__infer_list_path = infer_list_path
 
-        self.check()
+        self.args = self.parse() if args == None else args
+        self.cpu = self.args.cpu
+
+        self.dataset = dataset_path if self.args.dataset == "" else os.path.join(
+            dataset_path, self.args.dataset)
+        self.infer_list = os.path.join(self.dataset, self.args.infer_list)
+        self.model_dir = self.args.model_dir
+        self.result_info = self.args.result_info
+        self.result_path = self.args.result_path
+        self.split = self.args.split
 
     def parse(self):
         """
