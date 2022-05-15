@@ -143,7 +143,7 @@ class TrainX():
         self.epochs = args.epochs
         self.batch_size = args.batch_size
         self.learning_rate = args.learning_rate
-        self.lr_decay_epochs = args.lr_decay_epochs
+        self.lr_decay_epochs = mod.utils.str_to_list(args.lr_decay_epochs)
         self.lr_decay_gamma = args.lr_decay_gamma
         self.save_interval_epochs = args.save_interval_epochs
         self.save_dir = save_dir_path if args.save_dir == "" else args.save_dir

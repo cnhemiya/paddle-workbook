@@ -8,11 +8,12 @@ DATE:    2022-05-09 19:16
 """
 
 
-import os
 import paddlex as pdx
 from paddlex import transforms as T
 import mod.utils
 import mod.config as config
+import mod.args
+import mod.pdx
 
 
 # 训练 transforms 图像大小
@@ -27,21 +28,9 @@ TEST_IMAGE_SIZE = 224
 
 def train():
     # 解析命令行参数
-    args = config.train_args_x()
+    args = mod.args.TrainX()
     # 使用 cuda gpu 还是 cpu 运算
     config.user_cude(not args.cpu)
-
-    # 数据集目录和文件路径
-    dataset_path = config.DATASET_PATH
-    if (args.dataset != ""):
-        dataset_path = os.path.join(config.DATASET_PATH, args.dataset)
-    train_list_path = os.path.join(dataset_path, config.TRAIN_LIST_PATH)
-    eval_list_path = os.path.join(dataset_path, config.EVAL_LIST_PATH)
-    label_list_path = os.path.join(dataset_path, config.LABEL_LIST_PATH)
-    mod.utils.check_path(dataset_path)
-    mod.utils.check_path(train_list_path)
-    mod.utils.check_path(eval_list_path)
-    mod.utils.check_path(label_list_path)
 
     # 定义训练和验证时的 transforms
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/transforms/transforms.md
@@ -58,47 +47,25 @@ def train():
     # 定义训练和验证所用的数据集
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/datasets.md
     train_dataset = pdx.datasets.ImageNet(
-        data_dir=dataset_path,
-        file_list=train_list_path,
-        label_list=label_list_path,
+        data_dir=args.dataset,
+        file_list=args.train_list,
+        label_list=args.label_list,
         transforms=train_transforms,
         shuffle=True)
 
     eval_dataset = pdx.datasets.ImageNet(
-        data_dir=dataset_path,
-        file_list=eval_list_path,
-        label_list=label_list_path,
+        data_dir=args.dataset,
+        file_list=args.eval_list,
+        label_list=args.label_list,
         transforms=eval_transforms)
 
     # 分类数量
     num_classes = len(train_dataset.labels)
     # 获取 PaddleX 模型
-    model, model_name = config.pdx_cls_model(
+    model, model_name = mod.pdx.pdx_cls_model(
         model_name=args.model, num_classes=num_classes)
 
-    # 输出保存的目录
-    save_dir = config.SAVE_DIR_PATH if args.save_dir == "" else args.save_dir
-
-    # 模型权重
-    pretrain_weights = None
-    # 加载模型权重
-    if (args.weights == ""):
-        pretrain_weights = None
-    elif args.weights == "IMAGENET":
-        pretrain_weights = "IMAGENET"
-    else:
-        mod.utils.check_path(args.weights)
-        pretrain_weights = args.weights
-
-    # 恢复训练时指定上次训练保存的模型路径
-    resume_dir = None
-    # 恢复训练
-    if (args.resume != ""):
-        mod.utils.check_path(args.resume)
-        pretrain_weights = None
-        resume_dir = args.resume
-
-    print("开始训练。。。")
+    print("开始训练 。。。")
 
     # 模型训练
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/models/classification.md
@@ -109,27 +76,27 @@ def train():
                 train_batch_size=args.batch_size,
                 eval_dataset=eval_dataset,
                 save_interval_epochs=args.save_interval_epochs,
-                save_dir=save_dir,
-                pretrain_weights=pretrain_weights,
+                save_dir=args.save_dir,
+                pretrain_weights=args.pretrain_weights,
                 learning_rate=args.learning_rate,
-                lr_decay_epochs=mod.utils.str_to_list(args.lr_decay_epochs),
+                lr_decay_epochs=args.lr_decay_epochs,
                 lr_decay_gamma=args.lr_decay_gamma,
-                resume_checkpoint=resume_dir,
+                resume_checkpoint=args.resume_checkpoint,
                 use_vdl=True)
 
     # 保存报表
-    config.save_report_x(save_dir=save_dir, id=mod.utils.time_id(),
-                         model=model_name, args=args)
+    config.save_report_x(save_dir=args.save_dir, id=mod.utils.time_id(),
+                         model=model_name, args=args.args)
 
     print("结束训练。。。")
 
 
 def main():
     # 解析命令行参数
-    args = config.train_args_x()
+    args = mod.args.TrainX()
     # PaddleX 模型名称
     if (args.model_list):
-        model_list = config.pdx_cls_model_name()
+        model_list = mod.pdx.pdx_cls_model_name()
         print("\nPaddleX 图像分类模型")
         print(model_list)
     else:
