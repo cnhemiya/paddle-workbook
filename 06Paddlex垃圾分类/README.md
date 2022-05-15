@@ -13,15 +13,19 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 |--|--|
 |train.py|训练程序|
 |test.py|测试程序|
+|infer.py|预测程序|
 |onekey.sh|一键获取数据到 dataset 目录下|
 |get-data.sh|获取数据到 dataset 目录下|
 |make-dataset.py|生成数据集列表|
 |check-data.sh|检查 dataset 目录下的数据是否存在|
-|mod/utils.py|杂项|
+|mod/args.py|命令行参数解析|
+|mod/pdx.py|PaddleX 用的|
 |mod/config.py|配置|
+|mod/utils.py|杂项|
 |mod/report.py|结果报表|
 |dataset|数据集目录|
 |output|训练参数保存目录|
+|result|预测结果保存目录|
 
 ## 环境依赖
 
@@ -57,7 +61,7 @@ bash onekey.sh
 
 ```bash
 python3 train.py --dataset train --epochs 16 \
-    --batch_size 64 --learning_rate 0.025 \
+    --batch_size 64 --learning_rate 0.1 \
     --lr_decay_epochs "4 8 12" --lr_decay_gamma 0.5 \
     --model MobileNetV3_small_ssld
 ```
@@ -66,19 +70,23 @@ python3 train.py --dataset train --epochs 16 \
 
 ```bash
   --cpu                 是否使用 cpu 计算，默认使用 CUDA
-  --epochs              训练几轮，默认 2 轮
-  --batch_size          一批次数量，默认 2
+  --num_workers         线程数量，默认 auto，为CPU核数的一半
+  --epochs              训练几轮，默认 4 轮
+  --batch_size          一批次数量，默认 16
   --learning_rate       学习率，默认 0.025
   --lr_decay_epochs     默认优化器的学习率衰减轮数。默认为 30 60 90
   --lr_decay_gamma      默认优化器的学习率衰减率。默认为0.1
   --save_interval_epochs 
                         模型保存间隔(单位: 迭代轮数)。默认为1
-  --save_dir            模型保存路径。默认为 output
-  --dataset             数据集目录，默认 dataset
+  --save_dir            模型保存路径。默认为 ./output/
+  --dataset             数据集目录，默认 ./dataset/
   --model               PaddleX 模型名称
-  --weights             从文件加载模型权重，默认 IMAGENET 自动下载 ImageNet 预训练的模型权重
-  --resume              恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练
+  --pretrain_weights    从文件加载模型权重，默认 IMAGENET 自动下载 ImageNet 预训练的模型权重
+  --resume_checkpoint   恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练
   --model_list          输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练
+  --train_list          训练集列表，默认 train_list.txt
+  --eval_list           评估集列表，默认 val_list.txt
+  --label_list          分类标签列表，默认labels.txt
 ```
 
 ## 查看支持的模型
@@ -102,26 +110,48 @@ python3 train.py --model_list
 - 示例
 
 ```bash
-python3 test.py --dataset train --epochs 10 \
-    --model ./output/best_model
+python3 test.py --dataset train --epochs 4 \
+    --model_dir ./output/best_model
 ```
 - 参数
 
 ```bash
-  --cpu       是否使用 cpu 计算，默认使用 CUDA
-  --dataset   数据集目录，默认 dataset
-  --model     从文件加载模型
-  --epochs    测试几轮，默认 10 轮
+  --cpu         是否使用 cpu 计算，默认使用 CUDA
+  --epochs      训练几轮，默认 4 轮
+  --dataset     数据集目录，默认 ./dataset/
+  --test_list   训练集列表，默认 test_list.txt
+  --model_dir   读取训练后的模型目录，默认 ./output/best_model
+```
+
+## 预测模型
+
+运行 **infer.py** 文件，查看命令行参数加 -h
+
+- 示例
+
+```bash
+python3 test.py --dataset train --model_dir ./output/best_model
+```
+
+- 参数
+
+```bash
+  --cpu           是否使用 cpu 计算，默认使用 CUDA
+  --dataset       数据集目录，默认 ./dataset/
+  --infer_list    预测集列表，默认 infer_list.txt
+  --model_dir     读取训练后的模型目录，默认 ./output/best_model
+  --result_info   显示预测结果详细信息，默认 不显示
+  --result_path   预测结果文件路径，默认 ./result/result.csv
+  --split         数据分隔符，默认 ','
 ```
 
 ## VisualDL 可视化分析工具
 
 - 安装和使用说明参考：[VisualDL](https://gitee.com/paddlepaddle/VisualDL)
-- 训练的时候加上参数 **--log**
-- 如果是 **AI Studio** 环境训练的把 **log** 目录下载下来，解压缩后放到本地项目目录下 **log** 目录
+- 如果是 **AI Studio** 环境训练的把 **output/vdl_log** 目录下载下来，解压缩后放到本地项目目录下 **output/vdl_log** 目录
 - 在项目目录下运行下面命令
 - 然后根据提示的网址，打开浏览器访问提示的网址即可
 
 ```bash
-visualdl --logdir ./log
+visualdl --logdir ./output/vdl_log
 ```

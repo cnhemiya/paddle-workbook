@@ -321,7 +321,7 @@ class PredictX():
         arg_parse.add_argument("--result_path", dest="result_path", default="./result/result.csv",
                                metavar="", help="预测结果文件路径，默认 ./result/result.csv")
         arg_parse.add_argument("--split", dest="split", default=",",
-                               metavar="", help="结果分隔符，默认 ','")
+                               metavar="", help="数据分隔符，默认 ','")
         return arg_parse.parse_args()
 
     def check(self):
