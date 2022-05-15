@@ -8,11 +8,11 @@ DATE:    2022-05-12 02:04
 """
 
 
-import os
 import paddlex as pdx
 from paddlex import transforms as T
 import mod.config as config
 import mod.utils
+import mod.args
 
 
 # 训练 transforms 图像大小
@@ -27,17 +27,9 @@ TEST_IMAGE_SIZE = 224
 
 def main():
     # 解析命令行参数
-    args = config.test_args_x()
+    args = mod.args.TestX()
     # 使用 cuda gpu 还是 cpu 运算
     config.user_cude(not args.cpu)
-
-    # 数据集目录和文件路径
-    dataset_path = config.DATASET_PATH
-    if (args.dataset != ""):
-        dataset_path = os.path.join(config.DATASET_PATH, args.dataset)
-    test_list_path = os.path.join(dataset_path, config.TEST_LIST_PATH)
-    mod.utils.check_path(dataset_path)
-    mod.utils.check_path(test_list_path)
 
     # 定义训练和验证时的 transforms
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/transforms/transforms.md
@@ -48,14 +40,9 @@ def main():
 
     # 数据集解析
     image_paths, labels = mod.utils.parse_dataset(
-        dataset_path, dataset_list_path=test_list_path, shuffle=True)
-
-    # 模型文件目录
-    model_path = args.model
-    mod.utils.check_path(model_path)
+        args.dataset, dataset_list_path=args.test_list, shuffle=False)
     # 读取模型
-    model = pdx.load_model(model_path)
-
+    model = pdx.load_model(args.model_dir)
     # 样本数量
     sample_num = len(labels)
     # 测试几轮
@@ -71,13 +58,13 @@ def main():
         for i in range(len(image_paths)):
             # 分类模型预测接口
             result = model.predict(img_file=image_paths[i],
-                               transforms=test_transforms)            
+                                   transforms=test_transforms)
             data = result[0]
             if data["category_id"] == labels[i]:
                 ok_num += 1
             else:
                 err_num += 1
-        print("样本数量: {},  正确率: {:<.6f},  正确样本: {},  错误样本: {}".format(
+        print("样本数量: {},  正确率: {:<.5f},  正确样本: {},  错误样本: {}".format(
             sample_num, ok_num/sample_num, ok_num, err_num))
     print("结束测试 。。。")
 
