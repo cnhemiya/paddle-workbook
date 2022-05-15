@@ -24,6 +24,9 @@ EVAL_IMAGE_SIZE = 256
 # 测试 transforms 图像大小
 TEST_IMAGE_SIZE = 224
 
+# 分类 ID Key
+CATEGORY_ID_KEY = "category_id"
+
 
 def main():
     # 解析命令行参数
@@ -60,7 +63,7 @@ def main():
             result = model.predict(img_file=image_paths[i],
                                    transforms=test_transforms)
             data = result[0]
-            if data["category_id"] == labels[i]:
+            if data[CATEGORY_ID_KEY] == labels[i]:
                 ok_num += 1
             else:
                 err_num += 1

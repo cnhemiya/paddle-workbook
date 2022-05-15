@@ -25,6 +25,9 @@ EVAL_IMAGE_SIZE = 256
 # 测试 transforms 图像大小
 TEST_IMAGE_SIZE = 224
 
+# 分类 ID Key
+CATEGORY_ID_KEY = "category_id"
+
 
 def main():
     # 解析命令行参数
@@ -61,7 +64,7 @@ def main():
             print(image_file)
             print(data)
         result_lines.append("{}{}{}\n".format(
-            os.path.basename(image_file), args.split, data["category_id"]))
+            os.path.basename(image_file), args.split, data[CATEGORY_ID_KEY]))
     with open(args.result_path, "w") as f:
         f.writelines(result_lines)
     print("结束预测 。。。")

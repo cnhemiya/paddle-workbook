@@ -88,7 +88,7 @@ def train():
     config.save_report_x(save_dir=args.save_dir, id=mod.utils.time_id(),
                          model=model_name, args=args.args)
 
-    print("结束训练。。。")
+    print("结束训练 。。。")
 
 
 def main():
