@@ -3,7 +3,7 @@
 LICENSE: MulanPSL2
 AUTHOR:  cnhemiya@qq.com
 DATE:    2022-05-15 16:54
-文档说明: 命令行参数
+文档说明: 命令行参数解析
 """
 
 
@@ -151,7 +151,7 @@ class TrainX():
             dataset_path, args.dataset)
         self.model = args.model
         self.pretrain_weights = args.pretrain_weights
-        self.resume = args.resume
+        self.resume_checkpoint = args.resume_checkpoint
 
         self.model_list = args.model_list
         self.train_list = os.path.join(self.dataset, args.train_list)
@@ -198,7 +198,7 @@ class TrainX():
                                metavar="", help="PaddleX 模型名称")
         arg_parse.add_argument("--pretrain_weights", dest="pretrain_weights", default="IMAGENET",
                                metavar="", help="从文件加载模型权重，默认 IMAGENET 自动下载 ImageNet 预训练的模型权重")
-        arg_parse.add_argument("--resume", dest="resume", default="",
+        arg_parse.add_argument("--resume_checkpoint", dest="resume_checkpoint", default="",
                                metavar="", help="恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练")
         arg_parse.add_argument("--model_list", action="store_true", dest="model_list",
                                help="输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练")
@@ -228,9 +228,109 @@ class TrainX():
             self.pretrain_weights = self.args.pretrain_weights
 
         # 恢复训练时指定上次训练保存的模型路径
-        self.resume = None
+        self.resume_checkpoint = None
         # 恢复训练
-        if (self.args.resume != ""):
-            mod.utils.check_path(self.args.resume)
+        if (self.args.resume_checkpoint != ""):
+            mod.utils.check_path(self.args.resume_checkpoint)
             self.pretrain_weights = None
-            self.resume = self.args.resume
+            self.resume_checkpoint = self.args.resume_checkpoint
+
+
+class TestX():
+    """
+    返回 PaddleX 测试命令行参数
+    """
+
+    def __init__(self, args=None, dataset_path=config.DATASET_PATH,
+                 test_list_path=config.TEST_LIST_PATH):
+        self.args = self.parse() if args == None else args
+        self.cpu = args.cpu
+        self.epochs = args.epochs
+
+        self.dataset = dataset_path if args.dataset == "" else os.path.join(
+            dataset_path, args.dataset)
+        self.test_list = os.path.join(self.dataset, args.test_list)
+        self.model_dir = args.model_dir
+
+        self.__dataset_path = dataset_path
+        self.__test_list_path = test_list_path
+
+        self.check()
+
+    def parse(self):
+        """
+        返回命令行参数
+
+        Returns:
+            argparse: 命令行参数
+        """
+        arg_parse = argparse.ArgumentParser()
+        arg_parse.add_argument("--cpu", action="store_true",
+                               dest="cpu", help="是否使用 cpu 计算，默认使用 CUDA")
+        arg_parse.add_argument("--epochs", type=int, default=4,
+                               dest="epochs", metavar="", help="训练几轮，默认 4 轮")
+        arg_parse.add_argument("--dataset", dest="dataset", default="",
+                               metavar="", help="数据集目录，默认 {}".format(self.__dataset_path))
+        arg_parse.add_argument("--test_list", dest="test_list", default="{}".format(self.__test_list_path),
+                               metavar="", help="训练集列表，默认 {}".format(self.__test_list_path))
+        arg_parse.add_argument("--model_dir", dest="model_dir", default="./output/best_model",
+                               metavar="", help="读取训练后的模型目录，默认 ./output/best_model")
+        return arg_parse.parse_args()
+
+    def check(self):
+        mod.utils.check_path(self.dataset)
+        mod.utils.check_path(self.test_list)
+        mod.utils.check_path(self.model_dir)
+
+
+class PredictX():
+    """
+    返回 PaddleX 预测命令行参数
+    """
+
+    def __init__(self, args=None, dataset_path=config.DATASET_PATH,
+                 infer_list_path=config.INFER_LIST_PATH):
+        self.args = self.parse() if args == None else args
+        self.cpu = args.cpu
+
+        self.dataset = dataset_path if args.dataset == "" else os.path.join(
+            dataset_path, args.dataset)
+        self.infer_list = os.path.join(self.dataset, args.infer_list)
+        self.model_dir = args.model_dir
+        self.result_info = args.result_info
+        self.result_path = args.result_path
+        self.split = args.split
+
+        self.__dataset_path = dataset_path
+        self.__infer_list_path = infer_list_path
+
+        self.check()
+
+    def parse(self):
+        """
+        返回命令行参数
+
+        Returns:
+            argparse: 命令行参数
+        """
+        arg_parse = argparse.ArgumentParser()
+        arg_parse.add_argument("--cpu", action="store_true",
+                               dest="cpu", help="是否使用 cpu 计算，默认使用 CUDA")
+        arg_parse.add_argument("--dataset", dest="dataset", default="",
+                               metavar="", help="数据集目录，默认 {}".format(self.__dataset_path))
+        arg_parse.add_argument("--infer_list", dest="infer_list", default="{}".format(self.__infer_list_path),
+                               metavar="", help="预测集列表，默认 {}".format(self.__infer_list_path))
+        arg_parse.add_argument("--model_dir", dest="model_dir", default="./output/best_model",
+                               metavar="", help="读取训练后的模型目录，默认 ./output/best_model")
+        arg_parse.add_argument("--result_info", action="store_true",
+                               dest="result_info", help="显示预测结果详细信息，默认 不显示")
+        arg_parse.add_argument("--result_path", dest="result_path", default="./result/result.csv",
+                               metavar="", help="预测结果文件路径，默认 ./result/result.csv")
+        arg_parse.add_argument("--split", dest="split", default=",",
+                               metavar="", help="结果分隔符，默认 ','")
+        return arg_parse.parse_args()
+
+    def check(self):
+        mod.utils.check_path(self.dataset)
+        mod.utils.check_path(self.infer_list)
+        mod.utils.check_path(self.model_dir)

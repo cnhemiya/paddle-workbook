@@ -37,6 +37,8 @@ TRAIN_LIST_PATH = "train_list.txt"
 EVAL_LIST_PATH = "val_list.txt"
 # 测试数据
 TEST_LIST_PATH = "test_list.txt"
+# 预测数据
+INFER_LIST_PATH = "infer_list.txt"
 # 标签数据
 LABEL_LIST_PATH = "labels.txt"
 

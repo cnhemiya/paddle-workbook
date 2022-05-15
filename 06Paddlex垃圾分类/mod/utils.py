@@ -85,30 +85,39 @@ def str_to_list(str_arr: str, astype="int"):
     return result
 
 
-def parse_dataset(dataset_path: str, dataset_list_path: str, shuffle: bool):
+def parse_dataset(dataset_path: str, dataset_list_path: str, inc_label: bool, shuffle: bool):
     """
     数据集解析
 
     Args:
         dataset_path (str): 数据集目录路径
         dataset_list_path (str): 数据集列表文件路径
+        inc_label (bool): 包含标签
+        shuffle (bool): 随机打乱数据
 
     Returns:
         image_paths: 图像路径集
         labels: 分类标签集
     """
     lines = []
+    lines_n = []
     image_paths = []
     labels = []
     with open(dataset_list_path, "r") as f:
-        lines = f.readlines()
+        lines_n = f.readlines()
+    for i in lines_n:
+        i = i.rstrip("\n")
+        lines.append(i)
     # 随机打乱数据
     if (shuffle):
         random.shuffle(lines)
     for i in lines:
-        data = i.split(" ")
-        if (len(data) < 2):
-            raise Exception("数据集解析错误，数据少于 2")
-        image_paths.append(os.path.join(dataset_path, data[0]))
-        labels.append(int(data[1]))
+        if inc_label:
+            data = i.split(" ")
+            if (len(data) < 2):
+                raise Exception("数据集解析错误，数据少于 2")
+            image_paths.append(os.path.join(dataset_path, data[0]))
+            labels.append(int(data[1]))
+        else:
+            image_paths.append(os.path.join(dataset_path, i))
     return image_paths, labels
