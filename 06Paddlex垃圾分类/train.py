@@ -60,8 +60,9 @@ def train():
         data_dir=args.dataset,
         file_list=args.eval_list,
         label_list=args.label_list,
+        transforms=eval_transforms,
         num_workers=args.num_workers,
-        transforms=eval_transforms)
+        shuffle=False)
 
     # 分类数量
     num_classes = len(train_dataset.labels)
