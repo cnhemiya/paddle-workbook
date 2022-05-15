@@ -77,7 +77,7 @@ def train():
         model_name=args.model, num_classes=num_classes)
 
     # 输出保存的目录
-    save_dir = config.SAVE_DIR if args.save_dir == "" else args.save_dir
+    save_dir = config.SAVE_DIR_PATH if args.save_dir == "" else args.save_dir
 
     # 模型权重
     pretrain_weights = None

@@ -42,11 +42,11 @@ LABEL_LIST_PATH = "labels.txt"
 
 
 # 模型参数保存的文件夹
-SAVE_DIR = "./output/"
+SAVE_DIR_PATH = "./output/"
 # 最佳参数保存的文件夹
 SAVE_BAST_DIR = "best"
 # 最佳参数保存的路径
-SAVE_BEST_PATH = SAVE_DIR + SAVE_BAST_DIR + "/"
+SAVE_BEST_PATH = SAVE_DIR_PATH + SAVE_BAST_DIR + "/"
 # 模型参数保存的前缀
 SAVE_PREFIX = "model"
 
@@ -254,7 +254,7 @@ def test_dataset(transform):
     return mod.dataset.ImageClass(dataset_path=DATASET_PATH, images_labels_txt_path=TEST_LIST_PATH, transform=transform)
 
 
-def get_save_dir(save_dir=SAVE_DIR, time_id=mod.utils.time_id()):
+def get_save_dir(save_dir=SAVE_DIR_PATH, time_id=mod.utils.time_id()):
     """
     获取 模型输出文件夹
 
@@ -314,7 +314,7 @@ def save_result(data: list, result: list, result_file: str):
         f.writelines(lines)
 
 
-def save_model(model, save_dir=SAVE_DIR, time_id=mod.utils.time_id(), save_prefix=SAVE_PREFIX):
+def save_model(model, save_dir=SAVE_DIR_PATH, time_id=mod.utils.time_id(), save_prefix=SAVE_PREFIX):
     """
     保存模型参数
 
@@ -344,7 +344,7 @@ def load_model(model, loda_dir="", save_prefix=SAVE_PREFIX, reset_optimizer=Fals
         save_prefix (str, optional): 保存模型的前缀, 默认 SAVE_PREFIX
         reset_optimizer (bool, optional): 重置 optimizer 参数, 默认 False 不重置
     """
-    load_path = os.path.join(SAVE_DIR, loda_dir)
+    load_path = os.path.join(SAVE_DIR_PATH, loda_dir)
     mod.utils.check_path(load_path)
     load_path = os.path.join(load_path, save_prefix)
     print("读取模型参数。。。")
