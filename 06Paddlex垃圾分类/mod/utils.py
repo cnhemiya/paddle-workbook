@@ -105,6 +105,7 @@ def parse_dataset(dataset_path: str, dataset_list_path: str, inc_label: bool, sh
     labels = []
     with open(dataset_list_path, "r") as f:
         lines_n = f.readlines()
+    # 去掉行尾 \n
     for i in lines_n:
         i = i.rstrip("\n")
         lines.append(i)
