@@ -130,7 +130,7 @@ python3 test.py --dataset train --epochs 4 \
 - 示例
 
 ```bash
-python3 test.py --dataset train --model_dir ./output/best_model
+python3 infer.py --dataset train --model_dir ./output/best_model
 ```
 
 - 参数
