@@ -60,7 +60,7 @@ bash onekey.sh
 - 示例
 
 ```bash
-python3 train.py --dataset train --epochs 16 \
+python3 train.py --dataset ./dataset/train --epochs 16 \
     --batch_size 64 --learning_rate 0.1 \
     --lr_decay_epochs "4 8 12" --lr_decay_gamma 0.5 \
     --model MobileNetV3_small_ssld
@@ -84,9 +84,9 @@ python3 train.py --dataset train --epochs 16 \
   --pretrain_weights    从文件加载模型权重，默认 IMAGENET 自动下载 ImageNet 预训练的模型权重
   --resume_checkpoint   恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练
   --model_list          输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练
-  --train_list          训练集列表，默认 train_list.txt
-  --eval_list           评估集列表，默认 val_list.txt
-  --label_list          分类标签列表，默认labels.txt
+  --train_list          训练集列表，默认 '--dataset' 参数目录下的 train_list.txt
+  --eval_list           评估集列表，默认 '--dataset' 参数目录下的 val_list.txt
+  --label_list          分类标签列表，默认 '--dataset' 参数目录下的 labels.txt
 ```
 
 ## 查看支持的模型
@@ -110,7 +110,7 @@ python3 train.py --model_list
 - 示例
 
 ```bash
-python3 test.py --dataset train --epochs 4 \
+python3 test.py --dataset ./dataset/train --epochs 4 \
     --model_dir ./output/best_model
 ```
 - 参数
@@ -119,7 +119,7 @@ python3 test.py --dataset train --epochs 4 \
   --cpu         是否使用 cpu 计算，默认使用 CUDA
   --epochs      训练几轮，默认 4 轮
   --dataset     数据集目录，默认 ./dataset/
-  --test_list   训练集列表，默认 test_list.txt
+  --test_list   训练集列表，默认 '--dataset' 参数目录下的 test_list.txt
   --model_dir   读取训练后的模型目录，默认 ./output/best_model
 ```
 
@@ -130,7 +130,7 @@ python3 test.py --dataset train --epochs 4 \
 - 示例
 
 ```bash
-python3 infer.py --dataset train --model_dir ./output/best_model
+python3 infer.py --dataset ./dataset/train --model_dir ./output/best_model
 ```
 
 - 参数
@@ -138,7 +138,7 @@ python3 infer.py --dataset train --model_dir ./output/best_model
 ```bash
   --cpu           是否使用 cpu 计算，默认使用 CUDA
   --dataset       数据集目录，默认 ./dataset/
-  --infer_list    预测集列表，默认 infer_list.txt
+  --infer_list    预测集列表，默认 '--dataset' 参数目录下的 infer_list.txt
   --model_dir     读取训练后的模型目录，默认 ./output/best_model
   --result_info   显示预测结果详细信息，默认 不显示
   --result_path   预测结果文件路径，默认 ./result/result.csv
