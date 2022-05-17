@@ -4,7 +4,7 @@
 # 参数1：数据文件，例如：train.zip
 # 参数1：aistudio 数据目录，例如：data33408
 
-dir_list="./dataset ./output"
+dir_list="./dataset ./output ./result"
 dataset_dir="./dataset"
 ais_dataset_dir="../data"
 zip_files=""
