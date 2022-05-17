@@ -45,7 +45,7 @@ def main():
 
     # 数据集解析
     image_paths, labels = mod.utils.parse_dataset(
-        args.dataset, dataset_list_path=args.test_list, shuffle=False)
+        args.dataset, dataset_list_path=args.test_list, inc_label=True, shuffle=False)
     # 读取模型
     model = pdx.load_model(args.model_dir)
     # 样本数量
