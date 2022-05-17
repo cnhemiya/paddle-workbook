@@ -70,7 +70,7 @@ def train():
     model, model_name = mod.pdx.pdx_cls_model(
         model_name=args.model, num_classes=num_classes)
 
-    print("开始训练 。。。")
+    print("开始训练 。。。模型：{}".format(model_name))
 
     # 模型训练
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/models/classification.md
@@ -89,11 +89,7 @@ def train():
                 resume_checkpoint=args.resume_checkpoint,
                 use_vdl=True)
 
-    # 保存报表
-    config.save_report_x(save_dir=args.save_dir, id=mod.utils.time_id(),
-                         model=model_name, args=args.args)
-
-    print("结束训练 。。。")
+    print("结束训练 。。。模型：{}".format(model_name))
 
 
 def main():
