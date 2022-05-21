@@ -37,19 +37,19 @@ def train():
     # 定义训练和验证时的 transforms
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/transforms/transforms.md
     train_transforms = T.Compose([
-        T.MixupImage(mixup_epoch=-1), T.RandomDistort(),
-        T.RandomExpand(im_padding_value=[
-                       123.675, 116.28, 103.53]), T.RandomCrop(),
-        T.RandomHorizontalFlip(), T.BatchRandomResize(
-            target_sizes=[320, 352, 384, 416, 448, 480, 512, 544, 576, 608],
-            interp='RANDOM'), T.Normalize(
-                mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        T.MixupImage(mixup_epoch=-1),
+        T.RandomDistort(),
+        T.RandomExpand(im_padding_value=[123.675, 116.28, 103.53]),
+        T.RandomCrop(),
+        T.RandomHorizontalFlip(),
+        T.BatchRandomResize(target_sizes=[320, 352, 384, 416, 448, 480, 512, 544, 576, 608],
+                            interp='RANDOM'),
+        T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
     eval_transforms = T.Compose([
-        T.Resize(
-            target_size=608, interp='CUBIC'), T.Normalize(
-                mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        T.Resize(target_size=608, interp='CUBIC'),
+        T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
 
     # 定义训练和验证所用的数据集
