@@ -28,7 +28,7 @@ TEST_IMAGE_SIZE = 224
 
 def train():
     # 解析命令行参数
-    args = mod.args.TrainX()
+    args = mod.args.TrainXDet()
     # 检查文件或目录是否存在
     args.check()
     # 使用 cuda gpu 还是 cpu 运算
@@ -77,7 +77,7 @@ def train():
     #     model_name=args.model, num_classes=num_classes)
     # PPYOLOv2 PPYOLO PPYOLOTiny PicoDet YOLOv3 FasterRCNN
     # PPYOLO的backbone网络，取值范围为['ResNet50_vd_dcn', 'ResNet18_vd', 'MobileNetV3_large', 'MobileNetV3_small']。默认为'ResNet50_vd_dcn'
-    model = pdx.det.PPYOLO(num_classes=num_classes, backbone='MobileNetV3_small')
+    model = pdx.det.FasterRCNN(num_classes=num_classes, backbone='ResNet50_vd_ssld')
 
     # print("开始训练 。。。模型：{}".format(model_name))
 
@@ -104,7 +104,7 @@ def train():
 
 def main():
     # 解析命令行参数
-    args = mod.args.TrainX()
+    args = mod.args.TrainXDet()
     # PaddleX 模型名称
     if (args.model_list):
         model_list = mod.pdx.pdx_cls_model_name()

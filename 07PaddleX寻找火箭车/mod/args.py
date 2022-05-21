@@ -48,8 +48,6 @@ class Train():
                                dest="epochs", metavar="", help="训练几轮，默认 2 轮")
         arg_parse.add_argument("--batch_size", type=int, default=2,
                                dest="batch_size", metavar="", help="一批次数量，默认 2")
-        arg_parse.add_argument("--num_workers", type=int, default=2,
-                               dest="num_workers", metavar="", help="线程数量，默认 2")
         arg_parse.add_argument("--no_save", action="store_true",
                                dest="no_save", help="是否保存模型参数，默认保存, 选择后不保存模型参数")
         arg_parse.add_argument("--load_dir", dest="load_dir", default="",
@@ -126,7 +124,7 @@ class Predict():
         return arg_parse.parse_args()
 
 
-class TrainX():
+class BaseTrainX():
     """
     返回 PaddleX 训练命令行参数
     """
@@ -143,7 +141,7 @@ class TrainX():
         self.__save_dir_path = save_dir_path
 
         self._arg_parse = argparse.ArgumentParser()
-        self.add_argument()
+        self._add_argument()
         self.args = self._arg_parse.parse_args() if args == None else args
 
         self.cpu = self.args.cpu
@@ -169,7 +167,7 @@ class TrainX():
         self.label_list = os.path.join(
             self.dataset, label_list_path) if self.args.label_list == "" else self.args.label_list
 
-    def add_argument(self):
+    def _add_argument(self):
         """
         添加命令行参数
         """
@@ -196,7 +194,10 @@ class TrainX():
         self._arg_parse.add_argument("--model", dest="model", default="",
                                      metavar="", help="PaddleX 模型名称")
         self._arg_parse.add_argument("--pretrain_weights", dest="pretrain_weights", default="IMAGENET",
-                                     metavar="", help="从文件加载模型权重，默认 IMAGENET 自动下载 ImageNet 预训练的模型权重")
+                                     metavar="", help="若指定为'.pdparams'文件时，从文件加载模型权重；" +
+                                     "若为字符串’IMAGENET’，则自动下载在ImageNet图片数据上预训练的模型权重；" +
+                                     "若为字符串’COCO’，则自动下载在COCO数据集上预训练的模型权重；" +
+                                     "若为None，则不使用预训练模型。默认为'IMAGENET'。")
         self._arg_parse.add_argument("--resume_checkpoint", dest="resume_checkpoint", default="",
                                      metavar="", help="恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练")
         self._arg_parse.add_argument("--model_list", action="store_true", dest="model_list",
@@ -236,6 +237,42 @@ class TrainX():
             self.resume_checkpoint = self.args.resume_checkpoint
 
 
+class TrainXCls(BaseTrainX):
+    """
+    返回 PaddleX 图像分类训练命令行参数
+    """
+
+    def __init__(self, args=None, dataset_path=config.DATASET_PATH,
+                 train_list_path=config.TRAIN_LIST_PATH,
+                 eval_list_path=config.EVAL_LIST_PATH,
+                 label_list_path=config.LABEL_LIST_PATH,
+                 save_dir_path=config.SAVE_DIR_PATH):
+        super(TrainXCls, self).__init__(args=args,
+                                        dataset_path=dataset_path,
+                                        train_list_path=train_list_path,
+                                        eval_list_path=eval_list_path,
+                                        label_list_path=label_list_path,
+                                        save_dir_path=save_dir_path)
+
+
+class TrainXDet(BaseTrainX):
+    """
+    返回 PaddleX 目标检测训练命令行参数
+    """
+
+    def __init__(self, args=None, dataset_path=config.DATASET_PATH,
+                 train_list_path=config.TRAIN_LIST_PATH,
+                 eval_list_path=config.EVAL_LIST_PATH,
+                 label_list_path=config.LABEL_LIST_PATH,
+                 save_dir_path=config.SAVE_DIR_PATH):
+        super(TrainXDet, self).__init__(args=args,
+                                        dataset_path=dataset_path,
+                                        train_list_path=train_list_path,
+                                        eval_list_path=eval_list_path,
+                                        label_list_path=label_list_path,
+                                        save_dir_path=save_dir_path)
+
+
 class TestX():
     """
     返回 PaddleX 测试命令行参数
@@ -265,7 +302,7 @@ class TestX():
         self._arg_parse.add_argument("--cpu", action="store_true",
                                      dest="cpu", help="是否使用 cpu 计算，默认使用 CUDA")
         self._arg_parse.add_argument("--epochs", type=int, default=4,
-                                     dest="epochs", metavar="", help="训练几轮，默认 4 轮")
+                                     dest="epochs", metavar="", help="测试几轮，默认 4 轮")
         self._arg_parse.add_argument("--dataset", dest="dataset", default="",
                                      metavar="", help="数据集目录，默认 {}".format(self.__dataset_path))
         self._arg_parse.add_argument("--test_list", dest="test_list", default="", metavar="",
