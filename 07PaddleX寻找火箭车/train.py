@@ -11,9 +11,9 @@ DATE:    2022-05-09 19:16
 import paddlex as pdx
 from paddlex import transforms as T
 import mod.utils
-import mod.config as config
 import mod.args
-import mod.pdx
+import mod.config as config
+import mod.pdxconfig as pdxcfg
 
 
 # 训练 transforms 图像大小
@@ -73,7 +73,7 @@ def train():
     # 分类数量
     num_classes = len(train_dataset.labels)
     # 获取 PaddleX 模型
-    model, model_name = mod.pdx.pdx_det_model(
+    model, model_name = pdxcfg.pdx_det_model(
         model_name=args.model, backbone=args.backbone, num_classes=num_classes)
 
     print("开始训练 。。。模型：{}".format(model_name))
@@ -103,7 +103,7 @@ def main():
     args = mod.args.TrainXDet()
     # PaddleX 模型名称
     if (args.model_list):
-        mod.pdx.print_pdx_det_model_name()
+        pdxcfg.print_pdx_det_model_name()
     else:
         # 训练
         train()
