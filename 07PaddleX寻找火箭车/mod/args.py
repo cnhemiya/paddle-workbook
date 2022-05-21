@@ -271,6 +271,12 @@ class TrainXDet(BaseTrainX):
                                         eval_list_path=eval_list_path,
                                         label_list_path=label_list_path,
                                         save_dir_path=save_dir_path)
+        self.backbone = self.args.backbone
+
+    def _add_argument(self):
+        super(TrainXDet, self)._add_argument()
+        self._arg_parse.add_argument("--backbone", dest="backbone", default="",
+                                     metavar="", help="目标检测模型的 backbone 网络")
 
 
 class TestX():

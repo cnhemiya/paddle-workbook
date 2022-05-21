@@ -73,13 +73,10 @@ def train():
     # 分类数量
     num_classes = len(train_dataset.labels)
     # 获取 PaddleX 模型
-    # model, model_name = mod.pdx.pdx_cls_model(
-    #     model_name=args.model, num_classes=num_classes)
-    # PPYOLOv2 PPYOLO PPYOLOTiny PicoDet YOLOv3 FasterRCNN
-    # PPYOLO的backbone网络，取值范围为['ResNet50_vd_dcn', 'ResNet18_vd', 'MobileNetV3_large', 'MobileNetV3_small']。默认为'ResNet50_vd_dcn'
-    model = pdx.det.FasterRCNN(num_classes=num_classes, backbone='ResNet50_vd_ssld')
+    model, model_name = mod.pdx.pdx_det_model(
+        model_name=args.model, backbone=args.backbone, num_classes=num_classes)
 
-    # print("开始训练 。。。模型：{}".format(model_name))
+    print("开始训练 。。。模型：{}".format(model_name))
 
     # 模型训练
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/models/classification.md
@@ -98,8 +95,7 @@ def train():
                 resume_checkpoint=args.resume_checkpoint,
                 use_vdl=True)
 
-    # print("结束训练 。。。模型：{}".format(model_name))
-    print("结束训练 。。。")
+    print("结束训练 。。。模型：{}".format(model_name))
 
 
 def main():
@@ -107,9 +103,7 @@ def main():
     args = mod.args.TrainXDet()
     # PaddleX 模型名称
     if (args.model_list):
-        model_list = mod.pdx.pdx_cls_model_name()
-        print("\nPaddleX 目标检测模型")
-        print(model_list)
+        mod.pdx.print_pdx_det_model_name()
     else:
         # 训练
         train()

@@ -3,7 +3,7 @@
 LICENSE: MulanPSL2
 AUTHOR:  cnhemiya@qq.com
 DATE:    2022-05-15 20:35
-文档说明: PaddleX 用的
+文档说明: PaddleX 配置
 """
 
 
@@ -29,6 +29,32 @@ PDX_CLS_MODEL_NAME_LOWER = ['pplcnet', 'pplcnet_ssld', 'resnet18', 'resnet18_vd'
                             'shufflenetv2', 'shufflenetv2_swish', 'densenet121', 'densenet161', 'densenet169',
                             'densenet201', 'densenet264', 'hrnet_w18_c', 'hrnet_w30_c', 'hrnet_w32_c',
                             'hrnet_w40_c', 'hrnet_w44_c', 'hrnet_w48_c', 'hrnet_w64_c', 'alexnet']
+
+# PaddleX 目标检测模型名称
+PDX_DET_MODEL_NAME = ['PPYOLOv2', 'PPYOLO', 'PPYOLOTiny',
+                      'PicoDet', 'YOLOv3', 'FasterRCNN', ]
+
+# PaddleX 目标检测模型 PPYOLOv2 backbone 网络
+PDX_DET_PPYOLOV2_BACKBONE = ['ResNet50_vd_dcn', 'ResNet101_vd_dcn']
+
+# PaddleX 目标检测模型 PPYOLO backbone 网络
+PDX_DET_PPYOLO_BACKBONE = ['ResNet50_vd_dcn', 'ResNet18_vd',
+                           'MobileNetV3_large', 'MobileNetV3_small']
+
+# PaddleX 目标检测模型 PPYOLOTiny backbone 网络
+PDX_DET_PPYOLOTINY_BACKBONE = ['MobileNetV3']
+
+# PaddleX 目标检测模型 PicoDet backbone 网络
+PDX_DET_PICODET_BACKBONE = ['ESNet_s', 'ESNet_m', 'ESNet_l', 'LCNet',
+                            'MobileNetV3', 'ResNet18_vd']
+
+# PaddleX 目标检测模型 YOLOv3 backbone 网络
+PDX_DET_YOLOV3_BACKBONE = ['MobileNetV1', 'MobileNetV1_ssld', 'MobileNetV3',
+                           'MobileNetV3_ssld', 'DarkNet53', 'ResNet50_vd_dcn', 'ResNet34']
+
+# PaddleX 目标检测模型 FasterRCNN backbone 网络
+PDX_DET_FASTERRCNN_BACKBONE = ['ResNet50', 'ResNet50_vd', 'ResNet50_vd_ssld',
+                               'ResNet34', 'ResNet34_vd', 'ResNet101', 'ResNet101_vd', 'HRNet_W18']
 
 
 def pdx_cls_model(model_name: str, num_classes: int):
@@ -144,3 +170,80 @@ def pdx_cls_model_name():
     PaddleX 图像分类模型名称
     """
     return PDX_CLS_MODEL_NAME
+
+
+def pdx_det_model(model_name: str, backbone: str, num_classes: int):
+    """
+    获取 PaddleX 目标检测模型
+
+    Args:
+        model_name (str):  PaddleX 目标检测模型名称
+        backbone (str): 目标检测模型 backbone 网络
+        num_classes (int): 分类数量
+
+    Raises:
+        Exception: PaddleX 目标检测模型名称错误
+        Exception: PPYOLOv2 backbone 网络错误
+        Exception: PPYOLO backbone 网络错误
+        Exception: PPYOLOTiny backbone 网络错误
+        Exception: PicoDet backbone 网络错误
+        Exception: YOLOv3 backbone 网络错误
+        Exception: FasterRCNN backbone 网络错误
+
+    Returns:
+        model: 模型
+        model_name: 模型名称
+    """
+    if model_name not in PDX_DET_MODEL_NAME:
+        raise Exception("PaddleX 目标检测模型名称错误")
+    if (model_name == 'PPYOLOv2') and (backbone not in PDX_DET_PPYOLOV2_BACKBONE):
+        raise Exception("PaddleX 目标检测模型 PPYOLOv2 backbone 网络错误")
+    if (model_name == 'PPYOLO') and (backbone not in PDX_DET_PPYOLO_BACKBONE):
+        raise Exception("PaddleX 目标检测模型 PPYOLO backbone 网络错误")
+    if (model_name == 'PPYOLOTiny') and (backbone not in PDX_DET_PPYOLOTINY_BACKBONE):
+        raise Exception("PaddleX 目标检测模型 PPYOLOTiny backbone 网络错误")
+    if (model_name == 'PicoDet') and (backbone not in PDX_DET_PICODET_BACKBONE):
+        raise Exception("PaddleX 目标检测模型 PicoDet backbone 网络错误")
+    if (model_name == 'YOLOv3') and (backbone not in PDX_DET_YOLOV3_BACKBONE):
+        raise Exception("PaddleX 目标检测模型 YOLOv3 backbone 网络错误")
+    if (model_name == 'FasterRCNN') and (backbone not in PDX_DET_FASTERRCNN_BACKBONE):
+        raise Exception("PaddleX 目标检测模型 FasterRCNN backbone 网络错误")
+
+    model = None
+    if (model_name == 'PPYOLOv2'):
+        model = paddlex.det.PPYOLOv2(
+            num_classes=num_classes, backbone=backbone)
+    elif (model_name == 'PPYOLO'):
+        model = paddlex.det.PPYOLO(num_classes=num_classes, backbone=backbone)
+    elif (model_name == 'PPYOLOTiny'):
+        model = paddlex.det.PPYOLOTiny(
+            num_classes=num_classes, backbone=backbone)
+    elif (model_name == 'PicoDet'):
+        model = paddlex.det.PicoDet(num_classes=num_classes, backbone=backbone)
+    elif (model_name == 'YOLOv3'):
+        model = paddlex.det.YOLOv3(num_classes=num_classes, backbone=backbone)
+    elif (model_name == 'FasterRCNN'):
+        model = paddlex.det.FasterRCNN(
+            num_classes=num_classes, backbone=backbone)
+
+    return model, model_name
+
+
+def print_pdx_det_model_name():
+    """
+    打印 PaddleX 目标检测模型名称
+    """
+    print("\nPaddleX 目标检测模型")
+    print(PDX_DET_MODEL_NAME)
+    print("PPYOLOv2 backbone 网络")
+    print(PDX_DET_PPYOLOV2_BACKBONE)
+    print("PPYOLO backbone 网络")
+    print(PDX_DET_PPYOLO_BACKBONE)
+    print("PPYOLOTiny backbone 网络")
+    print(PDX_DET_PPYOLOTINY_BACKBONE)
+    print("PicoDet backbone 网络")
+    print(PDX_DET_PICODET_BACKBONE)
+    print("YOLOv3 backbone 网络")
+    print(PDX_DET_YOLOV3_BACKBONE)
+    print("FasterRCNN backbone 网络")
+    print(PDX_DET_FASTERRCNN_BACKBONE)
