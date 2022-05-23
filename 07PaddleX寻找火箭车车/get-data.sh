@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 
 # 获取数据到 dataset 目录下
-# 参数1：数据文件，例如：train.zip
-# 参数1：aistudio 数据目录，例如：data33408
+# 参数1：数据文件，例如：road_fighter_car.zip
+# 参数1：aistudio 数据目录，例如：data148354
 
 dir_list="./dataset ./output ./result"
 dataset_dir="./dataset"
@@ -39,13 +39,17 @@ get_data() {
     file="$1"
     if [ -f "$dataset_dir/$file" ]; then
         echo "找到文件: $dataset_dir/$file"
+        if [ "$2" == "zip" ]; then
+            unzip_file "$dataset_dir/$file" "$dataset_dir"
+        fi
     elif [ -f "$ais_dataset_dir/$file" ]; then
         echo "找到文件: $ais_dataset_dir/$file"
-        echo "复制文件到: $dataset_dir/$file"
-        cp "$ais_dataset_dir/$file" "$dataset_dir/$file"
-    fi
-    if [ "$2" == "zip" ]; then
-        unzip_file "$dataset_dir/$file" "$dataset_dir"
+        if [ "$2" == "zip" ]; then
+            unzip_file "$ais_dataset_dir/$file" "$dataset_dir"
+        else
+            echo "复制文件到: $dataset_dir/$file"
+            cp "$ais_dataset_dir/$file" "$dataset_dir/$file"
+        fi
     fi
 }
 
@@ -61,3 +65,4 @@ ais_dataset_dir=$ais_dataset_dir/$2
 
 make_dir_list
 get_all_zip_data
+
