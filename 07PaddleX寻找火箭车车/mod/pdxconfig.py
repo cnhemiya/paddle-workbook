@@ -195,19 +195,19 @@ def pdx_det_model(model_name: str, backbone: str, num_classes: int):
         model_name: 模型名称
     """
     if model_name not in PDX_DET_MODEL_NAME:
-        raise Exception("PaddleX 目标检测模型名称错误")
+        raise Exception("PaddleX 目标检测模型名称错误，错误信息：{}".format(model_name))
     if (model_name == 'PPYOLOv2') and (backbone not in PDX_DET_PPYOLOV2_BACKBONE):
-        raise Exception("PaddleX 目标检测模型 PPYOLOv2 backbone 网络错误")
+        raise Exception("PaddleX 目标检测模型 PPYOLOv2 backbone 网络错误，错误信息：{}".format(backbone))
     if (model_name == 'PPYOLO') and (backbone not in PDX_DET_PPYOLO_BACKBONE):
-        raise Exception("PaddleX 目标检测模型 PPYOLO backbone 网络错误")
+        raise Exception("PaddleX 目标检测模型 PPYOLO backbone 网络错误，错误信息：{}".format(backbone))
     if (model_name == 'PPYOLOTiny') and (backbone not in PDX_DET_PPYOLOTINY_BACKBONE):
-        raise Exception("PaddleX 目标检测模型 PPYOLOTiny backbone 网络错误")
+        raise Exception("PaddleX 目标检测模型 PPYOLOTiny backbone 网络错误，错误信息：{}".format(backbone))
     if (model_name == 'PicoDet') and (backbone not in PDX_DET_PICODET_BACKBONE):
-        raise Exception("PaddleX 目标检测模型 PicoDet backbone 网络错误")
+        raise Exception("PaddleX 目标检测模型 PicoDet backbone 网络错误，错误信息：{}".format(backbone))
     if (model_name == 'YOLOv3') and (backbone not in PDX_DET_YOLOV3_BACKBONE):
-        raise Exception("PaddleX 目标检测模型 YOLOv3 backbone 网络错误")
+        raise Exception("PaddleX 目标检测模型 YOLOv3 backbone 网络错误，错误信息：{}".format(backbone))
     if (model_name == 'FasterRCNN') and (backbone not in PDX_DET_FASTERRCNN_BACKBONE):
-        raise Exception("PaddleX 目标检测模型 FasterRCNN backbone 网络错误")
+        raise Exception("PaddleX 目标检测模型 FasterRCNN backbone 网络错误，错误信息：{}".format(backbone))
 
     model = None
     if (model_name == 'PPYOLOv2'):
