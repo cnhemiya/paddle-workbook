@@ -76,12 +76,11 @@ def train():
     model, model_name = pdxcfg.pdx_det_model(
         model_name=args.model, backbone=args.backbone, num_classes=num_classes)
 
-    print("开始训练 。。。模型：{}".format(model_name))
-
     # 模型训练
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/models/classification.md
     # 参数调整：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/parameters.md
     # 可使用 VisualDL 查看训练指标，参考：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/visualdl.md
+    print("开始训练 。。。模型：{}".format(model_name))
     model.train(num_epochs=args.epochs,
                 train_dataset=train_dataset,
                 train_batch_size=args.batch_size,
@@ -96,7 +95,6 @@ def train():
                 lr_decay_gamma=args.lr_decay_gamma,
                 resume_checkpoint=args.resume_checkpoint,
                 use_vdl=True)
-
     print("结束训练 。。。模型：{}".format(model_name))
 
 

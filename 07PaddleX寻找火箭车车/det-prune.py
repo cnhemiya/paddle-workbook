@@ -3,8 +3,8 @@
 """
 LICENSE: MulanPSL2
 AUTHOR:  cnhemiya@qq.com
-DATE:    2022-05-09 19:16
-文档说明: 训练
+DATE:    2022-05-25 15:41
+文档说明: 剪裁
 """
 
 
@@ -26,7 +26,7 @@ EVAL_IMAGE_SIZE = 256
 TEST_IMAGE_SIZE = 224
 
 
-def train():
+def prune():
     # 解析命令行参数
     args = mod.args.PruneX()
     # 检查文件或目录是否存在
@@ -121,8 +121,8 @@ def main():
     if (args.model_list):
         pdxcfg.print_pdx_det_model_name()
     else:
-        # 训练
-        train()
+        # 剪裁
+        prune()
 
 
 if __name__ == '__main__':
