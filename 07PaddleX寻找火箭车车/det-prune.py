@@ -13,17 +13,6 @@ from paddlex import transforms as T
 import mod.utils
 import mod.args
 import mod.config as config
-import mod.pdxconfig as pdxcfg
-
-
-# 训练 transforms 图像大小
-TRAIN_IMAGE_SIZE = 224
-
-# 评估 transforms 图像大小
-EVAL_IMAGE_SIZE = 256
-
-# 测试 transforms 图像大小
-TEST_IMAGE_SIZE = 224
 
 
 def prune():

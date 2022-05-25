@@ -157,7 +157,6 @@ class BaseTrainX():
         self.save_interval_epochs = self.args.save_interval_epochs
         self.save_dir = save_dir_path if self.args.save_dir == "" else self.args.save_dir
         self.dataset = dataset_path if self.args.dataset == "" else self.args.dataset
-        self.pretrain_weights = self.args.pretrain_weights
         self.resume_checkpoint = self.args.resume_checkpoint
 
         self.train_list = os.path.join(
@@ -196,11 +195,6 @@ class BaseTrainX():
                                      metavar="", help="模型保存路径。默认为 {}".format(self._save_dir_path))
         self._arg_parse.add_argument("--dataset", dest="dataset", default="",
                                      metavar="", help="数据集目录，默认 {}".format(self._dataset_path))
-        self._arg_parse.add_argument("--pretrain_weights", dest="pretrain_weights", default="IMAGENET",
-                                     metavar="", help="若指定为'.pdparams'文件时，从文件加载模型权重；" +
-                                     "若为字符串’IMAGENET’，则自动下载在ImageNet图片数据上预训练的模型权重；" +
-                                     "若为字符串’COCO’，则自动下载在COCO数据集上预训练的模型权重；" +
-                                     "若为None，则不使用预训练模型。默认为'IMAGENET'。")
         self._arg_parse.add_argument("--resume_checkpoint", dest="resume_checkpoint", default="",
                                      metavar="", help="恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练")
         self._arg_parse.add_argument("--train_list", dest="train_list", default="", metavar="",
@@ -215,19 +209,6 @@ class BaseTrainX():
         mod.utils.check_path(self.train_list)
         mod.utils.check_path(self.eval_list)
         mod.utils.check_path(self.label_list)
-
-        # 模型权重
-        self.pretrain_weights = None
-        # 加载模型权重
-        if (self.args.pretrain_weights == ""):
-            self.pretrain_weights = None
-        elif self.args.pretrain_weights == "IMAGENET":
-            self.pretrain_weights = "IMAGENET"
-        elif self.args.pretrain_weights == "COCO":
-            self.pretrain_weights = "COCO"
-        else:
-            mod.utils.check_path(self.args.pretrain_weights)
-            self.pretrain_weights = self.args.pretrain_weights
 
         # 恢复训练时指定上次训练保存的模型路径
         self.resume_checkpoint = None
@@ -254,16 +235,35 @@ class TrainX(BaseTrainX):
                                      eval_list_path=eval_list_path,
                                      label_list_path=label_list_path,
                                      save_dir_path=save_dir_path)
+        self.pretrain_weights = self.args.pretrain_weights
         self.model = self.args.model
         self.model_list = self.args.model_list
 
     def _add_argument(self):
         super(TrainX, self)._add_argument()
+        self._arg_parse.add_argument("--pretrain_weights", dest="pretrain_weights", default="IMAGENET",
+                                     metavar="", help="若指定为'.pdparams'文件时，从文件加载模型权重；" +
+                                     "若为字符串’IMAGENET’，则自动下载在ImageNet图片数据上预训练的模型权重；" +
+                                     "若为字符串’COCO’，则自动下载在COCO数据集上预训练的模型权重；" +
+                                     "若为None，则不使用预训练模型。默认为'IMAGENET'。")
         self._arg_parse.add_argument("--model", dest="model", default="",
                                      metavar="", help="PaddleX 模型名称")
         self._arg_parse.add_argument("--model_list", action="store_true", dest="model_list",
                                      help="输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练")
-
+    def check(self):
+        super(TrainX, self).check()
+        # 模型权重
+        self.pretrain_weights = None
+        # 加载模型权重
+        if (self.args.pretrain_weights == ""):
+            self.pretrain_weights = None
+        elif self.args.pretrain_weights == "IMAGENET":
+            self.pretrain_weights = "IMAGENET"
+        elif self.args.pretrain_weights == "COCO":
+            self.pretrain_weights = "COCO"
+        else:
+            mod.utils.check_path(self.args.pretrain_weights)
+            self.pretrain_weights = self.args.pretrain_weights
 
 class TrainXCls(TrainX):
     """

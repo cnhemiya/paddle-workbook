@@ -13,17 +13,6 @@ from paddlex import transforms as T
 import mod.utils
 import mod.args
 import mod.config as config
-import mod.pdxconfig as pdxcfg
-
-
-# 训练 transforms 图像大小
-TRAIN_IMAGE_SIZE = 224
-
-# 评估 transforms 图像大小
-EVAL_IMAGE_SIZE = 256
-
-# 测试 transforms 图像大小
-TEST_IMAGE_SIZE = 224
 
 
 def quant():
@@ -79,13 +68,12 @@ def quant():
     # 参数调整：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/parameters.md
     # 可使用 VisualDL 查看训练指标，参考：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/visualdl.md
     print("开始训练 。。。保存路径：{}".format(args.save_dir))
-    model.train(num_epochs=args.epochs,
+    model.quant_aware_train(num_epochs=args.epochs,
                 train_dataset=train_dataset,
                 train_batch_size=args.batch_size,
                 eval_dataset=eval_dataset,
                 save_interval_epochs=args.save_interval_epochs,
                 save_dir=args.save_dir,
-                pretrain_weights=args.pretrain_weights,
                 learning_rate=args.learning_rate,
                 warmup_steps=args.warmup_steps,
                 warmup_start_lr=args.warmup_start_lr,
