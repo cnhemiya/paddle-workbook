@@ -20,16 +20,6 @@ PDX_CLS_MODEL_NAME = ['PPLCNet', 'PPLCNet_ssld', 'ResNet18', 'ResNet18_vd', 'Res
                       'DenseNet201', 'DenseNet264', 'HRNet_W18_C', 'HRNet_W30_C', 'HRNet_W32_C',
                       'HRNet_W40_C', 'HRNet_W44_C', 'HRNet_W48_C', 'HRNet_W64_C', 'AlexNet']
 
-# PaddleX 图像分类模型小写名称
-PDX_CLS_MODEL_NAME_LOWER = ['pplcnet', 'pplcnet_ssld', 'resnet18', 'resnet18_vd', 'resnet34',
-                            'resnet34_vd', 'resnet50', 'resnet50_vd', 'resnet50_vd_ssld', 'resnet101',
-                            'resnet101_vd', 'resnet101_vd_ssld', 'resnet152', 'resnet152_vd', 'resnet200_vd',
-                            'darknet53', 'mobilenetv1', 'mobilenetv2', 'mobilenetv3_small', 'mobilenetv3_small_ssld',
-                            'mobilenetv3_large', 'mobilenetv3_large_ssld', 'xception41', 'xception65', 'xception71',
-                            'shufflenetv2', 'shufflenetv2_swish', 'densenet121', 'densenet161', 'densenet169',
-                            'densenet201', 'densenet264', 'hrnet_w18_c', 'hrnet_w30_c', 'hrnet_w32_c',
-                            'hrnet_w40_c', 'hrnet_w44_c', 'hrnet_w48_c', 'hrnet_w64_c', 'alexnet']
-
 # PaddleX 目标检测模型名称
 PDX_DET_MODEL_NAME = ['PPYOLOv2', 'PPYOLO', 'PPYOLOTiny',
                       'PicoDet', 'YOLOv3', 'FasterRCNN', ]
@@ -69,97 +59,93 @@ def pdx_cls_model(model_name: str, num_classes: int):
         model: 模型
         model_name: 模型名称
     """
-    model_list = PDX_CLS_MODEL_NAME_LOWER
-    model_lower = model_name.lower()
     model = None
-    if model_lower not in model_list:
+    if model_name not in PDX_CLS_MODEL_NAME:
         raise Exception("PaddleX 模型名称错误")
 
-    model_name = PDX_CLS_MODEL_NAME[PDX_CLS_MODEL_NAME_LOWER.index(
-        model_lower)]
-    if model_lower == "pplcnet":
+    if model_name == "PPLCNet":
         model = paddlex.cls.PPLCNet(num_classes=num_classes)
-    elif model_lower == "pplcnet_ssld":
+    elif model_name == "PPLCNet_ssld":
         model = paddlex.cls.PPLCNet_ssld(num_classes=num_classes)
-    elif model_lower == "resnet18":
+    elif model_name == "ResNet18":
         model = paddlex.cls.ResNet18(num_classes=num_classes)
-    elif model_lower == "resnet18_vd":
+    elif model_name == "ResNet18_vd":
         model = paddlex.cls.ResNet18_vd(num_classes=num_classes)
-    elif model_lower == "resnet34":
+    elif model_name == "ResNet34":
         model = paddlex.cls.ResNet34(num_classes=num_classes)
-    elif model_lower == "resnet34_vd":
+    elif model_name == "ResNet34_vd":
         model = paddlex.cls.ResNet34_vd(num_classes=num_classes)
-    elif model_lower == "resnet50":
+    elif model_name == "ResNet50":
         model = paddlex.cls.ResNet50(num_classes=num_classes)
-    elif model_lower == "resnet50_vd":
+    elif model_name == "ResNet50_vd":
         model = paddlex.cls.ResNet50_vd(num_classes=num_classes)
-    elif model_lower == "resnet50_vd_ssld":
+    elif model_name == "ResNet50_vd_ssld":
         model = paddlex.cls.ResNet50_vd_ssld(num_classes=num_classes)
-    elif model_lower == "resnet101":
+    elif model_name == "ResNet101":
         model = paddlex.cls.ResNet101(num_classes=num_classes)
-    elif model_lower == "resnet101_vd":
+    elif model_name == "ResNet101_vd":
         model = paddlex.cls.ResNet101_vd(num_classes=num_classes)
-    elif model_lower == "resnet101_vd_ssld":
+    elif model_name == "ResNet101_vd_ssld":
         model = paddlex.cls.ResNet101_vd_ssld(num_classes=num_classes)
-    elif model_lower == "resnet152":
+    elif model_name == "ResNet152":
         model = paddlex.cls.ResNet152(num_classes=num_classes)
-    elif model_lower == "resnet152_vd":
+    elif model_name == "ResNet152_vd":
         model = paddlex.cls.ResNet152_vd(num_classes=num_classes)
-    elif model_lower == "resnet200_vd":
+    elif model_name == "ResNet200_vd":
         model = paddlex.cls.ResNet200_vd(num_classes=num_classes)
-    elif model_lower == "darknet53":
+    elif model_name == "DarkNet53":
         model = paddlex.cls.DarkNet53(num_classes=num_classes)
-    elif model_lower == "mobilenetv1":
+    elif model_name == "MobileNetV1":
         model = paddlex.cls.MobileNetV1(num_classes=num_classes, scale=1.0)
-    elif model_lower == "mobilenetv2":
+    elif model_name == "MobileNetV2":
         model = paddlex.cls.MobileNetV2(num_classes=num_classes, scale=1.0)
-    elif model_lower == "mobilenetv3_small":
+    elif model_name == "MobileNetV3_small":
         model = paddlex.cls.MobileNetV3_small(
             num_classes=num_classes, scale=1.0)
-    elif model_lower == "mobilenetv3_small_ssld":
+    elif model_name == "MobileNetV3_small_ssld":
         model = paddlex.cls.MobileNetV3_small_ssld(
             num_classes=num_classes, scale=1.0)
-    elif model_lower == "mobilenetv3_large":
+    elif model_name == "MobileNetV3_large":
         model = paddlex.cls.MobileNetV3_large(
             num_classes=num_classes, scale=1.0)
-    elif model_lower == "mobilenetv3_large_ssld":
+    elif model_name == "MobileNetV3_large_ssld":
         model = paddlex.cls.MobileNetV3_large_ssld(num_classes=num_classes)
-    elif model_lower == "xception41":
+    elif model_name == "Xception41":
         model = paddlex.cls.Xception41(num_classes=num_classes)
-    elif model_lower == "xception65":
+    elif model_name == "Xception65":
         model = paddlex.cls.Xception65(num_classes=num_classes)
-    elif model_lower == "xception71":
+    elif model_name == "Xception71":
         model = paddlex.cls.Xception71(num_classes=num_classes)
-    elif model_lower == "shufflenetv2":
+    elif model_name == "ShuffleNetV2":
         model = paddlex.cls.ShuffleNetV2(num_classes=num_classes, scale=1.0)
-    elif model_lower == "shufflenetv2_swish":
+    elif model_name == "ShuffleNetV2_swish":
         model = paddlex.cls.ShuffleNetV2_swish(
             num_classes=num_classes, scale=1.0)
-    elif model_lower == "densenet121":
+    elif model_name == "DenseNet121":
         model = paddlex.cls.DenseNet121(num_classes=num_classes)
-    elif model_lower == "densenet161":
+    elif model_name == "DenseNet161":
         model = paddlex.cls.DenseNet161(num_classes=num_classes)
-    elif model_lower == "densenet169":
+    elif model_name == "DenseNet169":
         model = paddlex.cls.DenseNet169(num_classes=num_classes)
-    elif model_lower == "densenet201":
+    elif model_name == "DenseNet201":
         model = paddlex.cls.DenseNet201(num_classes=num_classes)
-    elif model_lower == "densenet264":
+    elif model_name == "DenseNet264":
         model = paddlex.cls.DenseNet264(num_classes=num_classes)
-    elif model_lower == "hrnet_w18_c":
+    elif model_name == "HRNet_W18_C":
         model = paddlex.cls.HRNet_W18_C(num_classes=num_classes)
-    elif model_lower == "hrnet_w30_c":
+    elif model_name == "HRNet_W30_C":
         model = paddlex.cls.HRNet_W30_C(num_classes=num_classes)
-    elif model_lower == "hrnet_w32_c":
+    elif model_name == "HRNet_W32_C":
         model = paddlex.cls.HRNet_W32_C(num_classes=num_classes)
-    elif model_lower == "hrnet_w40_c":
+    elif model_name == "HRNet_W40_C":
         model = paddlex.cls.HRNet_W40_C(num_classes=num_classes)
-    elif model_lower == "hrnet_w44_c":
+    elif model_name == "HRNet_W44_C":
         model = paddlex.cls.HRNet_W44_C(num_classes=num_classes)
-    elif model_lower == "hrnet_w48_c":
+    elif model_name == "HRNet_W48_C":
         model = paddlex.cls.HRNet_W48_C(num_classes=num_classes)
-    elif model_lower == "hrnet_w64_c":
+    elif model_name == "HRNet_W64_C":
         model = paddlex.cls.HRNet_W64_C(num_classes=num_classes)
-    elif model_lower == "alexnet":
+    elif model_name == "AlexNet":
         model = paddlex.cls.AlexNet(num_classes=num_classes)
 
     return model, model_name
