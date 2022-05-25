@@ -134,11 +134,11 @@ class BaseTrainX():
                  eval_list_path=config.EVAL_LIST_PATH,
                  label_list_path=config.LABEL_LIST_PATH,
                  save_dir_path=config.SAVE_DIR_PATH):
-        self.__dataset_path = dataset_path
-        self.__train_list_path = train_list_path
-        self.__eval_list_path = eval_list_path
-        self.__label_list_path = label_list_path
-        self.__save_dir_path = save_dir_path
+        self._dataset_path = dataset_path
+        self._train_list_path = train_list_path
+        self._eval_list_path = eval_list_path
+        self._label_list_path = label_list_path
+        self._save_dir_path = save_dir_path
 
         self._arg_parse = argparse.ArgumentParser()
         self._add_argument()
@@ -192,10 +192,10 @@ class BaseTrainX():
                                      dest="lr_decay_gamma", metavar="", help="默认优化器的学习率衰减率。默认为0.1")
         self._arg_parse.add_argument("--save_interval_epochs", type=int, default=1,
                                      dest="save_interval_epochs", metavar="", help="模型保存间隔(单位: 迭代轮数)。默认为1")
-        self._arg_parse.add_argument("--save_dir", dest="save_dir", default="{}".format(self.__save_dir_path),
-                                     metavar="", help="模型保存路径。默认为 {}".format(self.__save_dir_path))
+        self._arg_parse.add_argument("--save_dir", dest="save_dir", default="{}".format(self._save_dir_path),
+                                     metavar="", help="模型保存路径。默认为 {}".format(self._save_dir_path))
         self._arg_parse.add_argument("--dataset", dest="dataset", default="",
-                                     metavar="", help="数据集目录，默认 {}".format(self.__dataset_path))
+                                     metavar="", help="数据集目录，默认 {}".format(self._dataset_path))
         self._arg_parse.add_argument("--pretrain_weights", dest="pretrain_weights", default="IMAGENET",
                                      metavar="", help="若指定为'.pdparams'文件时，从文件加载模型权重；" +
                                      "若为字符串’IMAGENET’，则自动下载在ImageNet图片数据上预训练的模型权重；" +
@@ -204,11 +204,11 @@ class BaseTrainX():
         self._arg_parse.add_argument("--resume_checkpoint", dest="resume_checkpoint", default="",
                                      metavar="", help="恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练")
         self._arg_parse.add_argument("--train_list", dest="train_list", default="", metavar="",
-                                     help="训练集列表，默认 '--dataset' 参数目录下的 {}".format(self.__train_list_path))
+                                     help="训练集列表，默认 '--dataset' 参数目录下的 {}".format(self._train_list_path))
         self._arg_parse.add_argument("--eval_list", dest="eval_list", default="", metavar="",
-                                     help="评估集列表，默认 '--dataset' 参数目录下的 {}".format(self.__eval_list_path))
+                                     help="评估集列表，默认 '--dataset' 参数目录下的 {}".format(self._eval_list_path))
         self._arg_parse.add_argument("--label_list", dest="label_list", default="", metavar="",
-                                     help="分类标签列表，默认 '--dataset' 参数目录下的 {}".format(self.__label_list_path))
+                                     help="分类标签列表，默认 '--dataset' 参数目录下的 {}".format(self._label_list_path))
 
     def check(self):
         mod.utils.check_path(self.dataset)
@@ -328,8 +328,8 @@ class PruneX(BaseTrainX):
 
     def _add_argument(self):
         super(PruneX, self)._add_argument()
-        self._arg_parse.add_argument("--model_dir", dest="model_dir", default="{}".format(os.path.join(self.__save_dir_path, "best_model")),
-                                     metavar="", help="模型读取路径。默认为 {}".format(os.path.join(self.__save_dir_path, "best_model")))
+        self._arg_parse.add_argument("--model_dir", dest="model_dir", default="{}".format(os.path.join(self._save_dir_path, "best_model")),
+                                     metavar="", help="模型读取路径。默认为 {}".format(os.path.join(self._save_dir_path, "best_model")))
         self._arg_parse.add_argument("--skip_analyze", action="store_true",
                                      dest="skip_analyze", help="是否跳过分析模型各层参数在不同的剪裁比例下的敏感度，默认不跳过")
         self._arg_parse.add_argument("--pruned_flops", type=float, default=0.2,
