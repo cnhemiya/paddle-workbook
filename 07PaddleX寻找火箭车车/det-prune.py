@@ -116,7 +116,7 @@ def prune():
 
 def main():
     # 解析命令行参数
-    args = mod.args.TrainXDet()
+    args = mod.args.PruneX()
     # PaddleX 模型名称
     if (args.model_list):
         pdxcfg.print_pdx_det_model_name()
