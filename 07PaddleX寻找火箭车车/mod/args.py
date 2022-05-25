@@ -126,7 +126,7 @@ class Predict():
 
 class BaseTrainX():
     """
-    返回 PaddleX 训练命令行参数
+    返回 PaddleX 基本训练命令行参数
     """
 
     def __init__(self, args=None, dataset_path=config.DATASET_PATH,
@@ -150,16 +150,16 @@ class BaseTrainX():
         self.epochs = self.args.epochs
         self.batch_size = self.args.batch_size
         self.learning_rate = self.args.learning_rate
+        self.warmup_steps = self.args.warmup_steps
+        self.warmup_start_lr = self.args.warmup_start_lr
         self.lr_decay_epochs = mod.utils.str_to_list(self.args.lr_decay_epochs)
         self.lr_decay_gamma = self.args.lr_decay_gamma
         self.save_interval_epochs = self.args.save_interval_epochs
         self.save_dir = save_dir_path if self.args.save_dir == "" else self.args.save_dir
         self.dataset = dataset_path if self.args.dataset == "" else self.args.dataset
-        self.model = self.args.model
         self.pretrain_weights = self.args.pretrain_weights
         self.resume_checkpoint = self.args.resume_checkpoint
 
-        self.model_list = self.args.model_list
         self.train_list = os.path.join(
             self.dataset, train_list_path) if self.args.train_list == "" else self.args.train_list
         self.eval_list = os.path.join(
@@ -181,6 +181,11 @@ class BaseTrainX():
                                      dest="batch_size", metavar="", help="一批次数量，默认 16")
         self._arg_parse.add_argument("--learning_rate", type=float, default=0.025,
                                      dest="learning_rate", metavar="", help="学习率，默认 0.025")
+        self._arg_parse.add_argument("--warmup_steps", type=int, default=0,
+                                     dest="warmup_steps", metavar="", help="默认优化器的warmup步数，学习率将在设定的步数内，" + 
+                                     "从warmup_start_lr线性增长至设定的learning_rate，默认为0。")
+        self._arg_parse.add_argument("--warmup_start_lr", type=float, default=0.0,
+                                     dest="warmup_start_lr", metavar="", help="默认优化器的warmup起始学习率，默认为0.0。")
         self._arg_parse.add_argument("--lr_decay_epochs", dest="lr_decay_epochs", default="30 60 90",
                                      metavar="", help="默认优化器的学习率衰减轮数。默认为 30 60 90")
         self._arg_parse.add_argument("--lr_decay_gamma", type=float, default=0.1,
@@ -191,8 +196,6 @@ class BaseTrainX():
                                      metavar="", help="模型保存路径。默认为 {}".format(self.__save_dir_path))
         self._arg_parse.add_argument("--dataset", dest="dataset", default="",
                                      metavar="", help="数据集目录，默认 {}".format(self.__dataset_path))
-        self._arg_parse.add_argument("--model", dest="model", default="",
-                                     metavar="", help="PaddleX 模型名称")
         self._arg_parse.add_argument("--pretrain_weights", dest="pretrain_weights", default="IMAGENET",
                                      metavar="", help="若指定为'.pdparams'文件时，从文件加载模型权重；" +
                                      "若为字符串’IMAGENET’，则自动下载在ImageNet图片数据上预训练的模型权重；" +
@@ -200,8 +203,6 @@ class BaseTrainX():
                                      "若为None，则不使用预训练模型。默认为'IMAGENET'。")
         self._arg_parse.add_argument("--resume_checkpoint", dest="resume_checkpoint", default="",
                                      metavar="", help="恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练")
-        self._arg_parse.add_argument("--model_list", action="store_true", dest="model_list",
-                                     help="输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练")
         self._arg_parse.add_argument("--train_list", dest="train_list", default="", metavar="",
                                      help="训练集列表，默认 '--dataset' 参数目录下的 {}".format(self.__train_list_path))
         self._arg_parse.add_argument("--eval_list", dest="eval_list", default="", metavar="",
@@ -237,7 +238,34 @@ class BaseTrainX():
             self.resume_checkpoint = self.args.resume_checkpoint
 
 
-class TrainXCls(BaseTrainX):
+class TrainX(BaseTrainX):
+    """
+    返回 PaddleX 训练命令行参数
+    """
+
+    def __init__(self, args=None, dataset_path=config.DATASET_PATH,
+                 train_list_path=config.TRAIN_LIST_PATH,
+                 eval_list_path=config.EVAL_LIST_PATH,
+                 label_list_path=config.LABEL_LIST_PATH,
+                 save_dir_path=config.SAVE_DIR_PATH):
+        super(TrainX, self).__init__(args=args,
+                                     dataset_path=dataset_path,
+                                     train_list_path=train_list_path,
+                                     eval_list_path=eval_list_path,
+                                     label_list_path=label_list_path,
+                                     save_dir_path=save_dir_path)
+        self.model = self.args.model
+        self.model_list = self.args.model_list
+
+    def _add_argument(self):
+        super(TrainX, self)._add_argument()
+        self._arg_parse.add_argument("--model", dest="model", default="",
+                                     metavar="", help="PaddleX 模型名称")
+        self._arg_parse.add_argument("--model_list", action="store_true", dest="model_list",
+                                     help="输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练")
+
+
+class TrainXCls(TrainX):
     """
     返回 PaddleX 图像分类训练命令行参数
     """
@@ -255,7 +283,7 @@ class TrainXCls(BaseTrainX):
                                         save_dir_path=save_dir_path)
 
 
-class TrainXDet(BaseTrainX):
+class TrainXDet(TrainX):
     """
     返回 PaddleX 目标检测训练命令行参数
     """
@@ -277,6 +305,39 @@ class TrainXDet(BaseTrainX):
         super(TrainXDet, self)._add_argument()
         self._arg_parse.add_argument("--backbone", dest="backbone", default="",
                                      metavar="", help="目标检测模型的 backbone 网络")
+
+
+class PruneX(BaseTrainX):
+    """
+    返回 PaddleX 模型裁剪命令行参数
+    """
+    def __init__(self, args=None, dataset_path=config.DATASET_PATH,
+                 train_list_path=config.TRAIN_LIST_PATH,
+                 eval_list_path=config.EVAL_LIST_PATH,
+                 label_list_path=config.LABEL_LIST_PATH,
+                 save_dir_path=config.SAVE_DIR_PATH):
+        super(PruneX, self).__init__(args=args,
+                                        dataset_path=dataset_path,
+                                        train_list_path=train_list_path,
+                                        eval_list_path=eval_list_path,
+                                        label_list_path=label_list_path,
+                                        save_dir_path=save_dir_path)
+        self.model_dir = self.args.model_dir
+        self.skip_analyze = self.args.skip_analyze
+        self.pruned_flops = self.args.pruned_flops
+
+    def _add_argument(self):
+        super(PruneX, self)._add_argument()
+        self._arg_parse.add_argument("--model_dir", dest="model_dir", default="{}".format(os.path.join(self.__save_dir_path, "best_model")),
+                                     metavar="", help="模型读取路径。默认为 {}".format(os.path.join(self.__save_dir_path, "best_model")))
+        self._arg_parse.add_argument("--skip_analyze", action="store_true",
+                                     dest="skip_analyze", help="是否跳过分析模型各层参数在不同的剪裁比例下的敏感度，默认不跳过")
+        self._arg_parse.add_argument("--pruned_flops", type=float, default=0.2,
+                                     dest="pruned_flops", metavar="", help="根据选择的FLOPs减小比例对模型进行剪裁。默认为 0.2")
+
+    def check(self):
+        super(PruneX, self)._add_argument()
+        mod.utils.check_path(self.model_dir)
 
 
 class TestX():

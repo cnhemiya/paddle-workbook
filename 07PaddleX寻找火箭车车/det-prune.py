@@ -28,7 +28,7 @@ TEST_IMAGE_SIZE = 224
 
 def train():
     # 解析命令行参数
-    args = mod.args.TrainXDet()
+    args = mod.args.PruneX()
     # 检查文件或目录是否存在
     args.check()
     # 使用 cuda gpu 还是 cpu 运算
@@ -69,19 +69,34 @@ def train():
         transforms=eval_transforms,
         num_workers=args.num_workers,
         shuffle=False)
+    
+    # 加载模型
+    print("读取模型 。。。读取路径：{}".format(args.model_dir))
+    model = pdx.load_model(args.model_dir)
 
-    # 分类数量
-    num_classes = len(train_dataset.labels)
-    # 获取 PaddleX 模型
-    model, model_name = pdxcfg.pdx_det_model(
-        model_name=args.model, backbone=args.backbone, num_classes=num_classes)
+    # Step 1/3: 分析模型各层参数在不同的剪裁比例下的敏感度
+    # 注意：目标检测模型的剪裁依赖PaddleSlim 2.1.0
+    # 注意：如果之前运行过该步骤，第二次运行时会自动加载已有的 'save_dir'/model.sensi.data，不再进行敏感度分析
+    # API说明：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/apis/models/classification.md
+    # 使用参考：https://gitee.com/paddlepaddle/PaddleX/tree/develop/tutorials/slim/prune/image_classification
+    if not args.skip_analyze:
+        print("敏感度分析 。。。保存路径：{}".format(args.save_dir))
+        model.analyze_sensitivity(
+            dataset=eval_dataset,
+            batch_size=args.batch_size,
+            save_dir=args.save_dir)
 
-    print("开始训练 。。。模型：{}".format(model_name))
+    # Step 2/3: 根据选择的FLOPs减小比例对模型进行剪裁
+    # API说明：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/apis/models/classification.md
+    # 使用参考：https://gitee.com/paddlepaddle/PaddleX/tree/develop/tutorials/slim/prune/image_classification
+    print("对模型进行剪裁 。。。FLOPS：{}".format(args.pruned_flops))
+    model.prune(pruned_flops=args.pruned_flops)
 
     # 模型训练
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/models/classification.md
     # 参数调整：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/parameters.md
     # 可使用 VisualDL 查看训练指标，参考：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/visualdl.md
+    print("开始训练 。。。保存路径：{}".format(args.save_dir))
     model.train(num_epochs=args.epochs,
                 train_dataset=train_dataset,
                 train_batch_size=args.batch_size,
@@ -96,8 +111,7 @@ def train():
                 lr_decay_gamma=args.lr_decay_gamma,
                 resume_checkpoint=args.resume_checkpoint,
                 use_vdl=True)
-
-    print("结束训练 。。。模型：{}".format(model_name))
+    print("结束训练 。。。保存路径：{}".format(args.save_dir))
 
 
 def main():
