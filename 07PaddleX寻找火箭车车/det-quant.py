@@ -3,8 +3,8 @@
 """
 LICENSE: MulanPSL2
 AUTHOR:  cnhemiya@qq.com
-DATE:    2022-05-25 15:41
-文档说明: 裁剪
+DATE:    2022-05-25 18:54
+文档说明: 在线量化
 """
 
 
@@ -26,9 +26,9 @@ EVAL_IMAGE_SIZE = 256
 TEST_IMAGE_SIZE = 224
 
 
-def prune():
+def quant():
     # 解析命令行参数
-    args = mod.args.PruneX()
+    args = mod.args.QuantX()
     # 检查文件或目录是否存在
     args.check()
     # 使用 cuda gpu 还是 cpu 运算
@@ -74,24 +74,6 @@ def prune():
     print("读取模型 。。。读取路径：{}".format(args.model_dir))
     model = pdx.load_model(args.model_dir)
 
-    # Step 1/3: 分析模型各层参数在不同的剪裁比例下的敏感度
-    # 注意：目标检测模型的剪裁依赖PaddleSlim 2.1.0
-    # 注意：如果之前运行过该步骤，第二次运行时会自动加载已有的 'save_dir'/model.sensi.data，不再进行敏感度分析
-    # API说明：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/apis/models/classification.md
-    # 使用参考：https://gitee.com/paddlepaddle/PaddleX/tree/develop/tutorials/slim/prune/image_classification
-    if not args.skip_analyze:
-        print("敏感度分析 。。。保存路径：{}".format(args.save_dir))
-        model.analyze_sensitivity(
-            dataset=eval_dataset,
-            batch_size=args.batch_size,
-            save_dir=args.save_dir)
-
-    # Step 2/3: 根据选择的FLOPs减小比例对模型进行剪裁
-    # API说明：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/apis/models/classification.md
-    # 使用参考：https://gitee.com/paddlepaddle/PaddleX/tree/develop/tutorials/slim/prune/image_classification
-    print("对模型进行剪裁 。。。FLOPS：{}".format(args.pruned_flops))
-    model.prune(pruned_flops=args.pruned_flops)
-
     # 模型训练
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/models/classification.md
     # 参数调整：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/parameters.md
@@ -115,8 +97,8 @@ def prune():
 
 
 def main():
-    # 裁剪
-    prune()
+    # 在线量化
+    quant()
 
 
 if __name__ == '__main__':

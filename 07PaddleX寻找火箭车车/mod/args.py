@@ -182,7 +182,7 @@ class BaseTrainX():
         self._arg_parse.add_argument("--learning_rate", type=float, default=0.025,
                                      dest="learning_rate", metavar="", help="学习率，默认 0.025")
         self._arg_parse.add_argument("--warmup_steps", type=int, default=0,
-                                     dest="warmup_steps", metavar="", help="默认优化器的warmup步数，学习率将在设定的步数内，" + 
+                                     dest="warmup_steps", metavar="", help="默认优化器的warmup步数，学习率将在设定的步数内，" +
                                      "从warmup_start_lr线性增长至设定的learning_rate，默认为0。")
         self._arg_parse.add_argument("--warmup_start_lr", type=float, default=0.0,
                                      dest="warmup_start_lr", metavar="", help="默认优化器的warmup起始学习率，默认为0.0。")
@@ -311,17 +311,18 @@ class PruneX(BaseTrainX):
     """
     返回 PaddleX 模型裁剪命令行参数
     """
+
     def __init__(self, args=None, dataset_path=config.DATASET_PATH,
                  train_list_path=config.TRAIN_LIST_PATH,
                  eval_list_path=config.EVAL_LIST_PATH,
                  label_list_path=config.LABEL_LIST_PATH,
                  save_dir_path=config.SAVE_DIR_PATH):
         super(PruneX, self).__init__(args=args,
-                                        dataset_path=dataset_path,
-                                        train_list_path=train_list_path,
-                                        eval_list_path=eval_list_path,
-                                        label_list_path=label_list_path,
-                                        save_dir_path=save_dir_path)
+                                     dataset_path=dataset_path,
+                                     train_list_path=train_list_path,
+                                     eval_list_path=eval_list_path,
+                                     label_list_path=label_list_path,
+                                     save_dir_path=save_dir_path)
         self.model_dir = self.args.model_dir
         self.skip_analyze = self.args.skip_analyze
         self.pruned_flops = self.args.pruned_flops
@@ -336,7 +337,35 @@ class PruneX(BaseTrainX):
                                      dest="pruned_flops", metavar="", help="根据选择的FLOPs减小比例对模型进行剪裁。默认为 0.2")
 
     def check(self):
-        super(PruneX, self)._add_argument()
+        super(PruneX, self).check()
+        mod.utils.check_path(self.model_dir)
+
+
+class QuantX(BaseTrainX):
+    """
+    返回 PaddleX 模型在线量化命令行参数
+    """
+
+    def __init__(self, args=None, dataset_path=config.DATASET_PATH,
+                 train_list_path=config.TRAIN_LIST_PATH,
+                 eval_list_path=config.EVAL_LIST_PATH,
+                 label_list_path=config.LABEL_LIST_PATH,
+                 save_dir_path=config.SAVE_DIR_PATH):
+        super(QuantX, self).__init__(args=args,
+                                     dataset_path=dataset_path,
+                                     train_list_path=train_list_path,
+                                     eval_list_path=eval_list_path,
+                                     label_list_path=label_list_path,
+                                     save_dir_path=save_dir_path)
+        self.model_dir = self.args.model_dir
+
+    def _add_argument(self):
+        super(QuantX, self)._add_argument()
+        self._arg_parse.add_argument("--model_dir", dest="model_dir", default="{}".format(os.path.join(self._save_dir_path, "best_model")),
+                                     metavar="", help="模型读取路径。默认为 {}".format(os.path.join(self._save_dir_path, "best_model")))
+
+    def check(self):
+        super(QuantX, self).check()
         mod.utils.check_path(self.model_dir)
 
 
