@@ -1,29 +1,34 @@
-# 小熊飞桨练习册-06Paddlex垃圾分类
+# 小熊飞桨练习册-07PaddleX寻找火箭车车
 
 ## 简介
 
-小熊飞桨练习册-06Paddlex垃圾分类，本项目开发和测试均在 Ubuntu 20.04 系统下进行。  
+小熊飞桨练习册-07PaddleX寻找火箭车车，是学习目标检测小项目，本项目开发和测试均在 Ubuntu 20.04 系统下进行。  
 项目最新代码查看主页：[小熊飞桨练习册](https://gitee.com/cnhemiya/paddle-workbook)  
-百度飞桨 AI Studio 主页：[小熊飞桨练习册-06Paddlex垃圾分类](https://aistudio.baidu.com/aistudio/projectdetail/3966896)  
+百度飞桨 AI Studio 主页：[小熊飞桨练习册-07PaddleX寻找火箭车车](https://aistudio.baidu.com/aistudio/projectdetail/4078239)  
 Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https://my.oschina.net/hemiya/blog/5509991)
+
+- FC游戏火箭车，游戏演示
+
+<img src="doc/game_demo.jpg" width="80%">
 
 ## 文件说明
 
 |文件|说明|
 |--|--|
-|train.py|训练程序|
-|test.py|测试程序|
-|infer.py|预测程序|
+|det-train.py|训练程序|
+|det-prune.py|裁剪程序|
+|det-quant.py|量化程序|
 |onekey.sh|一键获取数据到 dataset 目录下|
+|onetasks.sh|一键训练，量化脚本|
 |get-data.sh|获取数据到 dataset 目录下|
-|make-dataset.py|生成数据集列表|
 |check-data.sh|检查 dataset 目录下的数据是否存在|
 |mod/args.py|命令行参数解析|
-|mod/pdx.py|PaddleX 用的|
+|mod/pdxconfig.py|PaddleX 配置|
 |mod/config.py|配置|
 |mod/utils.py|杂项|
 |mod/report.py|结果报表|
 |dataset|数据集目录|
+|doc|文档目录|
 |output|训练参数保存目录|
 |result|预测结果保存目录|
 
@@ -31,10 +36,26 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 
 - [百度飞桨](https://www.paddlepaddle.org.cn/)
 - [PaddleX](https://gitee.com/paddlepaddle/PaddleX)
+- AI Studio 环境，右侧 **包管理** 手动安装 **PaddleX**
 
 ## 数据集
 
-数据集来源于百度飞桨公共数据集：[垃圾分类训练集](https://aistudio.baidu.com/aistudio/datasetdetail/33408)
+数据集来源于自己收集标注的百度飞桨公共数据集：[寻找火箭车车](https://aistudio.baidu.com/aistudio/datasetdetail/148354)
+
+数据集包含训练集，验证集，测试集，相应的 VOC 格式标注文件。 
+
+### 如何自己标注数据
+
+- 使用标注工具：[labelImg](https://github.com/tzutalin/labelImg)
+- 中文界面，VOC 格式，COCO 格式
+- 打开图像目录
+- W 是标注
+- D 是下一张
+- A 是上一张
+
+- labelImg 演示
+
+<img src="doc/labelimg_demo.jpg" width="80%">
 
 ## 一键获取数据
 
@@ -51,42 +72,55 @@ bash onekey.sh
 
 ## 配置模块
 
-可以查看修改 **mod/config.py** 文件，有详细的说明
+可以查看修改 **mod/pdxconfig.py** 文件，有详细的说明
 
 ## 开始训练
 
-运行 **train.py** 文件，查看命令行参数加 -h
+运行 **det-train.py** 文件，查看命令行参数加 -h
 
 - 示例
 
 ```bash
-python3 train.py --dataset ./dataset/train --epochs 16 \
-    --batch_size 64 --learning_rate 0.1 \
-    --lr_decay_epochs "4 8 12" --lr_decay_gamma 0.5 \
-    --model MobileNetV3_small_ssld
+python3 det-train.py \
+    --dataset ./dataset/road_fighter_car \
+    --epochs 32 \
+    --batch_size 1 \
+    --learning_rate 0.01 \
+    --model PicoDet \
+    --backbone MobileNetV3 \
+    --save_interval_epochs 4 \
+    --pretrain_weights "" \
+    --save_dir ./output
 ```
 
 - 参数
 
 ```bash
+  -h, --help            show this help message and exit
   --cpu                 是否使用 cpu 计算，默认使用 CUDA
   --num_workers         线程数量，默认 auto，为CPU核数的一半
   --epochs              训练几轮，默认 4 轮
   --batch_size          一批次数量，默认 16
   --learning_rate       学习率，默认 0.025
+  --warmup_steps        默认优化器的warmup步数，学习率将在设定的步数内，从warmup_start_lr线性增长至设定的learning_rate
+                        ，默认为0。
+  --warmup_start_lr     默认优化器的warmup起始学习率，默认为0.0。
   --lr_decay_epochs     默认优化器的学习率衰减轮数。默认为 30 60 90
   --lr_decay_gamma      默认优化器的学习率衰减率。默认为0.1
   --save_interval_epochs 
                         模型保存间隔(单位: 迭代轮数)。默认为1
   --save_dir            模型保存路径。默认为 ./output/
   --dataset             数据集目录，默认 ./dataset/
-  --model               PaddleX 模型名称
-  --pretrain_weights    从文件加载模型权重，默认 IMAGENET 自动下载 ImageNet 预训练的模型权重
   --resume_checkpoint   恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练
-  --model_list          输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练
   --train_list          训练集列表，默认 '--dataset' 参数目录下的 train_list.txt
   --eval_list           评估集列表，默认 '--dataset' 参数目录下的 val_list.txt
   --label_list          分类标签列表，默认 '--dataset' 参数目录下的 labels.txt
+  --pretrain_weights    若指定为'.pdparams'文件时，从文件加载模型权重；若为字符串’IMAGENET’，则自动下载在ImageNet图片数据上
+                        预训练的模型权重；若为字符串’COCO’，则自动下载在COCO数据集上预训练的模型权重；若为None，则不使用预训练模型。默认为
+                        'IMAGENET'。
+  --model               PaddleX 模型名称
+  --model_list          输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练
+  --backbone            目标检测模型的 backbone 网络
 ```
 
 ## 查看支持的模型
@@ -94,56 +128,154 @@ python3 train.py --dataset ./dataset/train --epochs 16 \
 - 运行命令
 
 ```bash
-python3 train.py --model_list
+python3 det-train.py --model_list
 ```
 
 - 结果
 
 ```bash
-'PPLCNet', 'PPLCNet_ssld', 'ResNet18', 'ResNet18_vd', 'ResNet34', 'ResNet34_vd', 'ResNet50', 'ResNet50_vd', 'ResNet50_vd_ssld', 'ResNet101', 'ResNet101_vd', 'ResNet101_vd_ssld', 'ResNet152', 'ResNet152_vd', 'ResNet200_vd', 'DarkNet53', 'MobileNetV1', 'MobileNetV2', 'MobileNetV3_small', 'MobileNetV3_small_ssld', 'MobileNetV3_large', 'MobileNetV3_large_ssld', 'Xception41', 'Xception65', 'Xception71', 'ShuffleNetV2', 'ShuffleNetV2_swish', 'DenseNet121', 'DenseNet161', 'DenseNet169', 'DenseNet201', 'DenseNet264', 'HRNet_W18_C', 'HRNet_W30_C', 'HRNet_W32_C', 'HRNet_W40_C', 'HRNet_W44_C', 'HRNet_W48_C', 'HRNet_W64_C', 'AlexNet'
+PaddleX 目标检测模型
+['PPYOLOv2', 'PPYOLO', 'PPYOLOTiny', 'PicoDet', 'YOLOv3', 'FasterRCNN']
+PPYOLOv2 backbone 网络
+['ResNet50_vd_dcn', 'ResNet101_vd_dcn']
+PPYOLO backbone 网络
+['ResNet50_vd_dcn', 'ResNet18_vd', 'MobileNetV3_large', 'MobileNetV3_small']
+PPYOLOTiny backbone 网络
+['MobileNetV3']
+PicoDet backbone 网络
+['ESNet_s', 'ESNet_m', 'ESNet_l', 'LCNet', 'MobileNetV3', 'ResNet18_vd']
+YOLOv3 backbone 网络
+['MobileNetV1', 'MobileNetV1_ssld', 'MobileNetV3', 'MobileNetV3_ssld', 'DarkNet53', 'ResNet50_vd_dcn', 'ResNet34']
+FasterRCNN backbone 网络
+['ResNet50', 'ResNet50_vd', 'ResNet50_vd_ssld', 'ResNet34', 'ResNet34_vd', 'ResNet101', 'ResNet101_vd', 'HRNet_W18']
 ```
 
-## 测试模型
+## 模型裁剪
 
-运行 **test.py** 文件，查看命令行参数加 -h
-
+- 运行 **det-prune.py** 文件，查看命令行参数加 -h。
+- 注意：有的模型不支持裁剪，比如 **PicoDet**。
+- 参数 --pretrain_weights 必须为空 ""，裁剪后的精度大部分会降低。
+- 参考文档：[模型裁剪](https://gitee.com/paddlepaddle/PaddleX/tree/develop/tutorials/slim/prune)
 - 示例
 
 ```bash
-python3 test.py --dataset ./dataset/train --epochs 4 \
-    --model_dir ./output/best_model
+python3 det-prune.py \
+    --dataset ./dataset/road_fighter_car \
+    --epochs 32 \
+    --batch_size 1 --learning_rate 0.001 \
+    --save_interval_epochs 4 \
+    --model_dir ./output/best_model \
+    --save_dir ./output/prune \
+    --pruned_flops 0.2 \
+    --pretrain_weights ""
 ```
 - 参数
 
 ```bash
-  --cpu         是否使用 cpu 计算，默认使用 CUDA
-  --epochs      训练几轮，默认 4 轮
-  --dataset     数据集目录，默认 ./dataset/
-  --test_list   训练集列表，默认 '--dataset' 参数目录下的 test_list.txt
-  --model_dir   读取训练后的模型目录，默认 ./output/best_model
+  -h, --help            show this help message and exit
+  --cpu                 是否使用 cpu 计算，默认使用 CUDA
+  --num_workers         线程数量，默认 auto，为CPU核数的一半
+  --epochs              训练几轮，默认 4 轮
+  --batch_size          一批次数量，默认 16
+  --learning_rate       学习率，默认 0.025
+  --warmup_steps        默认优化器的warmup步数，学习率将在设定的步数内，从warmup_start_lr线性增长至设定的learning_rate
+                        ，默认为0。
+  --warmup_start_lr     默认优化器的warmup起始学习率，默认为0.0。
+  --lr_decay_epochs     默认优化器的学习率衰减轮数。默认为 30 60 90
+  --lr_decay_gamma      默认优化器的学习率衰减率。默认为0.1
+  --save_interval_epochs 
+                        模型保存间隔(单位: 迭代轮数)。默认为1
+  --save_dir            模型保存路径。默认为 ./output/
+  --dataset             数据集目录，默认 ./dataset/
+  --resume_checkpoint   恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练
+  --train_list          训练集列表，默认 '--dataset' 参数目录下的 train_list.txt
+  --eval_list           评估集列表，默认 '--dataset' 参数目录下的 val_list.txt
+  --label_list          分类标签列表，默认 '--dataset' 参数目录下的 labels.txt
+  --model_dir           模型读取路径。默认为 ./output/best_model
+  --skip_analyze        是否跳过分析模型各层参数在不同的剪裁比例下的敏感度，默认不跳过
+  --pruned_flops        根据选择的FLOPs减小比例对模型进行剪裁。默认为 0.2
 ```
+
+## 模型量化
+
+- 运行 **det-quant.py** 文件，查看命令行参数加 -h
+- model_dir 是正常训练后的模型保存目录。
+- 参考文档：[模型量化](https://gitee.com/paddlepaddle/PaddleX/tree/develop/tutorials/slim/quantize)
+- 示例
+
+```bash
+python3 det-quant.py \
+    --dataset ./dataset/road_fighter_car \
+    --epochs 32 \
+    --batch_size 1 \
+    --learning_rate 0.001 \
+    --save_interval_epochs 4 \
+    --model_dir ./output/best_model \
+    --save_dir ./output/quant
+```
+
+- 参数
+
+```bash
+  -h, --help            show this help message and exit
+  --cpu                 是否使用 cpu 计算，默认使用 CUDA
+  --num_workers         线程数量，默认 auto，为CPU核数的一半
+  --epochs              训练几轮，默认 4 轮
+  --batch_size          一批次数量，默认 16
+  --learning_rate       学习率，默认 0.025
+  --warmup_steps        默认优化器的warmup步数，学习率将在设定的步数内，从warmup_start_lr线性增长至设定的learning_rate
+                        ，默认为0。
+  --warmup_start_lr     默认优化器的warmup起始学习率，默认为0.0。
+  --lr_decay_epochs     默认优化器的学习率衰减轮数。默认为 30 60 90
+  --lr_decay_gamma      默认优化器的学习率衰减率。默认为0.1
+  --save_interval_epochs 
+                        模型保存间隔(单位: 迭代轮数)。默认为1
+  --save_dir            模型保存路径。默认为 ./output/
+  --dataset             数据集目录，默认 ./dataset/
+  --resume_checkpoint   恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练
+  --train_list          训练集列表，默认 '--dataset' 参数目录下的 train_list.txt
+  --eval_list           评估集列表，默认 '--dataset' 参数目录下的 val_list.txt
+  --label_list          分类标签列表，默认 '--dataset' 参数目录下的 labels.txt
+  --model_dir           模型读取路径。默认为 ./output/best_model
+```
+
 
 ## 预测模型
 
-运行 **infer.py** 文件，查看命令行参数加 -h
-
+- 运行 **det-infer.py** 文件，查看命令行参数加 -h
+- show_result 本地计算机运行有效
 - 示例
 
 ```bash
-python3 infer.py --dataset ./dataset/train --model_dir ./output/best_model
+python3 det-infer.py --model_dir ./output/best_model \
+    --predict_image ./dataset/road_fighter_car/JPEGImages/0297.jpg
 ```
 
 - 参数
 
 ```bash
-  --cpu           是否使用 cpu 计算，默认使用 CUDA
-  --dataset       数据集目录，默认 ./dataset/
-  --infer_list    预测集列表，默认 '--dataset' 参数目录下的 infer_list.txt
-  --model_dir     读取训练后的模型目录，默认 ./output/best_model
-  --result_info   显示预测结果详细信息，默认 不显示
-  --result_path   预测结果文件路径，默认 ./result/result.csv
-  --split         数据分隔符，默认 ','
+  -h, --help        show this help message and exit
+  --model_dir       读取模型的目录，默认 './output/best_model'
+  --predict_image   预测的图像文件
+  --threshold       score阈值，将Box置信度低于该阈值的框过滤，默认 0.5
+  --result_list     预测的结果列表文件，默认 './result/result.txt'
+  --result_dir      预测结果可视化的保存目录，默认 './result'
+  --show_result     显示预测结果的图像
 ```
+
+## 部署模型导出
+
+--fixed_input_shape 来指定输入大小[w,h]或者是[n,c,w,h]
+- 参考文档：[部署模型导出](https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/apis/export_model.md)
+- 示例
+
+```bash
+paddlex --export_inference --model_dir=./output/best_model/ --save_dir=./output/inference_model --fixed_input_shape=[1,3,608,608]
+```
+
+- 结果演示
+
+<img src="doc/visualize_result.jpg" width="80%">
 
 ## VisualDL 可视化分析工具
 
