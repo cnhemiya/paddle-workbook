@@ -59,6 +59,33 @@ def quant():
         num_workers=args.num_workers,
         shuffle=False)
 
+    # 量化器配置
+    quant_config = {
+        # weight预处理方法，默认为None，代表不进行预处理；当需要使用`PACT`方法时设置为`"PACT"`
+        'weight_preprocess_type': None,
+
+        # activation预处理方法，默认为None，代表不进行预处理`
+        'activation_preprocess_type': None,
+
+        # weight量化方法, 默认为'channel_wise_abs_max', 此外还支持'channel_wise_abs_max'
+        'weight_quantize_type': 'channel_wise_abs_max',
+
+        # activation量化方法, 默认为'moving_average_abs_max', 此外还支持'abs_max'
+        'activation_quantize_type': 'moving_average_abs_max',
+
+        # weight量化比特数, 默认为 8
+        'weight_bits': 16,
+
+        # activation量化比特数, 默认为 8
+        'activation_bits': 16,
+
+        # 'moving_average_abs_max'的滑动平均超参, 默认为0.9
+        'moving_rate': 0.9,
+
+        # 需要量化的算子类型
+        'quantizable_layer_type': ['Conv2D', 'Linear']
+    }
+
     # 加载模型
     print("读取模型 。。。读取路径：{}".format(args.model_dir))
     model = pdx.load_model(args.model_dir)
@@ -69,18 +96,19 @@ def quant():
     # 可使用 VisualDL 查看训练指标，参考：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/visualdl.md
     print("开始训练 。。。保存路径：{}".format(args.save_dir))
     model.quant_aware_train(num_epochs=args.epochs,
-                train_dataset=train_dataset,
-                train_batch_size=args.batch_size,
-                eval_dataset=eval_dataset,
-                save_interval_epochs=args.save_interval_epochs,
-                save_dir=args.save_dir,
-                learning_rate=args.learning_rate,
-                warmup_steps=args.warmup_steps,
-                warmup_start_lr=args.warmup_start_lr,
-                lr_decay_epochs=args.lr_decay_epochs,
-                lr_decay_gamma=args.lr_decay_gamma,
-                resume_checkpoint=args.resume_checkpoint,
-                use_vdl=True)
+                            train_dataset=train_dataset,
+                            train_batch_size=args.batch_size,
+                            eval_dataset=eval_dataset,
+                            save_interval_epochs=args.save_interval_epochs,
+                            save_dir=args.save_dir,
+                            learning_rate=args.learning_rate,
+                            warmup_steps=args.warmup_steps,
+                            warmup_start_lr=args.warmup_start_lr,
+                            lr_decay_epochs=args.lr_decay_epochs,
+                            lr_decay_gamma=args.lr_decay_gamma,
+                            resume_checkpoint=args.resume_checkpoint,
+                            quant_config=quant_config,
+                            use_vdl=True)
     print("结束训练 。。。保存路径：{}".format(args.save_dir))
 
 
