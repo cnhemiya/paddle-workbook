@@ -52,3 +52,11 @@
 - 依赖：[PaddleX](https://gitee.com/paddlepaddle/PaddleX)
 - GITEE 主页：[小熊飞桨练习册-06Paddlex垃圾分类](https://gitee.com/cnhemiya/paddle-workbook/tree/master/06Paddlex%E5%9E%83%E5%9C%BE%E5%88%86%E7%B1%BB)
 - AI Studio 主页：[小熊飞桨练习册-06Paddlex垃圾分类](https://aistudio.baidu.com/aistudio/projectdetail/3966896)
+
+## 07PaddleX寻找火箭车车
+
+- 学习 **PaddleX 目标检测**，进行图像识别
+- 依赖：[百度飞桨](https://www.paddlepaddle.org.cn/)
+- 依赖：[PaddleX](https://gitee.com/paddlepaddle/PaddleX)
+- GITEE 主页：[小熊飞桨练习册-07PaddleX寻找火箭车车](https://gitee.com/cnhemiya/paddle-workbook/tree/master/07PaddleX%E5%AF%BB%E6%89%BE%E7%81%AB%E7%AE%AD%E8%BD%A6%E8%BD%A6)
+- AI Studio 主页：[小熊飞桨练习册-07PaddleX寻找火箭车车](https://aistudio.baidu.com/aistudio/projectdetail/4078239)
