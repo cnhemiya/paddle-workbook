@@ -36,7 +36,7 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 
 - [百度飞桨](https://www.paddlepaddle.org.cn/)
 - [PaddleX](https://gitee.com/paddlepaddle/PaddleX)
-- AI Studio 环境，右侧 **包管理** 手动安装 **PaddleX**
+- **AI Studio** 环境，右侧 **包管理** 手动安装 **PaddleX**
 
 ## 数据集
 
@@ -47,7 +47,7 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 ### 如何自己标注数据
 
 - 使用标注工具：[labelImg](https://github.com/tzutalin/labelImg)
-- 中文界面，VOC 格式，COCO 格式
+- 中文界面，支持 VOC 格式，COCO 格式
 - 打开图像目录
 - W 是标注
 - D 是下一张
@@ -169,6 +169,7 @@ python3 det-prune.py \
     --pruned_flops 0.2 \
     --pretrain_weights ""
 ```
+
 - 参数
 
 ```bash
@@ -192,8 +193,8 @@ python3 det-prune.py \
   --eval_list           评估集列表，默认 '--dataset' 参数目录下的 val_list.txt
   --label_list          分类标签列表，默认 '--dataset' 参数目录下的 labels.txt
   --model_dir           模型读取路径。默认为 ./output/best_model
-  --skip_analyze        是否跳过分析模型各层参数在不同的剪裁比例下的敏感度，默认不跳过
-  --pruned_flops        根据选择的FLOPs减小比例对模型进行剪裁。默认为 0.2
+  --skip_analyze        是否跳过分析模型各层参数在不同的裁剪比例下的敏感度，默认不跳过
+  --pruned_flops        根据选择的FLOPs减小比例对模型进行裁剪。默认为 0.2
 ```
 
 ## 模型量化
@@ -239,7 +240,6 @@ python3 det-quant.py \
   --model_dir           模型读取路径。默认为 ./output/best_model
 ```
 
-
 ## 预测模型
 
 - 运行 **det-infer.py** 文件，查看命令行参数加 -h
@@ -263,6 +263,10 @@ python3 det-infer.py --model_dir ./output/best_model \
   --show_result     显示预测结果的图像
 ```
 
+- 结果演示
+
+<img src="doc/visualize_result.jpg" width="80%">
+
 ## 部署模型导出
 
 --fixed_input_shape 来指定输入大小[w,h]或者是[n,c,w,h]
@@ -272,10 +276,6 @@ python3 det-infer.py --model_dir ./output/best_model \
 ```bash
 paddlex --export_inference --model_dir=./output/best_model/ --save_dir=./output/inference_model --fixed_input_shape=[1,3,608,608]
 ```
-
-- 结果演示
-
-<img src="doc/visualize_result.jpg" width="80%">
 
 ## VisualDL 可视化分析工具
 
