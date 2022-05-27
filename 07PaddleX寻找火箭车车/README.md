@@ -269,7 +269,7 @@ python3 det-infer.py --model_dir ./output/best_model \
 
 ## 部署模型导出
 
---fixed_input_shape 来指定输入大小[w,h]或者是[n,c,w,h]
+- --fixed_input_shape 来指定输入大小[w,h]或者是[n,c,w,h]
 - 参考文档：[部署模型导出](https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/apis/export_model.md)
 - 示例
 

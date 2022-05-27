@@ -154,10 +154,14 @@ class BaseTrainX():
         self.warmup_start_lr = self.args.warmup_start_lr
         self.lr_decay_epochs = mod.utils.str_to_list(self.args.lr_decay_epochs)
         self.lr_decay_gamma = self.args.lr_decay_gamma
+        self.use_ema = self.args.use_ema
+        self.early_stop = self.args.early_stop
+        self.early_stop_patience = self.args.early_stop_patience
         self.save_interval_epochs = self.args.save_interval_epochs
+        self.log_interval_steps = self.args.log_interval_steps
+        self.resume_checkpoint = self.args.resume_checkpoint
         self.save_dir = save_dir_path if self.args.save_dir == "" else self.args.save_dir
         self.dataset = dataset_path if self.args.dataset == "" else self.args.dataset
-        self.resume_checkpoint = self.args.resume_checkpoint
 
         self.train_list = os.path.join(
             self.dataset, train_list_path) if self.args.train_list == "" else self.args.train_list
@@ -182,21 +186,30 @@ class BaseTrainX():
                                      dest="learning_rate", metavar="", help="学习率，默认 0.025")
         self._arg_parse.add_argument("--warmup_steps", type=int, default=0,
                                      dest="warmup_steps", metavar="", help="默认优化器的warmup步数，学习率将在设定的步数内，" +
-                                     "从warmup_start_lr线性增长至设定的learning_rate，默认为0。")
+                                     "从warmup_start_lr线性增长至设定的learning_rate，默认为0")
         self._arg_parse.add_argument("--warmup_start_lr", type=float, default=0.0,
-                                     dest="warmup_start_lr", metavar="", help="默认优化器的warmup起始学习率，默认为0.0。")
+                                     dest="warmup_start_lr", metavar="", help="默认优化器的warmup起始学习率，默认为0.0")
         self._arg_parse.add_argument("--lr_decay_epochs", dest="lr_decay_epochs", default="30 60 90",
                                      metavar="", help="默认优化器的学习率衰减轮数。默认为 30 60 90")
         self._arg_parse.add_argument("--lr_decay_gamma", type=float, default=0.1,
                                      dest="lr_decay_gamma", metavar="", help="默认优化器的学习率衰减率。默认为0.1")
+        self._arg_parse.add_argument("--use_ema", action="store_true",
+                                     dest="use_ema", help="是否使用指数衰减计算参数的滑动平均值。默认为False")
+        self._arg_parse.add_argument("--early_stop", action="store_true",
+                                     dest="early_stop", help="是否使用提前终止训练策略。默认为False")
+        self._arg_parse.add_argument("--early_stop_patience", type=int, default=5,
+                                     dest="early_stop_patience", metavar="", help="当使用提前终止训练策略时，如果验证集精度在" +
+                                     "early_stop_patience个epoch内连续下降或持平，则终止训练。默认为5")
         self._arg_parse.add_argument("--save_interval_epochs", type=int, default=1,
                                      dest="save_interval_epochs", metavar="", help="模型保存间隔(单位: 迭代轮数)。默认为1")
+        self._arg_parse.add_argument("--log_interval_steps", type=int, default=10,
+                                     dest="log_interval_steps", metavar="", help="训练日志输出间隔（单位：迭代次数）。默认为10")
+        self._arg_parse.add_argument("--resume_checkpoint", dest="resume_checkpoint", default="",
+                                     metavar="", help="恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练")
         self._arg_parse.add_argument("--save_dir", dest="save_dir", default="{}".format(self._save_dir_path),
                                      metavar="", help="模型保存路径。默认为 {}".format(self._save_dir_path))
         self._arg_parse.add_argument("--dataset", dest="dataset", default="",
                                      metavar="", help="数据集目录，默认 {}".format(self._dataset_path))
-        self._arg_parse.add_argument("--resume_checkpoint", dest="resume_checkpoint", default="",
-                                     metavar="", help="恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练")
         self._arg_parse.add_argument("--train_list", dest="train_list", default="", metavar="",
                                      help="训练集列表，默认 '--dataset' 参数目录下的 {}".format(self._train_list_path))
         self._arg_parse.add_argument("--eval_list", dest="eval_list", default="", metavar="",
@@ -245,11 +258,12 @@ class TrainX(BaseTrainX):
                                      metavar="", help="若指定为'.pdparams'文件时，从文件加载模型权重；" +
                                      "若为字符串’IMAGENET’，则自动下载在ImageNet图片数据上预训练的模型权重；" +
                                      "若为字符串’COCO’，则自动下载在COCO数据集上预训练的模型权重；" +
-                                     "若为None，则不使用预训练模型。默认为'IMAGENET'。")
+                                     "若为None，则不使用预训练模型。默认为'IMAGENET'")
         self._arg_parse.add_argument("--model", dest="model", default="",
                                      metavar="", help="PaddleX 模型名称")
         self._arg_parse.add_argument("--model_list", action="store_true", dest="model_list",
                                      help="输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练")
+
     def check(self):
         super(TrainX, self).check()
         # 模型权重
@@ -264,6 +278,7 @@ class TrainX(BaseTrainX):
         else:
             mod.utils.check_path(self.args.pretrain_weights)
             self.pretrain_weights = self.args.pretrain_weights
+
 
 class TrainXCls(TrainX):
     """
