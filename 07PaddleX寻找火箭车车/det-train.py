@@ -85,15 +85,19 @@ def train():
                 train_dataset=train_dataset,
                 train_batch_size=args.batch_size,
                 eval_dataset=eval_dataset,
-                save_interval_epochs=args.save_interval_epochs,
                 save_dir=args.save_dir,
-                pretrain_weights=args.pretrain_weights,
+                save_interval_epochs=args.save_interval_epochs,
+                log_interval_steps=args.log_interval_steps,
                 learning_rate=args.learning_rate,
                 warmup_steps=args.warmup_steps,
                 warmup_start_lr=args.warmup_start_lr,
                 lr_decay_epochs=args.lr_decay_epochs,
                 lr_decay_gamma=args.lr_decay_gamma,
+                use_ema=args.use_ema,
+                early_stop=args.early_stop,
+                early_stop_patience=args.early_stop_patience,
                 resume_checkpoint=args.resume_checkpoint,
+                pretrain_weights=args.pretrain_weights,
                 use_vdl=True)
     print("结束训练 。。。模型：{}".format(model_name))
 
