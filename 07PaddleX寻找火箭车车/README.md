@@ -274,7 +274,7 @@ python3 det-infer.py --model_dir ./output/best_model \
 - 示例
 
 ```bash
-paddlex --export_inference --model_dir=./output/best_model/ --save_dir=./output/inference_model --fixed_input_shape=[1,3,608,608]
+paddlex --export_inference --model_dir=./output/best_model/ --save_dir=./output/inference_model --fixed_input_shape=[-1,3,608,608]
 ```
 
 ## VisualDL 可视化分析工具
