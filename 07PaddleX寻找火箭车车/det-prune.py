@@ -88,7 +88,7 @@ def prune():
                                         warmup_steps=args.warmup_steps,
                                         warmup_start_lr=args.warmup_start_lr,
                                         lr_decay_epochs=args.lr_decay_epochs,
-                                        lr_decay_gammaargs=args.lr_decay_gamma,
+                                        lr_decay_gamma=args.lr_decay_gamma,
                                         num_steps_each_epoch=len(
                                             train_dataset),
                                         reg_coeff=args.opti_reg_coeff,
