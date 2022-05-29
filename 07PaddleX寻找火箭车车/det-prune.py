@@ -81,6 +81,21 @@ def prune():
     print("对模型进行剪裁 。。。FLOPS：{}".format(args.pruned_flops))
     model.prune(pruned_flops=args.pruned_flops)
 
+    # 优化器
+    # https://gitee.com/paddlepaddle/PaddleX/blob/develop/paddlex/cv/models/classifier.py#L147
+    optimizer = model.default_optimizer(parameters=model.net.parameters(),
+                                        learning_rate=args.learning_rate,
+                                        warmup_steps=args.warmup_steps,
+                                        warmup_start_lr=args.warmup_start_lr,
+                                        lr_decay_epochs=args.lr_decay_epochs,
+                                        lr_decay_gammaargs=args.lr_decay_gamma,
+                                        num_steps_each_epoch=len(
+                                            train_dataset),
+                                        reg_coeff=args.opti_reg_coeff,
+                                        scheduler=args.opti_scheduler,
+                                        num_epochs=args.epochs
+                                        )
+
     # 模型训练
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/models/classification.md
     # 参数调整：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/parameters.md
@@ -103,6 +118,7 @@ def prune():
                 early_stop_patience=args.early_stop_patience,
                 resume_checkpoint=args.resume_checkpoint,
                 pretrain_weights=args.pretrain_weights,
+                optimizer=optimizer,
                 use_vdl=True)
     print("结束训练 。。。保存路径：{}".format(args.save_dir))
 

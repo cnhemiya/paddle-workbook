@@ -90,6 +90,21 @@ def quant():
     print("读取模型 。。。读取路径：{}".format(args.model_dir))
     model = pdx.load_model(args.model_dir)
 
+    # 优化器
+    # https://gitee.com/paddlepaddle/PaddleX/blob/develop/paddlex/cv/models/classifier.py#L147
+    optimizer = model.default_optimizer(parameters=model.net.parameters(),
+                                        learning_rate=args.learning_rate,
+                                        warmup_steps=args.warmup_steps,
+                                        warmup_start_lr=args.warmup_start_lr,
+                                        lr_decay_epochs=args.lr_decay_epochs,
+                                        lr_decay_gammaargs=args.lr_decay_gamma,
+                                        num_steps_each_epoch=len(
+                                            train_dataset),
+                                        reg_coeff=args.opti_reg_coeff,
+                                        scheduler=args.opti_scheduler,
+                                        num_epochs=args.epochs
+                                        )
+
     # 模型训练
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/models/classification.md
     # 参数调整：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/parameters.md
@@ -112,6 +127,7 @@ def quant():
                             early_stop_patience=args.early_stop_patience,
                             resume_checkpoint=args.resume_checkpoint,
                             quant_config=quant_config,
+                            optimizer=optimizer,
                             use_vdl=True)
     print("结束训练 。。。保存路径：{}".format(args.save_dir))
 
