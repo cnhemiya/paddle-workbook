@@ -170,6 +170,14 @@ class BaseTrainX():
         self.label_list = os.path.join(
             self.dataset, label_list_path) if self.args.label_list == "" else self.args.label_list
 
+        self.opti_scheduler = self.args.opti_scheduler
+        self.opti_reg_coeff = self.args.opti_reg_coeff
+        if self.opti_scheduler == "Cosine" and self.opti_reg_coeff == 0.0:
+            self.opti_reg_coeff = 4e-05
+        elif self.opti_scheduler == "Piecewise" and self.opti_reg_coeff == 0.0:
+            self.opti_reg_coeff = 1e-04
+        
+
     def _add_argument(self):
         """
         添加命令行参数
@@ -216,6 +224,12 @@ class BaseTrainX():
                                      help="评估集列表，默认 '--dataset' 参数目录下的 {}".format(self._eval_list_path))
         self._arg_parse.add_argument("--label_list", dest="label_list", default="", metavar="",
                                      help="分类标签列表，默认 '--dataset' 参数目录下的 {}".format(self._label_list_path))
+        self._arg_parse.add_argument("--opti_scheduler", dest="opti_scheduler", default="Cosine",
+                                     metavar="", help="优化器的调度器，默认 Cosine，可选 Cosine，Piecewise")
+        self._arg_parse.add_argument("--opti_reg_coeff", type=float, default=0.0,
+                                     dest="opti_reg_coeff", metavar="", help="优化器衰减系数，" +
+                                     "如果 opti_scheduler 是 Cosine，默认是 4e-05，" +
+                                     "如果 opti_scheduler 是 Piecewise，默认是 1e-04")
 
     def check(self):
         mod.utils.check_path(self.dataset)
@@ -230,6 +244,9 @@ class BaseTrainX():
             mod.utils.check_path(self.args.resume_checkpoint)
             self.pretrain_weights = None
             self.resume_checkpoint = self.args.resume_checkpoint
+
+        if self.opti_scheduler not in ["Cosine", "Piecewise"]:
+            raise Exception("优化器的调度器只能是 Cosine，Piecewise")
 
 
 class TrainX(BaseTrainX):
