@@ -74,7 +74,7 @@ def train():
     num_classes = len(train_dataset.labels)
     # 获取 PaddleX 模型
     model, model_name = pdxcfg.pdx_det_model(
-        model_name=args.model, backbone=args.backbone, num_classes=num_classes)
+        model_name=args.model, num_classes=num_classes, backbone=args.backbone)
 
     # 优化器
     # https://gitee.com/paddlepaddle/PaddleX/blob/develop/paddlex/cv/models/classifier.py#L147

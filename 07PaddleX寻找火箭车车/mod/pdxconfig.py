@@ -169,14 +169,14 @@ def print_pdx_cls_model_name():
     print(PDX_CLS_MODEL_NAME)
 
 
-def pdx_det_model(model_name: str, backbone: str, num_classes: int):
+def pdx_det_model(model_name: str, num_classes: int, backbone: str):
     """
     获取 PaddleX 目标检测模型
 
     Args:
         model_name (str):  PaddleX 目标检测模型名称
-        backbone (str): 目标检测模型 backbone 网络
         num_classes (int): 分类数量
+        backbone (str): 目标检测模型 backbone 网络
 
     Raises:
         Exception: PaddleX 目标检测模型名称错误
@@ -261,21 +261,22 @@ def print_pdx_det_model_name():
     print(PDX_DET_MASKRCNN_BACKBONE)
 
 
-def pdx_seg_model(model_name: str, backbone: str, num_classes: int):
+def pdx_seg_model(model_name: str, num_classes: int, backbone: str):
     """
     获取 PaddleX 图像分割模型
 
     Args:
         model_name (str):  PaddleX 图像分割模型名称
-        backbone (str): 图像分割模型 backbone 网络
         num_classes (int): 分类数量
+        backbone (str): 图像分割模型 backbone 网络
 
     Raises:
         Exception: PaddleX 图像分割模型名称错误
         Exception: DeepLabV3P backbone 网络错误
 
     Returns:
-        _type_: _description_
+        model: 模型
+        model_name: 模型名称
     """
     if model_name not in PDX_SEG_MODEL_NAME:
         raise Exception("PaddleX 图像分割模型名称错误，错误信息：{}".format(model_name))
