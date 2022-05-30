@@ -71,7 +71,7 @@ def pdx_cls_model(model_name: str, num_classes: int):
     """
     model = None
     if model_name not in PDX_CLS_MODEL_NAME:
-        raise Exception("PaddleX 模型名称错误，错误信息：{}".format(model_name))
+        raise Exception("PaddleX 图像分类模型名称错误，错误信息：{}".format(model_name))
 
     if model_name == "PPLCNet":
         model = paddlex.cls.PPLCNet(num_classes=num_classes)
