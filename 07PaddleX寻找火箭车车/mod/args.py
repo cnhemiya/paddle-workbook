@@ -172,9 +172,9 @@ class BaseTrainX():
 
         self.opti_scheduler = self.args.opti_scheduler
         self.opti_reg_coeff = self.args.opti_reg_coeff
-        if self.opti_scheduler == "Cosine" and self.opti_reg_coeff == 0.0:
+        if self.opti_scheduler.lower() == "cosine" and self.opti_reg_coeff == 0.0:
             self.opti_reg_coeff = 4e-05
-        elif self.opti_scheduler == "Piecewise" and self.opti_reg_coeff == 0.0:
+        elif self.opti_scheduler.lower() == "piecewise" and self.opti_reg_coeff == 0.0:
             self.opti_reg_coeff = 1e-04
         
 
@@ -245,7 +245,7 @@ class BaseTrainX():
             self.pretrain_weights = None
             self.resume_checkpoint = self.args.resume_checkpoint
 
-        if self.opti_scheduler not in ["Cosine", "Piecewise"]:
+        if self.opti_scheduler.lower() not in ["cosine", "piecewise"]:
             raise Exception("优化器的调度器只能是 Cosine，Piecewise")
 
 
