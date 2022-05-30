@@ -22,7 +22,7 @@ PDX_CLS_MODEL_NAME = ['PPLCNet', 'PPLCNet_ssld', 'ResNet18', 'ResNet18_vd', 'Res
 
 # PaddleX 目标检测模型名称
 PDX_DET_MODEL_NAME = ['PPYOLOv2', 'PPYOLO', 'PPYOLOTiny',
-                      'PicoDet', 'YOLOv3', 'FasterRCNN', ]
+                      'PicoDet', 'YOLOv3', 'FasterRCNN', 'MaskRCNN']
 
 # PaddleX 目标检测模型 PPYOLOv2 backbone 网络
 PDX_DET_PPYOLOV2_BACKBONE = ['ResNet50_vd_dcn', 'ResNet101_vd_dcn']
@@ -46,6 +46,10 @@ PDX_DET_YOLOV3_BACKBONE = ['MobileNetV1', 'MobileNetV1_ssld', 'MobileNetV3',
 PDX_DET_FASTERRCNN_BACKBONE = ['ResNet50', 'ResNet50_vd', 'ResNet50_vd_ssld',
                                'ResNet34', 'ResNet34_vd', 'ResNet101', 'ResNet101_vd', 'HRNet_W18']
 
+# PaddleX 目标检测模型 实例分割 MaskRCNN backbone 网络
+PDX_DET_MASKRCNN_BACKBONE = ['ResNet50', 'ResNet50_vd', 'ResNet50_vd_ssld',
+                             'ResNet101', 'ResNet101_vd']
+
 
 def pdx_cls_model(model_name: str, num_classes: int):
     """
@@ -61,7 +65,7 @@ def pdx_cls_model(model_name: str, num_classes: int):
     """
     model = None
     if model_name not in PDX_CLS_MODEL_NAME:
-        raise Exception("PaddleX 模型名称错误")
+        raise Exception("PaddleX 模型名称错误，错误信息：{}".format(model_name))
 
     if model_name == "PPLCNet":
         model = paddlex.cls.PPLCNet(num_classes=num_classes)
@@ -175,6 +179,7 @@ def pdx_det_model(model_name: str, backbone: str, num_classes: int):
         Exception: PicoDet backbone 网络错误
         Exception: YOLOv3 backbone 网络错误
         Exception: FasterRCNN backbone 网络错误
+        Exception: MaskRCNN backbone 网络错误
 
     Returns:
         model: 模型
@@ -183,17 +188,26 @@ def pdx_det_model(model_name: str, backbone: str, num_classes: int):
     if model_name not in PDX_DET_MODEL_NAME:
         raise Exception("PaddleX 目标检测模型名称错误，错误信息：{}".format(model_name))
     if (model_name == 'PPYOLOv2') and (backbone not in PDX_DET_PPYOLOV2_BACKBONE):
-        raise Exception("PaddleX 目标检测模型 PPYOLOv2 backbone 网络错误，错误信息：{}".format(backbone))
+        raise Exception(
+            "PaddleX 目标检测模型 PPYOLOv2 backbone 网络错误，错误信息：{}".format(backbone))
     if (model_name == 'PPYOLO') and (backbone not in PDX_DET_PPYOLO_BACKBONE):
-        raise Exception("PaddleX 目标检测模型 PPYOLO backbone 网络错误，错误信息：{}".format(backbone))
+        raise Exception(
+            "PaddleX 目标检测模型 PPYOLO backbone 网络错误，错误信息：{}".format(backbone))
     if (model_name == 'PPYOLOTiny') and (backbone not in PDX_DET_PPYOLOTINY_BACKBONE):
-        raise Exception("PaddleX 目标检测模型 PPYOLOTiny backbone 网络错误，错误信息：{}".format(backbone))
+        raise Exception(
+            "PaddleX 目标检测模型 PPYOLOTiny backbone 网络错误，错误信息：{}".format(backbone))
     if (model_name == 'PicoDet') and (backbone not in PDX_DET_PICODET_BACKBONE):
-        raise Exception("PaddleX 目标检测模型 PicoDet backbone 网络错误，错误信息：{}".format(backbone))
+        raise Exception(
+            "PaddleX 目标检测模型 PicoDet backbone 网络错误，错误信息：{}".format(backbone))
     if (model_name == 'YOLOv3') and (backbone not in PDX_DET_YOLOV3_BACKBONE):
-        raise Exception("PaddleX 目标检测模型 YOLOv3 backbone 网络错误，错误信息：{}".format(backbone))
+        raise Exception(
+            "PaddleX 目标检测模型 YOLOv3 backbone 网络错误，错误信息：{}".format(backbone))
     if (model_name == 'FasterRCNN') and (backbone not in PDX_DET_FASTERRCNN_BACKBONE):
-        raise Exception("PaddleX 目标检测模型 FasterRCNN backbone 网络错误，错误信息：{}".format(backbone))
+        raise Exception(
+            "PaddleX 目标检测模型 FasterRCNN backbone 网络错误，错误信息：{}".format(backbone))
+    if (model_name == 'MaskRCNN') and (backbone not in PDX_DET_MASKRCNN_BACKBONE):
+        raise Exception(
+            "PaddleX 目标检测模型 MaskRCNN backbone 网络错误，错误信息：{}".format(backbone))
 
     model = None
     if (model_name == 'PPYOLOv2'):
@@ -210,6 +224,9 @@ def pdx_det_model(model_name: str, backbone: str, num_classes: int):
         model = paddlex.det.YOLOv3(num_classes=num_classes, backbone=backbone)
     elif (model_name == 'FasterRCNN'):
         model = paddlex.det.FasterRCNN(
+            num_classes=num_classes, backbone=backbone)
+    elif (model_name == 'MaskRCNN'):
+        model = paddlex.det.MaskRCNN(
             num_classes=num_classes, backbone=backbone)
 
     return model, model_name
@@ -233,3 +250,5 @@ def print_pdx_det_model_name():
     print(PDX_DET_YOLOV3_BACKBONE)
     print("FasterRCNN backbone 网络")
     print(PDX_DET_FASTERRCNN_BACKBONE)
+    print("MaskRCNN backbone 网络")
+    print(PDX_DET_MASKRCNN_BACKBONE)
