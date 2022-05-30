@@ -50,6 +50,12 @@ PDX_DET_FASTERRCNN_BACKBONE = ['ResNet50', 'ResNet50_vd', 'ResNet50_vd_ssld',
 PDX_DET_MASKRCNN_BACKBONE = ['ResNet50', 'ResNet50_vd', 'ResNet50_vd_ssld',
                              'ResNet101', 'ResNet101_vd']
 
+# PaddleX 图像分割模型名称
+PDX_SEG_MODEL_NAME = ["DeepLabV3P", "BiSeNetV2", "UNet", "HRNet", "FastSCNN"]
+
+# PaddleX 图像分割模型 DeepLabV3P backbone 网络
+PDX_SEG_DEEPLABV3P_BACKBONE = ['ResNet50_vd', 'ResNet101_vd']
+
 
 def pdx_cls_model(model_name: str, num_classes: int):
     """
@@ -155,11 +161,12 @@ def pdx_cls_model(model_name: str, num_classes: int):
     return model, model_name
 
 
-def pdx_cls_model_name():
+def print_pdx_cls_model_name():
     """
-    PaddleX 图像分类模型名称
+    打印 PaddleX 图像分类模型名称
     """
-    return PDX_CLS_MODEL_NAME
+    print("\nPaddleX 图像分类模型")
+    print(PDX_CLS_MODEL_NAME)
 
 
 def pdx_det_model(model_name: str, backbone: str, num_classes: int):
@@ -252,3 +259,51 @@ def print_pdx_det_model_name():
     print(PDX_DET_FASTERRCNN_BACKBONE)
     print("MaskRCNN backbone 网络")
     print(PDX_DET_MASKRCNN_BACKBONE)
+
+
+def pdx_seg_model(model_name: str, backbone: str, num_classes: int):
+    """
+    获取 PaddleX 图像分割模型
+
+    Args:
+        model_name (str):  PaddleX 图像分割模型名称
+        backbone (str): 图像分割模型 backbone 网络
+        num_classes (int): 分类数量
+
+    Raises:
+        Exception: PaddleX 图像分割模型名称错误
+        Exception: DeepLabV3P backbone 网络错误
+
+    Returns:
+        _type_: _description_
+    """
+    if model_name not in PDX_SEG_MODEL_NAME:
+        raise Exception("PaddleX 图像分割模型名称错误，错误信息：{}".format(model_name))
+    if (model_name == 'DeepLabV3P') and (backbone not in PDX_SEG_DEEPLABV3P_BACKBONE):
+        raise Exception(
+            "PaddleX 图像分割模型 DeepLabV3P backbone 网络错误，错误信息：{}".format(backbone))
+
+    model = None
+    if (model_name == 'DeepLabV3P'):
+        model = paddlex.seg.DeepLabV3P(
+            num_classes=num_classes, backbone=backbone)
+    elif (model_name == 'BiSeNetV2'):
+        model = paddlex.seg.BiSeNetV2(num_classes=num_classes)
+    elif (model_name == 'UNet'):
+        model = paddlex.seg.UNet(num_classes=num_classes)
+    elif (model_name == 'HRNet'):
+        model = paddlex.seg.HRNet(num_classes=num_classes)
+    elif (model_name == 'FastSCNN'):
+        model = paddlex.seg.FastSCNN(num_classes=num_classes)
+
+    return model, model_name
+
+
+def print_pdx_seg_model_name():
+    """
+    打印 PaddleX 图像分割模型名称
+    """
+    print("\nPaddleX 图像分割模型")
+    print(PDX_SEG_MODEL_NAME)
+    print("DeepLabV3P backbone 网络")
+    print(PDX_SEG_DEEPLABV3P_BACKBONE)
