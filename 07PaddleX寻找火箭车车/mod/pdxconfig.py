@@ -268,7 +268,7 @@ def pdx_seg_model(model_name: str, num_classes: int, backbone: str):
     Args:
         model_name (str):  PaddleX 图像分割模型名称
         num_classes (int): 分类数量
-        backbone (str): 图像分割模型 backbone 网络
+        backbone (str): 图像分割模型 DeepLabV3P backbone 网络
 
     Raises:
         Exception: PaddleX 图像分割模型名称错误
