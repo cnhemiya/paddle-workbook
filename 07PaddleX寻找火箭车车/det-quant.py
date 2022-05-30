@@ -92,18 +92,20 @@ def quant():
 
     # 优化器
     # https://gitee.com/paddlepaddle/PaddleX/blob/develop/paddlex/cv/models/classifier.py#L147
-    optimizer = model.default_optimizer(parameters=model.net.parameters(),
-                                        learning_rate=args.learning_rate,
-                                        warmup_steps=args.warmup_steps,
-                                        warmup_start_lr=args.warmup_start_lr,
-                                        lr_decay_epochs=args.lr_decay_epochs,
-                                        lr_decay_gamma=args.lr_decay_gamma,
-                                        num_steps_each_epoch=len(
-                                            train_dataset),
-                                        reg_coeff=args.opti_reg_coeff,
-                                        scheduler=args.opti_scheduler,
-                                        num_epochs=args.epochs
-                                        )
+    optimizer = None
+    if args.opti_scheduler != "auto":
+        optimizer = model.default_optimizer(parameters=model.net.parameters(),
+                                            learning_rate=args.learning_rate,
+                                            warmup_steps=args.warmup_steps,
+                                            warmup_start_lr=args.warmup_start_lr,
+                                            lr_decay_epochs=args.lr_decay_epochs,
+                                            lr_decay_gamma=args.lr_decay_gamma,
+                                            num_steps_each_epoch=len(
+                                                train_dataset),
+                                            reg_coeff=args.opti_reg_coeff,
+                                            scheduler=args.opti_scheduler,
+                                            num_epochs=args.epochs
+                                            )
 
     # 模型训练
     # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/models/classification.md
