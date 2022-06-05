@@ -4,7 +4,7 @@
 LICENSE: MulanPSL2
 AUTHOR:  cnhemiya@qq.com
 DATE:    2022-05-23 21:29
-文档说明: 预测
+文档说明: 目标检测预测
 """
 
 

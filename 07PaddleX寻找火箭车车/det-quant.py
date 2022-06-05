@@ -4,7 +4,7 @@
 LICENSE: MulanPSL2
 AUTHOR:  cnhemiya@qq.com
 DATE:    2022-05-25 18:54
-文档说明: 在线量化
+文档说明: 目标检测在线量化
 """
 
 
@@ -108,7 +108,7 @@ def quant():
                                             )
 
     # 模型训练
-    # API说明：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/apis/models/detection.md
+    # API说明：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/apis/models/detection.md#quant_aware_train
     # 使用参考：https://gitee.com/paddlepaddle/PaddleX/tree/develop/tutorials/slim/quantize
     # 可使用 VisualDL 查看训练指标，参考：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/visualdl.md
     print("开始训练 。。。保存路径：{}".format(args.save_dir))

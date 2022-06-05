@@ -4,7 +4,7 @@
 LICENSE: MulanPSL2
 AUTHOR:  cnhemiya@qq.com
 DATE:    2022-05-09 19:16
-文档说明: 训练
+文档说明: 目标检测训练
 """
 
 
