@@ -124,9 +124,9 @@ class Predict():
         return arg_parse.parse_args()
 
 
-class BaseTrainX():
+class BaseArgsX():
     """
-    返回 PaddleX 基本训练命令行参数
+    返回 PaddleX 基本命令行参数
     """
 
     def __init__(self, args=None, dataset_path=config.DATASET_PATH,
@@ -150,11 +150,6 @@ class BaseTrainX():
         self.epochs = self.args.epochs
         self.batch_size = self.args.batch_size
         self.learning_rate = self.args.learning_rate
-        self.warmup_steps = self.args.warmup_steps
-        self.warmup_start_lr = self.args.warmup_start_lr
-        self.lr_decay_epochs = mod.utils.str_to_list(self.args.lr_decay_epochs)
-        self.lr_decay_gamma = self.args.lr_decay_gamma
-        self.use_ema = self.args.use_ema
         self.early_stop = self.args.early_stop
         self.early_stop_patience = self.args.early_stop_patience
         self.save_interval_epochs = self.args.save_interval_epochs
@@ -170,13 +165,6 @@ class BaseTrainX():
         self.label_list = os.path.join(
             self.dataset, label_list_path) if self.args.label_list == "" else self.args.label_list
 
-        self.opti_scheduler = self.args.opti_scheduler.lower()
-        self.opti_reg_coeff = self.args.opti_reg_coeff
-        if self.opti_scheduler == "cosine" and self.opti_reg_coeff == 0.0:
-            self.opti_reg_coeff = 4e-05
-        elif self.opti_scheduler == "piecewise" and self.opti_reg_coeff == 0.0:
-            self.opti_reg_coeff = 1e-04
-
     def _add_argument(self):
         """
         添加命令行参数
@@ -191,26 +179,15 @@ class BaseTrainX():
                                      dest="batch_size", metavar="", help="一批次数量，默认 16")
         self._arg_parse.add_argument("--learning_rate", type=float, default=0.025,
                                      dest="learning_rate", metavar="", help="学习率，默认 0.025")
-        self._arg_parse.add_argument("--warmup_steps", type=int, default=0,
-                                     dest="warmup_steps", metavar="", help="默认优化器的warmup步数，学习率将在设定的步数内，" +
-                                     "从warmup_start_lr线性增长至设定的learning_rate，默认为0")
-        self._arg_parse.add_argument("--warmup_start_lr", type=float, default=0.0,
-                                     dest="warmup_start_lr", metavar="", help="默认优化器的warmup起始学习率，默认为0.0")
-        self._arg_parse.add_argument("--lr_decay_epochs", dest="lr_decay_epochs", default="30 60 90",
-                                     metavar="", help="默认优化器的学习率衰减轮数。默认为 30 60 90")
-        self._arg_parse.add_argument("--lr_decay_gamma", type=float, default=0.1,
-                                     dest="lr_decay_gamma", metavar="", help="默认优化器的学习率衰减率。默认为0.1")
-        self._arg_parse.add_argument("--use_ema", action="store_true",
-                                     dest="use_ema", help="是否使用指数衰减计算参数的滑动平均值。默认为False")
         self._arg_parse.add_argument("--early_stop", action="store_true",
-                                     dest="early_stop", help="是否使用提前终止训练策略。默认为False")
+                                     dest="early_stop", help="是否使用提前终止训练策略。默认为 False")
         self._arg_parse.add_argument("--early_stop_patience", type=int, default=5,
                                      dest="early_stop_patience", metavar="", help="当使用提前终止训练策略时，如果验证集精度在" +
-                                     "early_stop_patience个epoch内连续下降或持平，则终止训练。默认为5")
+                                     "early_stop_patience 个 epoch 内连续下降或持平，则终止训练。默认为 5")
         self._arg_parse.add_argument("--save_interval_epochs", type=int, default=1,
-                                     dest="save_interval_epochs", metavar="", help="模型保存间隔(单位: 迭代轮数)。默认为1")
+                                     dest="save_interval_epochs", metavar="", help="模型保存间隔(单位: 迭代轮数)。默认为 1")
         self._arg_parse.add_argument("--log_interval_steps", type=int, default=10,
-                                     dest="log_interval_steps", metavar="", help="训练日志输出间隔（单位：迭代次数）。默认为10")
+                                     dest="log_interval_steps", metavar="", help="训练日志输出间隔（单位：迭代次数）。默认为 10")
         self._arg_parse.add_argument("--resume_checkpoint", dest="resume_checkpoint", default="",
                                      metavar="", help="恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练")
         self._arg_parse.add_argument("--save_dir", dest="save_dir", default="{}".format(self._save_dir_path),
@@ -223,12 +200,6 @@ class BaseTrainX():
                                      help="评估集列表，默认 '--dataset' 参数目录下的 {}".format(self._eval_list_path))
         self._arg_parse.add_argument("--label_list", dest="label_list", default="", metavar="",
                                      help="分类标签列表，默认 '--dataset' 参数目录下的 {}".format(self._label_list_path))
-        self._arg_parse.add_argument("--opti_scheduler", dest="opti_scheduler", default="auto",
-                                     metavar="", help="优化器的调度器，默认 auto，可选 auto，cosine，piecewise")
-        self._arg_parse.add_argument("--opti_reg_coeff", type=float, default=0.0,
-                                     dest="opti_reg_coeff", metavar="", help="优化器衰减系数，" +
-                                     "如果 opti_scheduler 是 Cosine，默认是 4e-05，" +
-                                     "如果 opti_scheduler 是 Piecewise，默认是 1e-04")
 
     def check(self):
         mod.utils.check_path(self.dataset)
@@ -244,6 +215,61 @@ class BaseTrainX():
             self.pretrain_weights = None
             self.resume_checkpoint = self.args.resume_checkpoint
 
+
+class BaseTrainX(BaseArgsX):
+    """
+    返回 PaddleX 基本训练命令行参数
+    """
+
+    def __init__(self, args=None, dataset_path=config.DATASET_PATH,
+                 train_list_path=config.TRAIN_LIST_PATH,
+                 eval_list_path=config.EVAL_LIST_PATH,
+                 label_list_path=config.LABEL_LIST_PATH,
+                 save_dir_path=config.SAVE_DIR_PATH):
+        super(BaseTrainX, self).__init__(args=args,
+                                         dataset_path=dataset_path,
+                                         train_list_path=train_list_path,
+                                         eval_list_path=eval_list_path,
+                                         label_list_path=label_list_path,
+                                         save_dir_path=save_dir_path)
+        self.warmup_steps = self.args.warmup_steps
+        self.warmup_start_lr = self.args.warmup_start_lr
+        self.lr_decay_epochs = mod.utils.str_to_list(self.args.lr_decay_epochs)
+        self.lr_decay_gamma = self.args.lr_decay_gamma
+        self.use_ema = self.args.use_ema
+
+        self.opti_scheduler = self.args.opti_scheduler.lower()
+        self.opti_reg_coeff = self.args.opti_reg_coeff
+        if self.opti_scheduler == "cosine" and self.opti_reg_coeff == 0.0:
+            self.opti_reg_coeff = 4e-05
+        elif self.opti_scheduler == "piecewise" and self.opti_reg_coeff == 0.0:
+            self.opti_reg_coeff = 1e-04
+
+    def _add_argument(self):
+        """
+        添加命令行参数
+        """
+        super(BaseTrainX, self)._add_argument()
+        self._arg_parse.add_argument("--warmup_steps", type=int, default=0,
+                                     dest="warmup_steps", metavar="", help="默认优化器的 warmup 步数，学习率将在设定的步数内，" +
+                                     "从 warmup_start_lr 线性增长至设定的 learning_rate，默认为 0")
+        self._arg_parse.add_argument("--warmup_start_lr", type=float, default=0.0,
+                                     dest="warmup_start_lr", metavar="", help="默认优化器的 warmup 起始学习率，默认为 0.0")
+        self._arg_parse.add_argument("--lr_decay_epochs", dest="lr_decay_epochs", default="30 60 90",
+                                     metavar="", help="默认优化器的学习率衰减轮数。默认为 30 60 90")
+        self._arg_parse.add_argument("--lr_decay_gamma", type=float, default=0.1,
+                                     dest="lr_decay_gamma", metavar="", help="默认优化器的学习率衰减率。默认为 0.1")
+        self._arg_parse.add_argument("--use_ema", action="store_true",
+                                     dest="use_ema", help="是否使用指数衰减计算参数的滑动平均值。默认为 False")
+        self._arg_parse.add_argument("--opti_scheduler", dest="opti_scheduler", default="auto",
+                                     metavar="", help="优化器的调度器，默认 auto，可选 auto，cosine，piecewise")
+        self._arg_parse.add_argument("--opti_reg_coeff", type=float, default=0.0,
+                                     dest="opti_reg_coeff", metavar="", help="优化器衰减系数，" +
+                                     "如果 opti_scheduler 是 Cosine，默认是 4e-05，" +
+                                     "如果 opti_scheduler 是 Piecewise，默认是 1e-04")
+
+    def check(self):
+        super(BaseTrainX, self).check()
         if self.opti_scheduler not in ["auto", "cosine", "piecewise"]:
             raise Exception("优化器的调度器只能是 auto，cosine，piecewise，错误信息：{}"
                             .format(self.opti_scheduler))
@@ -366,7 +392,7 @@ class PruneX(BaseTrainX):
         self._arg_parse.add_argument("--skip_analyze", action="store_true",
                                      dest="skip_analyze", help="是否跳过分析模型各层参数在不同的剪裁比例下的敏感度，默认不跳过")
         self._arg_parse.add_argument("--pruned_flops", type=float, default=0.2,
-                                     dest="pruned_flops", metavar="", help="根据选择的FLOPs减小比例对模型进行剪裁。默认为 0.2")
+                                     dest="pruned_flops", metavar="", help="根据选择的 FLOPS 减小比例对模型进行剪裁。默认为 0.2")
 
     def check(self):
         super(PruneX, self).check()
