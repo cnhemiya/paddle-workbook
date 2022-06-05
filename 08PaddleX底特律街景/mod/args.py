@@ -392,9 +392,9 @@ class PruneX(BaseTrainX):
                                      metavar="", help="模型读取路径。默认为 {}"
                                      .format(os.path.join(self._save_dir_path, "best_model")))
         self._arg_parse.add_argument("--skip_analyze", action="store_true",
-                                     dest="skip_analyze", help="是否跳过分析模型各层参数在不同的剪裁比例下的敏感度，默认不跳过")
+                                     dest="skip_analyze", help="是否跳过分析模型各层参数在不同的裁剪比例下的敏感度，默认不跳过")
         self._arg_parse.add_argument("--pruned_flops", type=float, default=0.2,
-                                     dest="pruned_flops", metavar="", help="根据选择的 FLOPS 减小比例对模型进行剪裁。默认为 0.2")
+                                     dest="pruned_flops", metavar="", help="根据选择的 FLOPS 减小比例对模型进行裁剪。默认为 0.2")
 
     def check(self):
         super(PruneX, self).check()
@@ -551,9 +551,9 @@ class PruneXSeg(BaseTrainXSeg):
                                      metavar="", help="模型读取路径。默认为 {}"
                                      .format(os.path.join(self._save_dir_path, "best_model")))
         self._arg_parse.add_argument("--skip_analyze", action="store_true",
-                                     dest="skip_analyze", help="是否跳过分析模型各层参数在不同的剪裁比例下的敏感度，默认不跳过")
+                                     dest="skip_analyze", help="是否跳过分析模型各层参数在不同的裁剪比例下的敏感度，默认不跳过")
         self._arg_parse.add_argument("--pruned_flops", type=float, default=0.2,
-                                     dest="pruned_flops", metavar="", help="根据选择的 FLOPS 减小比例对模型进行剪裁。默认为 0.2")
+                                     dest="pruned_flops", metavar="", help="根据选择的 FLOPS 减小比例对模型进行裁剪。默认为 0.2")
 
     def check(self):
         super(PruneXSeg, self).check()
