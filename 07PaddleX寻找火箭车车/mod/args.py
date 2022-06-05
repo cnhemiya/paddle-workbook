@@ -387,8 +387,10 @@ class PruneX(BaseTrainX):
 
     def _add_argument(self):
         super(PruneX, self)._add_argument()
-        self._arg_parse.add_argument("--model_dir", dest="model_dir", default="{}".format(os.path.join(self._save_dir_path, "best_model")),
-                                     metavar="", help="模型读取路径。默认为 {}".format(os.path.join(self._save_dir_path, "best_model")))
+        self._arg_parse.add_argument("--model_dir", dest="model_dir", default="{}"
+                                     .format(os.path.join(self._save_dir_path, "best_model")),
+                                     metavar="", help="模型读取路径。默认为 {}"
+                                     .format(os.path.join(self._save_dir_path, "best_model")))
         self._arg_parse.add_argument("--skip_analyze", action="store_true",
                                      dest="skip_analyze", help="是否跳过分析模型各层参数在不同的剪裁比例下的敏感度，默认不跳过")
         self._arg_parse.add_argument("--pruned_flops", type=float, default=0.2,
@@ -419,11 +421,172 @@ class QuantX(BaseTrainX):
 
     def _add_argument(self):
         super(QuantX, self)._add_argument()
-        self._arg_parse.add_argument("--model_dir", dest="model_dir", default="{}".format(os.path.join(self._save_dir_path, "best_model")),
-                                     metavar="", help="模型读取路径。默认为 {}".format(os.path.join(self._save_dir_path, "best_model")))
+        self._arg_parse.add_argument("--model_dir", dest="model_dir", default="{}"
+                                     .format(os.path.join(self._save_dir_path, "best_model")),
+                                     metavar="", help="模型读取路径。默认为 {}"
+                                     .format(os.path.join(self._save_dir_path, "best_model")))
 
     def check(self):
         super(QuantX, self).check()
+        mod.utils.check_path(self.model_dir)
+
+
+class BaseTrainXSeg(BaseArgsX):
+    """
+    返回 PaddleX 图像分割命令行参数
+    """
+
+    def __init__(self, args=None, dataset_path=config.DATASET_PATH,
+                 train_list_path=config.TRAIN_LIST_PATH,
+                 eval_list_path=config.EVAL_LIST_PATH,
+                 label_list_path=config.LABEL_LIST_PATH,
+                 save_dir_path=config.SAVE_DIR_PATH):
+        super(BaseTrainXSeg, self).__init__(args=args,
+                                            dataset_path=dataset_path,
+                                            train_list_path=train_list_path,
+                                            eval_list_path=eval_list_path,
+                                            label_list_path=label_list_path,
+                                            save_dir_path=save_dir_path)
+        self.lr_decay_power = self.args.lr_decay_power
+
+    def _add_argument(self):
+        super(BaseTrainXSeg, self)._add_argument()
+        self._arg_parse.add_argument("--lr_decay_power", type=float, default=0.9,
+                                     dest="lr_decay_power", metavar="", help="默认优化器学习率衰减指数。默认为 0.9")
+
+
+class TrainXSeg(BaseTrainXSeg):
+    """
+    返回 PaddleX 图像分割训练命令行参数
+    """
+
+    def __init__(self, args=None, dataset_path=config.DATASET_PATH,
+                 train_list_path=config.TRAIN_LIST_PATH,
+                 eval_list_path=config.EVAL_LIST_PATH,
+                 label_list_path=config.LABEL_LIST_PATH,
+                 save_dir_path=config.SAVE_DIR_PATH):
+        super(TrainXSeg, self).__init__(args=args,
+                                        dataset_path=dataset_path,
+                                        train_list_path=train_list_path,
+                                        eval_list_path=eval_list_path,
+                                        label_list_path=label_list_path,
+                                        save_dir_path=save_dir_path)
+        self.use_mixed_loss = self.args.use_mixed_loss
+        self.align_corners = self.args.align_corners
+        self.backbone = self.args.backbone
+        self.hrnet_width = self.args.hrnet_width
+        self.pretrain_weights = self.args.pretrain_weights
+        self.model = self.args.model
+        self.model_list = self.args.model_list
+
+    def _add_argument(self):
+        super(TrainXSeg, self)._add_argument()
+        self._arg_parse.add_argument("--use_mixed_loss", action="store_true", dest="use_mixed_loss",
+                                     help="是否使用混合损失函数。如果为True，混合使用CrossEntropyLoss和LovaszSoftmaxLoss，" + 
+                                     "权重分别为0.8和0.2。如果为False，则仅使用CrossEntropyLoss。" + 
+                                     "也可以以列表的形式自定义混合损失函数，列表的每一个元素为(损失函数类型，权重)元组，" + 
+                                     "损失函数类型取值范围为['CrossEntropyLoss', 'DiceLoss', 'LovaszSoftmaxLoss']。默认为False。")
+        self._arg_parse.add_argument("--align_corners", action="store_true", dest="align_corners",
+                                     help="是网络中对特征图进行插值时是否将四个角落像素的中心对齐。" + 
+                                     "若特征图尺寸为偶数，建议设为True。若特征图尺寸为奇数，建议设为False。默认为False。")
+        self._arg_parse.add_argument("--backbone", dest="backbone", default="ResNet50_vd",
+                                     metavar="", help="图像分割模型 DeepLabV3P 的 backbone 网络，" +
+                                     "取值范围为['ResNet50_vd', 'ResNet101_vd']，默认为'ResNet50_vd'。")
+        self._arg_parse.add_argument("--hrnet_width", type=int, default=48, dest="hrnet_width",
+                                     metavar="", help="图像分割模型 HRNet 的 width 网络，" +
+                                     "高分辨率分支中特征层的通道数量。默认为48。可选择取值为[18, 48]。")
+        self._arg_parse.add_argument("--pretrain_weights", dest="pretrain_weights", default="CITYSCAPES",
+                                     metavar="", help="若指定为'.pdparams'文件时，则从文件加载模型权重；" +
+                                     "若为字符串'CITYSCAPES'，则自动下载在CITYSCAPES图片数据上预训练的模型权重；" +
+                                     "若为字符串'PascalVOC'，则自动下载在PascalVOC图片数据上预训练的模型权重；" +
+                                     "若为字符串'IMAGENET'，则自动下载在ImageNet图片数据上预训练的模型权重；" +
+                                     "若为None，则不使用预训练模型。默认为'CITYSCAPES'。")
+        self._arg_parse.add_argument("--model", dest="model", default="",
+                                     metavar="", help="PaddleX 模型名称")
+        self._arg_parse.add_argument("--model_list", action="store_true", dest="model_list",
+                                     help="输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练")
+
+    def check(self):
+        super(TrainXSeg, self).check()
+        # 模型权重
+        self.pretrain_weights = None
+        # 加载模型权重
+        if (self.args.pretrain_weights == ""):
+            self.pretrain_weights = None
+        elif self.args.pretrain_weights == "CITYSCAPES":
+            self.pretrain_weights = "CITYSCAPES"
+        elif self.args.pretrain_weights == "PascalVOC":
+            self.pretrain_weights = "PascalVOC"
+        elif self.args.pretrain_weights == "IMAGENET":
+            self.pretrain_weights = "IMAGENET"
+        else:
+            mod.utils.check_path(self.args.pretrain_weights)
+            self.pretrain_weights = self.args.pretrain_weights
+
+
+class PruneXSeg(BaseTrainXSeg):
+    """
+    返回 PaddleX 图像分割模型裁剪命令行参数
+    """
+
+    def __init__(self, args=None, dataset_path=config.DATASET_PATH,
+                 train_list_path=config.TRAIN_LIST_PATH,
+                 eval_list_path=config.EVAL_LIST_PATH,
+                 label_list_path=config.LABEL_LIST_PATH,
+                 save_dir_path=config.SAVE_DIR_PATH):
+        super(PruneXSeg, self).__init__(args=args,
+                                        dataset_path=dataset_path,
+                                        train_list_path=train_list_path,
+                                        eval_list_path=eval_list_path,
+                                        label_list_path=label_list_path,
+                                        save_dir_path=save_dir_path)
+        self.model_dir = self.args.model_dir
+        self.skip_analyze = self.args.skip_analyze
+        self.pruned_flops = self.args.pruned_flops
+
+    def _add_argument(self):
+        super(PruneXSeg, self)._add_argument()
+        self._arg_parse.add_argument("--model_dir", dest="model_dir", default="{}"
+                                     .format(os.path.join(self._save_dir_path, "best_model")),
+                                     metavar="", help="模型读取路径。默认为 {}"
+                                     .format(os.path.join(self._save_dir_path, "best_model")))
+        self._arg_parse.add_argument("--skip_analyze", action="store_true",
+                                     dest="skip_analyze", help="是否跳过分析模型各层参数在不同的剪裁比例下的敏感度，默认不跳过")
+        self._arg_parse.add_argument("--pruned_flops", type=float, default=0.2,
+                                     dest="pruned_flops", metavar="", help="根据选择的 FLOPS 减小比例对模型进行剪裁。默认为 0.2")
+
+    def check(self):
+        super(PruneXSeg, self).check()
+        mod.utils.check_path(self.model_dir)
+
+
+class QuantXSeg(BaseTrainXSeg):
+    """
+    返回 PaddleX 图像分割模型在线量化命令行参数
+    """
+
+    def __init__(self, args=None, dataset_path=config.DATASET_PATH,
+                 train_list_path=config.TRAIN_LIST_PATH,
+                 eval_list_path=config.EVAL_LIST_PATH,
+                 label_list_path=config.LABEL_LIST_PATH,
+                 save_dir_path=config.SAVE_DIR_PATH):
+        super(QuantXSeg, self).__init__(args=args,
+                                        dataset_path=dataset_path,
+                                        train_list_path=train_list_path,
+                                        eval_list_path=eval_list_path,
+                                        label_list_path=label_list_path,
+                                        save_dir_path=save_dir_path)
+        self.model_dir = self.args.model_dir
+
+    def _add_argument(self):
+        super(QuantXSeg, self)._add_argument()
+        self._arg_parse.add_argument("--model_dir", dest="model_dir", default="{}"
+                                     .format(os.path.join(self._save_dir_path, "best_model")),
+                                     metavar="", help="模型读取路径。默认为 {}"
+                                     .format(os.path.join(self._save_dir_path, "best_model")))
+
+    def check(self):
+        super(QuantXSeg, self).check()
         mod.utils.check_path(self.model_dir)
 
 

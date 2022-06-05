@@ -261,7 +261,7 @@ def print_pdx_det_model_name():
     print(PDX_DET_MASKRCNN_BACKBONE)
 
 
-def pdx_seg_model(model_name: str, num_classes: int, backbone: str):
+def pdx_seg_model(model_name: str, num_classes: int, backbone: str, hrnet_width: int):
     """
     获取 PaddleX 图像分割模型
 
@@ -293,7 +293,7 @@ def pdx_seg_model(model_name: str, num_classes: int, backbone: str):
     elif (model_name == 'UNet'):
         model = paddlex.seg.UNet(num_classes=num_classes)
     elif (model_name == 'HRNet'):
-        model = paddlex.seg.HRNet(num_classes=num_classes)
+        model = paddlex.seg.HRNet(num_classes=num_classes, width=hrnet_width)
     elif (model_name == 'FastSCNN'):
         model = paddlex.seg.FastSCNN(num_classes=num_classes)
 
