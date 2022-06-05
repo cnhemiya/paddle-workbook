@@ -16,7 +16,7 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 |文件|说明|
 |--|--|
 |det-train.py|训练程序|
-|det-prune.py|裁剪程序|
+|det-prune.py|剪裁程序|
 |det-quant.py|量化程序|
 |onekey.sh|一键获取数据到 dataset 目录下|
 |onetasks.sh|一键训练，量化脚本|
@@ -150,12 +150,12 @@ FasterRCNN backbone 网络
 ['ResNet50', 'ResNet50_vd', 'ResNet50_vd_ssld', 'ResNet34', 'ResNet34_vd', 'ResNet101', 'ResNet101_vd', 'HRNet_W18']
 ```
 
-## 模型裁剪
+## 模型剪裁
 
 - 运行 **det-prune.py** 文件，查看命令行参数加 -h。
-- 注意：有的模型不支持裁剪，比如 **PicoDet**。
-- 参数 --pretrain_weights 必须为空 ""，裁剪后的精度大部分会降低。
-- 参考文档：[模型裁剪](https://gitee.com/paddlepaddle/PaddleX/tree/develop/tutorials/slim/prune)
+- 注意：有的模型不支持剪裁，比如 **PicoDet**。
+- 参数 --pretrain_weights 必须为空 ""，剪裁后的精度大部分会降低。
+- 参考文档：[模型剪裁](https://gitee.com/paddlepaddle/PaddleX/tree/develop/tutorials/slim/prune)
 - 示例
 
 ```bash
@@ -193,8 +193,8 @@ python3 det-prune.py \
   --eval_list           评估集列表，默认 '--dataset' 参数目录下的 val_list.txt
   --label_list          分类标签列表，默认 '--dataset' 参数目录下的 labels.txt
   --model_dir           模型读取路径。默认为 ./output/best_model
-  --skip_analyze        是否跳过分析模型各层参数在不同的裁剪比例下的敏感度，默认不跳过
-  --pruned_flops        根据选择的FLOPs减小比例对模型进行裁剪。默认为 0.2
+  --skip_analyze        是否跳过分析模型各层参数在不同的剪裁比例下的敏感度，默认不跳过
+  --pruned_flops        根据选择的FLOPs减小比例对模型进行剪裁。默认为 0.2
 ```
 
 ## 模型量化
