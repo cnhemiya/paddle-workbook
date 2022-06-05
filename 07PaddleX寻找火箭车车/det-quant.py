@@ -91,7 +91,7 @@ def quant():
     model = pdx.load_model(args.model_dir)
 
     # 优化器
-    # https://gitee.com/paddlepaddle/PaddleX/blob/develop/paddlex/cv/models/classifier.py#L147
+    # https://gitee.com/paddlepaddle/PaddleX/blob/develop/paddlex/cv/models/detector.py#L115
     optimizer = None
     if args.opti_scheduler != "auto":
         optimizer = model.default_optimizer(parameters=model.net.parameters(),
@@ -108,8 +108,8 @@ def quant():
                                             )
 
     # 模型训练
-    # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/models/classification.md
-    # 参数调整：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/parameters.md
+    # API说明：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/apis/models/detection.md
+    # 使用参考：https://gitee.com/paddlepaddle/PaddleX/tree/develop/tutorials/slim/quantize
     # 可使用 VisualDL 查看训练指标，参考：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/visualdl.md
     print("开始训练 。。。保存路径：{}".format(args.save_dir))
     model.quant_aware_train(num_epochs=args.epochs,

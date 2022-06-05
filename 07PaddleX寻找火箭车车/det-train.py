@@ -16,16 +16,6 @@ import mod.config as config
 import mod.pdxconfig as pdxcfg
 
 
-# 训练 transforms 图像大小
-TRAIN_IMAGE_SIZE = 224
-
-# 评估 transforms 图像大小
-EVAL_IMAGE_SIZE = 256
-
-# 测试 transforms 图像大小
-TEST_IMAGE_SIZE = 224
-
-
 def train():
     # 解析命令行参数
     args = mod.args.TrainXDet()
@@ -77,7 +67,7 @@ def train():
         model_name=args.model, num_classes=num_classes, backbone=args.backbone)
 
     # 优化器
-    # https://gitee.com/paddlepaddle/PaddleX/blob/develop/paddlex/cv/models/classifier.py#L147
+    # https://gitee.com/paddlepaddle/PaddleX/blob/develop/paddlex/cv/models/detector.py#L115
     optimizer = None
     if args.opti_scheduler != "auto":
         optimizer = model.default_optimizer(parameters=model.net.parameters(),
@@ -94,7 +84,7 @@ def train():
                                             )
 
     # 模型训练
-    # API说明：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/apis/models/classification.md
+    # API说明：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/apis/models/detection.md
     # 参数调整：https://gitee.com/paddlepaddle/PaddleX/blob/develop/docs/parameters.md
     # 可使用 VisualDL 查看训练指标，参考：https://gitee.com/PaddlePaddle/PaddleX/blob/develop/docs/visualdl.md
     print("开始训练 。。。模型：{}".format(model_name))

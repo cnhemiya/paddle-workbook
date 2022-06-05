@@ -482,12 +482,12 @@ class TrainXSeg(BaseTrainXSeg):
     def _add_argument(self):
         super(TrainXSeg, self)._add_argument()
         self._arg_parse.add_argument("--use_mixed_loss", action="store_true", dest="use_mixed_loss",
-                                     help="是否使用混合损失函数。如果为True，混合使用CrossEntropyLoss和LovaszSoftmaxLoss，" + 
-                                     "权重分别为0.8和0.2。如果为False，则仅使用CrossEntropyLoss。" + 
-                                     "也可以以列表的形式自定义混合损失函数，列表的每一个元素为(损失函数类型，权重)元组，" + 
+                                     help="是否使用混合损失函数。如果为True，混合使用CrossEntropyLoss和LovaszSoftmaxLoss，" +
+                                     "权重分别为0.8和0.2。如果为False，则仅使用CrossEntropyLoss。" +
+                                     "也可以以列表的形式自定义混合损失函数，列表的每一个元素为(损失函数类型，权重)元组，" +
                                      "损失函数类型取值范围为['CrossEntropyLoss', 'DiceLoss', 'LovaszSoftmaxLoss']。默认为False。")
         self._arg_parse.add_argument("--align_corners", action="store_true", dest="align_corners",
-                                     help="是网络中对特征图进行插值时是否将四个角落像素的中心对齐。" + 
+                                     help="是网络中对特征图进行插值时是否将四个角落像素的中心对齐。" +
                                      "若特征图尺寸为偶数，建议设为True。若特征图尺寸为奇数，建议设为False。默认为False。")
         self._arg_parse.add_argument("--backbone", dest="backbone", default="ResNet50_vd",
                                      metavar="", help="图像分割模型 DeepLabV3P 的 backbone 网络，" +
