@@ -212,7 +212,6 @@ class BaseArgsX():
         # 恢复训练
         if (self.args.resume_checkpoint != ""):
             mod.utils.check_path(self.args.resume_checkpoint)
-            self.pretrain_weights = None
             self.resume_checkpoint = self.args.resume_checkpoint
 
 
@@ -321,6 +320,9 @@ class TrainX(BaseTrainX):
         else:
             mod.utils.check_path(self.args.pretrain_weights)
             self.pretrain_weights = self.args.pretrain_weights
+        # 恢复训练
+        if (self.args.resume_checkpoint != ""):
+            self.pretrain_weights = None
 
 
 class TrainXCls(TrainX):
@@ -522,6 +524,9 @@ class TrainXSeg(BaseTrainXSeg):
         else:
             mod.utils.check_path(self.args.pretrain_weights)
             self.pretrain_weights = self.args.pretrain_weights
+        # 恢复训练
+        if (self.args.resume_checkpoint != ""):
+            self.pretrain_weights = None
 
 
 class PruneXSeg(BaseTrainXSeg):

@@ -60,8 +60,12 @@ def train():
     # 分类数量
     num_classes = len(train_dataset.labels)
     # 获取 PaddleX 模型
-    model, model_name = pdxcfg.pdx_seg_model(
-        model_name=args.model, num_classes=num_classes, backbone=args.backbone, hrnet_width=args.hrnet_width)
+    model, model_name = pdxcfg.pdx_seg_model(model_name=args.model,
+                                             num_classes=num_classes,
+                                             backbone=args.backbone,
+                                             hrnet_width=args.hrnet_width,
+                                             use_mixed_loss=args.use_mixed_loss,
+                                             align_corners=args.align_corners)
 
     # 优化器
     # https://gitee.com/paddlepaddle/PaddleX/blob/develop/paddlex/cv/models/segmenter.py#L189
