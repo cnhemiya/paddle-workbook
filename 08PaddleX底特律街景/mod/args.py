@@ -296,7 +296,7 @@ class TrainX(BaseTrainX):
 
     def _add_argument(self):
         super(TrainX, self)._add_argument()
-        self._arg_parse.add_argument("--pretrain_weights", dest="pretrain_weights", default="IMAGENET",
+        self._arg_parse.add_argument("--pretrain_weights", dest="pretrain_weights", default="",
                                      metavar="", help="若指定为'.pdparams'文件时，从文件加载模型权重；" +
                                      "若为字符串’IMAGENET’，则自动下载在ImageNet图片数据上预训练的模型权重；" +
                                      "若为字符串’COCO’，则自动下载在COCO数据集上预训练的模型权重；" +
@@ -309,7 +309,7 @@ class TrainX(BaseTrainX):
     def check(self):
         super(TrainX, self).check()
         # 模型权重
-        self.pretrain_weights = None
+        self.pretrain_weights = "IMAGENET"
         # 加载模型权重
         if (self.args.pretrain_weights == ""):
             self.pretrain_weights = None
@@ -511,7 +511,7 @@ class TrainXSeg(BaseTrainXSeg):
     def check(self):
         super(TrainXSeg, self).check()
         # 模型权重
-        self.pretrain_weights = None
+        self.pretrain_weights = "CITYSCAPES"
         # 加载模型权重
         if (self.args.pretrain_weights == ""):
             self.pretrain_weights = None
