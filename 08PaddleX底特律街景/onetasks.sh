@@ -10,8 +10,10 @@ HRNET_WIDTH="18"
 DATASET="./dataset/detroit_streetscape"
 # 保存的目录
 BASE_SAVE_DIR="./output/${MODEL}_${HRNET_WIDTH}"
-# 导出模型的输入大小，默认 None，或者修改[n,c,w,h] --fixed_input_shape=[-1,3,512,512]
-FIXED_INPUT_SHAPE="--fixed_input_shape=[-1,3,512,512]"
+# 导出模型的输入大小，默认 None，或者修改[n,c,w,h] --fixed_input_shape=[-1,3,224,224]
+# 图像分割，没有 --fixed_input_shape 参数
+# FIXED_INPUT_SHAPE="--fixed_input_shape=[-1,3,512,512]"
+FIXED_INPUT_SHAPE=""
 
 # 训练轮数
 TRAIN_EPOCHS=96
