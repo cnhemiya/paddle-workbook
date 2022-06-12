@@ -4,7 +4,7 @@
 
 # 模型名称
 MODEL="HRNet"
-# HRNET_WIDTH 可选 18,48
+# HRNET_WIDTH 可选 18,48，高分辨率分支中特征层的通道数量。
 HRNET_WIDTH="18"
 # 数据集目录
 DATASET="./dataset/detroit_streetscape"
@@ -60,7 +60,7 @@ QUANT_INFER_ZIP_FILE="${MODEL}_${HRNET_WIDTH}_${QUANT_EPOCHS}e_${QUANT_LEARNING_
 
 echo "开始训练"
 # 训练
-python3 det-train.py --dataset "$DATASET" \
+python3 seq-train.py --dataset "$DATASET" \
     --epochs $TRAIN_EPOCHS \
     --batch_size $TRAIN_BATCH_SIZE \
     --learning_rate $TRAIN_LEARNING_RATE \
@@ -79,7 +79,7 @@ tar -caf "$BASE_SAVE_DIR/$TRAIN_INFER_ZIP_FILE" "$TRAIN_INFER_SAVE_DIR"
 
 echo "开始量化"
 # 量化
-python3 det-quant.py --dataset "$DATASET" \
+python3 seq-quant.py --dataset "$DATASET" \
     --epochs $QUANT_EPOCHS \
     --batch_size $QUANT_BATCH_SIZE \
     --learning_rate $QUANT_LEARNING_RATE \
