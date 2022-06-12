@@ -60,7 +60,7 @@ QUANT_INFER_ZIP_FILE="${MODEL}_${HRNET_WIDTH}_${QUANT_EPOCHS}e_${QUANT_LEARNING_
 
 echo "开始训练"
 # 训练
-python3 seq-train.py --dataset "$DATASET" \
+python3 seg-train.py --dataset "$DATASET" \
     --epochs $TRAIN_EPOCHS \
     --batch_size $TRAIN_BATCH_SIZE \
     --learning_rate $TRAIN_LEARNING_RATE \
@@ -79,7 +79,7 @@ tar -caf "$BASE_SAVE_DIR/$TRAIN_INFER_ZIP_FILE" "$TRAIN_INFER_SAVE_DIR"
 
 echo "开始量化"
 # 量化
-python3 seq-quant.py --dataset "$DATASET" \
+python3 seg-quant.py --dataset "$DATASET" \
     --epochs $QUANT_EPOCHS \
     --batch_size $QUANT_BATCH_SIZE \
     --learning_rate $QUANT_LEARNING_RATE \
