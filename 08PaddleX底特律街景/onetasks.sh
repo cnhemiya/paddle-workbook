@@ -4,7 +4,7 @@
 
 # 模型名称
 MODEL="HRNet"
-# HRNET_WIDTH 可选 18,48，高分辨率分支中特征层的通道数量。
+# HRNET_WIDTH 可选 18,48，高分辨率分支中特征层的通道数量
 HRNET_WIDTH="18"
 # 数据集目录
 DATASET="./dataset/detroit_streetscape"

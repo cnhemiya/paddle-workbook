@@ -3,11 +3,11 @@
 # 一键获取数据
 
 # 数据压缩包
-zip_file="road_fighter_car.zip"
+zip_file="detroit_streetscape.zip"
 # aistudio 数据目录
-ais_dir="data148354"
+ais_dir="data152045"
 # 解压后的数据目录
-sub_data_dir="road_fighter_car"
+sub_data_dir="detroit_streetscape"
 # 数据目录
 data_dir="./dataset/$sub_data_dir"
 
