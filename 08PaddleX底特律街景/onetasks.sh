@@ -1,26 +1,26 @@
 #!/usr/bin/bash
 
-# 目标检测，训练，量化，一键任务脚本
+# 图像分割，训练，量化，一键任务脚本
 
 # 模型名称
-MODEL="PicoDet"
-# backbone 主干模型
-BACKBONE="MobileNetV3"
+MODEL="HRNet"
+# HRNET_WIDTH 可选 18,48
+HRNET_WIDTH="18"
 # 数据集目录
-DATASET="./dataset/road_fighter_car"
+DATASET="./dataset/detroit_streetscape"
 # 保存的目录
-BASE_SAVE_DIR="./output/${MODEL}_${BACKBONE}"
-# 导出模型的输入大小，默认 None，或者修改[n,c,w,h] --fixed_input_shape=[-1,3,608,608]
-FIXED_INPUT_SHAPE="--fixed_input_shape=[-1,3,608,608]"
+BASE_SAVE_DIR="./output/${MODEL}_${HRNET_WIDTH}"
+# 导出模型的输入大小，默认 None，或者修改[n,c,w,h] --fixed_input_shape=[-1,3,512,512]
+FIXED_INPUT_SHAPE="--fixed_input_shape=[-1,3,512,512]"
 
 # 训练轮数
-TRAIN_EPOCHS=64
+TRAIN_EPOCHS=96
 # 训练单批次数量
 TRAIN_BATCH_SIZE=1
 # 训练学习率
 TRAIN_LEARNING_RATE=0.01
 # 训练保存间隔轮数
-TRAIN_SAVE_INTERVAL_EPOCHS=4
+TRAIN_SAVE_INTERVAL_EPOCHS=1
 # 训练预加载权重
 TRAIN_PRETRAIN_WEIGHTS=""
 # 训练模型保存的目录
@@ -29,7 +29,7 @@ TRAIN_SAVE_DIR="$BASE_SAVE_DIR/normal"
 TRAIN_BSET_SAVE_DIR="$TRAIN_SAVE_DIR/best_model"
 
 # 量化训练轮数
-QUANT_EPOCHS=32
+QUANT_EPOCHS=64
 # 量化训练单批次数量
 QUANT_BATCH_SIZE=1
 # 量化训练学习率
@@ -44,9 +44,9 @@ QUANT_SAVE_DIR="$BASE_SAVE_DIR/quant"
 QUANT_BSET_SAVE_DIR="$QUANT_SAVE_DIR/best_model"
 
 # 训练模型压缩文档
-TRAIN_ZIP_FILE="${MODEL}_${BACKBONE}_${TRAIN_EPOCHS}e_${TRAIN_LEARNING_RATE}.tar.gz"
+TRAIN_ZIP_FILE="${MODEL}_${HRNET_WIDTH}_${TRAIN_EPOCHS}e_${TRAIN_LEARNING_RATE}.tar.gz"
 # 量化模型压缩文档
-QUANT_ZIP_FILE="${MODEL}_${BACKBONE}_${QUANT_EPOCHS}e_${QUANT_LEARNING_RATE}_quant.tar.gz"
+QUANT_ZIP_FILE="${MODEL}_${HRNET_WIDTH}_${QUANT_EPOCHS}e_${QUANT_LEARNING_RATE}_quant.tar.gz"
 
 # 训练导出模型目录
 TRAIN_INFER_SAVE_DIR="$BASE_SAVE_DIR/normal_infer"
@@ -54,9 +54,9 @@ TRAIN_INFER_SAVE_DIR="$BASE_SAVE_DIR/normal_infer"
 QUANT_INFER_SAVE_DIR="$BASE_SAVE_DIR/quant_infer"
 
 # 训练导出模型压缩文档
-TRAIN_INFER_ZIP_FILE="${MODEL}_${BACKBONE}_${TRAIN_EPOCHS}e_${TRAIN_LEARNING_RATE}_infer.tar.gz"
+TRAIN_INFER_ZIP_FILE="${MODEL}_${HRNET_WIDTH}_${TRAIN_EPOCHS}e_${TRAIN_LEARNING_RATE}_infer.tar.gz"
 # 量化导出模型压缩文档
-QUANT_INFER_ZIP_FILE="${MODEL}_${BACKBONE}_${QUANT_EPOCHS}e_${QUANT_LEARNING_RATE}_quant_infer.tar.gz"
+QUANT_INFER_ZIP_FILE="${MODEL}_${HRNET_WIDTH}_${QUANT_EPOCHS}e_${QUANT_LEARNING_RATE}_quant_infer.tar.gz"
 
 echo "开始训练"
 # 训练
@@ -65,7 +65,7 @@ python3 det-train.py --dataset "$DATASET" \
     --batch_size $TRAIN_BATCH_SIZE \
     --learning_rate $TRAIN_LEARNING_RATE \
     --model $MODEL \
-    --backbone $BACKBONE \
+    --hrnet_width $HRNET_WIDTH \
     --save_interval_epochs $TRAIN_SAVE_INTERVAL_EPOCHS \
     --pretrain_weights "$TRAIN_PRETRAIN_WEIGHTS" \
     --save_dir "$TRAIN_SAVE_DIR"
