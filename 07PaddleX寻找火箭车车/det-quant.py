@@ -74,10 +74,10 @@ def quant():
         'activation_quantize_type': 'moving_average_abs_max',
 
         # weight量化比特数, 默认为 8
-        'weight_bits': 16,
+        'weight_bits': 8,
 
         # activation量化比特数, 默认为 8
-        'activation_bits': 16,
+        'activation_bits': 8,
 
         # 'moving_average_abs_max'的滑动平均超参, 默认为0.9
         'moving_rate': 0.9,
