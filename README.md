@@ -60,3 +60,11 @@
 - 依赖：[PaddleX](https://gitee.com/paddlepaddle/PaddleX)
 - GITEE 主页：[小熊飞桨练习册-07PaddleX寻找火箭车车](https://gitee.com/cnhemiya/paddle-workbook/tree/master/07PaddleX%E5%AF%BB%E6%89%BE%E7%81%AB%E7%AE%AD%E8%BD%A6%E8%BD%A6)
 - AI Studio 主页：[小熊飞桨练习册-07PaddleX寻找火箭车车](https://aistudio.baidu.com/aistudio/projectdetail/4078239)
+
+## 08PaddleX底特律街景
+
+- 学习 **PaddleX 图像分割**，进行图像识别
+- 依赖：[百度飞桨](https://www.paddlepaddle.org.cn/)
+- 依赖：[PaddleX](https://gitee.com/paddlepaddle/PaddleX)
+- GITEE 主页：[小熊飞桨练习册-08PaddleX底特律街景](https://gitee.com/cnhemiya/paddle-workbook/tree/master/08PaddleX%E5%BA%95%E7%89%B9%E5%BE%8B%E8%A1%97%E6%99%AF)
+- AI Studio 主页：[小熊飞桨练习册-08PaddleX底特律街景](https://aistudio.baidu.com/aistudio/projectdetail/4237728)
