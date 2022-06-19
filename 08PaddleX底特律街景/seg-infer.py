@@ -3,8 +3,8 @@
 """
 LICENSE: MulanPSL2
 AUTHOR:  cnhemiya@qq.com
-DATE:    2022-05-23 21:29
-文档说明: 预测
+DATE:    2022-06-19 13:52
+文档说明: 图像分割预测
 """
 
 
@@ -13,6 +13,15 @@ import sys
 import cv2
 import argparse
 import paddlex as pdx
+
+# 可视化颜色，EISeg 颜色通道顺序为 RGB，paddlex.seg.visualize 颜色通道顺序为 BGR
+VISUALIZE_COLOR = [0, 0, 0,        # 背景
+                   164, 101, 52,   # 汽车
+                   6, 128, 245,    # 交通标志
+                   22, 210, 115,   # 车道线
+                   41, 41, 239,    # 行人
+                   190, 104, 145,  # 摩托车手
+                   41, 41, 239, ]  # 骑行者
 
 
 def get_arg_parse():
@@ -23,15 +32,11 @@ def get_arg_parse():
     arg_parse.add_argument("--predict_image", default="", dest="predict_image",
                            metavar="", help="预测的图像文件")
     arg_parse.add_argument("--predict_image_dir", default="", dest="predict_image_dir",
-                           metavar="", help="预测的图像目录，选择后 --result_list，--show_result 失效")
-    arg_parse.add_argument("--threshold", default=0.5, dest="threshold",
-                           metavar="", help="score阈值，将Box置信度低于该阈值的框过滤，默认 0.5")
-    arg_parse.add_argument("--result_list", default="./result/result.txt", dest="result_list",
-                           metavar="", help="预测的结果列表文件，默认 './result/result.txt'")
+                           metavar="", help="预测的图像目录")
+    arg_parse.add_argument("--weight", default=0.6, dest="weight",
+                           metavar="", help="mask可视化结果与原图权重因子，weight表示原图的权重，默认 0.6")
     arg_parse.add_argument("--result_dir", default="./result", dest="result_dir",
                            metavar="", help="预测结果可视化的保存目录，默认 './result'")
-    arg_parse.add_argument("--show_result", action="store_true", dest="show_result",
-                           help="显示预测结果的图像")
     return arg_parse
 
 
@@ -45,12 +50,10 @@ def infer(args):
     # 是预测图像目录
     is_predict_dir = False if predict_image_dir == "" else True
     # score阈值，将Box置信度低于该阈值的框过滤
-    threshold = args.threshold
-    # 预测的结果列表文件
-    result_list = args.result_list
+    weight = args.weight
     # 预测结果可视化的保存目录
     result_dir = args.result_dir
-
+    # 预测图像列表
     predict_image_list = []
 
     if not is_predict_dir:
@@ -62,57 +65,11 @@ def infer(args):
             predict_image_list.append(os.path.join(predict_image_dir, i))
 
     for predict_image_idx in predict_image_list:
-        # 读取图像
-        img = cv2.imread(predict_image_idx)
         # 预测结果
-        result = model.predict(img)
-        # 保留的结果
-        keep_results = []
-        # 面积
-        areas = []
-        # 写入文件的结果
-        result_lines = []
-        # 数量计数
-        count = 0
-
-        # 遍历结果，过滤
-        for det in result:
-            cname, bbox, score = det["category"], det["bbox"], det["score"]
-            # 结果过滤
-            if score >= threshold:
-                count += 1
-                keep_results.append(det)
-                result_lines.append("{}\n".format(str(det)))
-                # 面积：宽 * 高
-                areas.append(bbox[2] * bbox[3])
-
-        # 面积降序排列
-        # areas = np.asarray(areas)
-        # sorted_idxs = np.argsort(-areas).tolist()
-        # keep_results = [keep_results[k]
-        #                 for k in sorted_idxs] if len(keep_results) > 0 else []
-
-        if not is_predict_dir:
-            # 符合阈值 threshold 的结果数量
-            total_str = "the total number is : {}".format(str(count))
-            print(total_str)
-            # 写入结果
-            with open(result_list, "w") as f:
-                f.writelines(result_lines)
-
+        result = model.predict(predict_image_idx)
         # 预测结果可视化
-        pdx.det.visualize(
-            predict_image_idx, result, threshold=threshold, save_dir=result_dir)
-
-        if not is_predict_dir:
-            # 显示预测结果的图像
-            if args.show_result:
-                image_path = os.path.join(result_dir, "visualize_{}".format(
-                    os.path.basename(predict_image_idx)))
-                img = cv2.imread(image_path)
-                cv2.imshow("result", img)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
+        pdx.seg.visualize(image=predict_image_idx, result=result, weight=weight,
+                          save_dir=result_dir, color=VISUALIZE_COLOR)
 
 
 def main():
