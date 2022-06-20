@@ -261,7 +261,8 @@ def print_pdx_det_model_name():
     print(PDX_DET_MASKRCNN_BACKBONE)
 
 
-def pdx_seg_model(model_name: str, num_classes: int, backbone: str, hrnet_width: int):
+def pdx_seg_model(model_name: str, num_classes: int, backbone: str, hrnet_width: int,
+                  use_mixed_loss: False, align_corners: False):
     """
     获取 PaddleX 图像分割模型
 
@@ -269,6 +270,9 @@ def pdx_seg_model(model_name: str, num_classes: int, backbone: str, hrnet_width:
         model_name (str):  PaddleX 图像分割模型名称
         num_classes (int): 分类数量
         backbone (str): 图像分割模型 DeepLabV3P backbone 网络
+        hrnet_width (int): hrnet_width 高分辨率分支中特征层的通道数量，可选择取值为[18, 48]
+        use_mixed_loss (bool): 是否使用混合损失，可选择取值为[True, False]
+        align_corners (bool): 网络中对特征图进行插值时是否将四个角落像素的中心对齐，可选择取值为[True, False]
 
     Raises:
         Exception: PaddleX 图像分割模型名称错误
@@ -287,15 +291,19 @@ def pdx_seg_model(model_name: str, num_classes: int, backbone: str, hrnet_width:
     model = None
     if (model_name == 'DeepLabV3P'):
         model = paddlex.seg.DeepLabV3P(
-            num_classes=num_classes, backbone=backbone)
+            num_classes=num_classes, backbone=backbone, use_mixed_loss=use_mixed_loss, align_corners=align_corners)
     elif (model_name == 'BiSeNetV2'):
-        model = paddlex.seg.BiSeNetV2(num_classes=num_classes)
+        model = paddlex.seg.BiSeNetV2(
+            num_classes=num_classes, use_mixed_loss=use_mixed_loss, align_corners=align_corners)
     elif (model_name == 'UNet'):
-        model = paddlex.seg.UNet(num_classes=num_classes)
+        model = paddlex.seg.UNet(
+            num_classes=num_classes, use_mixed_loss=use_mixed_loss, align_corners=align_corners)
     elif (model_name == 'HRNet'):
-        model = paddlex.seg.HRNet(num_classes=num_classes, width=hrnet_width)
+        model = paddlex.seg.HRNet(num_classes=num_classes, width=hrnet_width,
+                                  use_mixed_loss=use_mixed_loss, align_corners=align_corners)
     elif (model_name == 'FastSCNN'):
-        model = paddlex.seg.FastSCNN(num_classes=num_classes)
+        model = paddlex.seg.FastSCNN(
+            num_classes=num_classes, use_mixed_loss=use_mixed_loss, align_corners=align_corners)
 
     return model, model_name
 
