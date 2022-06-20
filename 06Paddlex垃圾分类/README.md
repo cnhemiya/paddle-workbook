@@ -12,14 +12,16 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 |文件|说明|
 |--|--|
 |train.py|训练程序|
+|quant.py|量化程序|
+|prune.py|裁剪程序|
 |test.py|测试程序|
 |infer.py|预测程序|
 |onekey.sh|一键获取数据到 dataset 目录下|
-|get-data.sh|获取数据到 dataset 目录下|
-|make-dataset.py|生成数据集列表|
-|check-data.sh|检查 dataset 目录下的数据是否存在|
+|onetasks.sh|一键训练，量化脚本|
+|get_data.sh|获取数据到 dataset 目录下|
+|check_data.sh|检查 dataset 目录下的数据是否存在|
 |mod/args.py|命令行参数解析|
-|mod/pdx.py|PaddleX 用的|
+|mod/pdxconfig.py|PaddleX 配置|
 |mod/config.py|配置|
 |mod/utils.py|杂项|
 |mod/report.py|结果报表|
@@ -51,7 +53,7 @@ bash onekey.sh
 
 ## 配置模块
 
-可以查看修改 **mod/config.py** 文件，有详细的说明
+可以查看修改 **mod/pdxconfig.py** 文件，有详细的说明
 
 ## 开始训练
 
@@ -60,33 +62,55 @@ bash onekey.sh
 - 示例
 
 ```bash
-python3 train.py --dataset ./dataset/train --epochs 16 \
-    --batch_size 64 --learning_rate 0.1 \
-    --lr_decay_epochs "4 8 12" --lr_decay_gamma 0.5 \
-    --model MobileNetV3_small_ssld
+python3 run/train.py \
+    --dataset ./dataset/train \
+    --epochs 32 \
+    --batch_size 16 \
+    --learning_rate 0.01 \
+    --lr_decay_epochs "16"\
+    --lr_decay_gamma 0.25 \
+    --model MobileNetV3_large_ssld \
+    --pretrain_weights "IMAGENET"
 ```
 
 - 参数
 
 ```bash
+  -h, --help            show this help message and exit
   --cpu                 是否使用 cpu 计算，默认使用 CUDA
   --num_workers         线程数量，默认 auto，为CPU核数的一半
   --epochs              训练几轮，默认 4 轮
   --batch_size          一批次数量，默认 16
   --learning_rate       学习率，默认 0.025
-  --lr_decay_epochs     默认优化器的学习率衰减轮数。默认为 30 60 90
-  --lr_decay_gamma      默认优化器的学习率衰减率。默认为0.1
+  --early_stop          是否使用提前终止训练策略。默认为 False
+  --early_stop_patience 
+                        当使用提前终止训练策略时，如果验证集精度在early_stop_patience 个 epoch
+                        内连续下降或持平，则终止训练。默认为 5
   --save_interval_epochs 
-                        模型保存间隔(单位: 迭代轮数)。默认为1
+                        模型保存间隔(单位: 迭代轮数)。默认为 1
+  --log_interval_steps 
+                        训练日志输出间隔（单位：迭代次数）。默认为 10
+  --resume_checkpoint   恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练
   --save_dir            模型保存路径。默认为 ./output/
   --dataset             数据集目录，默认 ./dataset/
-  --model               PaddleX 模型名称
-  --pretrain_weights    从文件加载模型权重，默认 IMAGENET 自动下载 ImageNet 预训练的模型权重
-  --resume_checkpoint   恢复训练时指定上次训练保存的模型路径, 默认不会恢复训练
-  --model_list          输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练
   --train_list          训练集列表，默认 '--dataset' 参数目录下的 train_list.txt
   --eval_list           评估集列表，默认 '--dataset' 参数目录下的 val_list.txt
   --label_list          分类标签列表，默认 '--dataset' 参数目录下的 labels.txt
+  --warmup_steps        默认优化器的 warmup 步数，学习率将在设定的步数内，从 warmup_start_lr
+                        线性增长至设定的 learning_rate，默认为 0
+  --warmup_start_lr     默认优化器的 warmup 起始学习率，默认为 0.0
+  --lr_decay_epochs     默认优化器的学习率衰减轮数。默认为 30 60 90
+  --lr_decay_gamma      默认优化器的学习率衰减率。默认为 0.1
+  --use_ema             是否使用指数衰减计算参数的滑动平均值。默认为 False
+  --opti_scheduler      优化器的调度器，默认 auto，可选 auto，cosine，piecewise
+  --opti_reg_coeff      优化器衰减系数，如果 opti_scheduler 是 Cosine，默认是 4e-05，如果
+                        opti_scheduler 是 Piecewise，默认是 1e-04
+  --pretrain_weights    若指定为'.pdparams'文件时，从文件加载模型权重；若为字符串’IMAGENET’，则自动下载在Ima
+                        geNet图片数据上预训练的模型权重；若为字符串’COCO’，则自动下载在COCO数据集上预训练的模型权重；
+                        若为None，则不使用预训练模型。默认为'IMAGENET'
+  --model               PaddleX 模型名称
+  --model_list          输出 PaddleX 模型名称，默认不输出，选择后只输出信息，不会开启训练
+  --backbone            目标检测模型的 backbone 网络
 ```
 
 ## 查看支持的模型
@@ -94,7 +118,7 @@ python3 train.py --dataset ./dataset/train --epochs 16 \
 - 运行命令
 
 ```bash
-python3 train.py --model_list
+python3 run/train.py --model_list
 ```
 
 - 结果
@@ -110,14 +134,17 @@ python3 train.py --model_list
 - 示例
 
 ```bash
-python3 test.py --dataset ./dataset/train --epochs 4 \
-    --model_dir ./output/best_model
+python3 run/test.py --model_dir ./output/best_model \
+    --epochs 4 \
+    --dataset ./dataset/train \
+    --test_list ./dataset/train/test_list.txt
 ```
 - 参数
 
 ```bash
+  -h, --help    show this help message and exit
   --cpu         是否使用 cpu 计算，默认使用 CUDA
-  --epochs      训练几轮，默认 4 轮
+  --epochs      测试几轮，默认 4 轮
   --dataset     数据集目录，默认 ./dataset/
   --test_list   训练集列表，默认 '--dataset' 参数目录下的 test_list.txt
   --model_dir   读取训练后的模型目录，默认 ./output/best_model
@@ -130,12 +157,13 @@ python3 test.py --dataset ./dataset/train --epochs 4 \
 - 示例
 
 ```bash
-python3 infer.py --dataset ./dataset/train --model_dir ./output/best_model
+python3 run/infer.py --dataset ./dataset/train --model_dir ./output/best_model
 ```
 
 - 参数
 
 ```bash
+  -h, --help      show this help message and exit
   --cpu           是否使用 cpu 计算，默认使用 CUDA
   --dataset       数据集目录，默认 ./dataset/
   --infer_list    预测集列表，默认 '--dataset' 参数目录下的 infer_list.txt

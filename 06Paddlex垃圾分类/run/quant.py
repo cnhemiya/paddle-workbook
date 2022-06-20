@@ -118,7 +118,6 @@ def quant():
                             warmup_start_lr=args.warmup_start_lr,
                             lr_decay_epochs=args.lr_decay_epochs,
                             lr_decay_gamma=args.lr_decay_gamma,
-                            use_ema=args.use_ema,
                             early_stop=args.early_stop,
                             early_stop_patience=args.early_stop_patience,
                             resume_checkpoint=args.resume_checkpoint,
