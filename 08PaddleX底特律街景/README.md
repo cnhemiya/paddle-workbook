@@ -16,13 +16,14 @@ Ubuntu 系统安装 CUDA 参考：[Ubuntu 百度飞桨和 CUDA 的安装](https:
 
 |文件|说明|
 |--|--|
-|seg-train.py|训练程序|
-|seg-prune.py|裁剪程序|
-|seg-quant.py|量化程序|
+|train.py|训练程序|
+|prune.py|裁剪程序|
+|quant.py|量化程序|
+|infer.py|预测程序|
 |onekey.sh|一键获取数据到 dataset 目录下|
 |onetasks.sh|一键训练，量化脚本|
-|get-data.sh|获取数据到 dataset 目录下|
-|check-data.sh|检查 dataset 目录下的数据是否存在|
+|get_data.sh|获取数据到 dataset 目录下|
+|check_data.sh|检查 dataset 目录下的数据是否存在|
 |mod/args.py|命令行参数解析|
 |mod/pdxconfig.py|PaddleX 配置|
 |mod/config.py|配置|
@@ -69,12 +70,12 @@ bash onekey.sh
 
 ## 开始训练
 
-运行 **seg-train.py** 文件，查看命令行参数加 -h
+运行 **train.py** 文件，查看命令行参数加 -h
 
 - 示例
 
 ```bash
-python3 seg-train.py \
+python3 run/train.py \
     --dataset ./dataset/detroit_streetscape \
     --epochs 32 \
     --batch_size 1 \
@@ -129,7 +130,7 @@ python3 seg-train.py \
 - 运行命令
 
 ```bash
-python3 seg-train.py --model_list
+python3 run/train.py --model_list
 ```
 
 - 结果
@@ -143,14 +144,14 @@ DeepLabV3P backbone 网络
 
 ## 模型裁剪
 
-- 运行 **seg-prune.py** 文件，查看命令行参数加 -h。
+- 运行 **prune.py** 文件，查看命令行参数加 -h。
 - 注意：有的模型不支持裁剪。
 - 裁剪后的精度大部分会降低。
 - 参考文档：[模型裁剪](https://gitee.com/paddlepaddle/PaddleX/tree/develop/tutorials/slim/prune)
 - 示例
 
 ```bash
-python3 seg-prune.py \
+python3 run/prune.py \
     --dataset ./dataset/detroit_streetscape \
     --epochs 16 \
     --batch_size 1 \
@@ -190,13 +191,13 @@ python3 seg-prune.py \
 
 ## 模型量化
 
-- 运行 **seg-quant.py** 文件，查看命令行参数加 -h
+- 运行 **quant.py** 文件，查看命令行参数加 -h
 - model_dir 是正常训练后的模型保存目录。
 - 参考文档：[模型量化](https://gitee.com/paddlepaddle/PaddleX/tree/develop/tutorials/slim/quantize)
 - 示例
 
 ```bash
-python3 seg-quant.py \
+python3 run/quant.py \
     --dataset ./dataset/detroit_streetscape \
     --epochs 16 \
     --batch_size 1 \
@@ -233,11 +234,11 @@ python3 seg-quant.py \
 
 ## 预测模型
 
-- 运行 **seg-infer.py** 文件，查看命令行参数加 -h
+- 运行 **infer.py** 文件，查看命令行参数加 -h
 - 示例
 
 ```bash
-python3 seg-infer.py --model_dir ./output/best_model \
+python3 run/infer.py --model_dir ./output/best_model \
     --predict_image ./dataset/detroit_streetscape/0183.jpg
 ```
 
