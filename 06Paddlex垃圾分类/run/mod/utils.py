@@ -10,6 +10,7 @@ DATE:    2022-04-08 21:52
 import os
 import time
 import random
+import paddle
 import paddle.nn.functional as F
 
 
@@ -56,13 +57,14 @@ def predict_to_class(predict_result):
     return result_idx
 
 
-def str_to_list(str_arr: str, astype="int"):
+def str_to_list(str_arr: str, astype="int", split=" "):
     """
     数字字符串转列表
 
     Args:
         str_arr (str): 一组数字字符串，如："3 6 9"
         astype (str, optional): 转为类型, 默认 "int"
+        split (str): 数据分割字符，默认 空格
 
     Raises:
         Exception: astype 错误
@@ -75,7 +77,7 @@ def str_to_list(str_arr: str, astype="int"):
     if astype not in ["int", "float"]:
         raise Exception("astype 错误, 只能为: int, float")
 
-    arr = str_arr.split(" ")
+    arr = str_arr.split(split)
     result = []
     for i in arr:
         if (astype == "int"):
@@ -122,3 +124,15 @@ def parse_dataset(dataset_path: str, dataset_list_path: str, inc_label: bool, sh
         else:
             image_paths.append(os.path.join(dataset_path, i))
     return image_paths, labels
+
+
+def image_to_tensor(image, img_c, img_h, img_w):
+    """
+    图像数据转 tensor
+
+    Returns:
+        tensor: 转换后的 tensor 数据
+    """
+    # 图像数据格式 CHW
+    data = image.reshape([1, img_c, img_h, img_w]).astype("float32")
+    return paddle.to_tensor(data)
