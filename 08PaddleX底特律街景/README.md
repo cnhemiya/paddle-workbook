@@ -255,7 +255,7 @@ python3 run/infer.py --model_dir ./output/best_model \
 
 ## 关于图像宽高
 
-- 由于原始图像是 1920x1080 在训练前填充为 1920 的正方形图像，然后调整为 1024x1024，参见 **seg-train.py**
+- 由于原始图像是 1920x1080 在训练前填充为 1920 的正方形图像，然后调整为 1024x1024，参见 **train.py**
 
 ```python
 T.Padding(target_size=1920, pad_mode=0, im_padding_value=[0, 0, 0]),
