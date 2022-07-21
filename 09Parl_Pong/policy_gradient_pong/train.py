@@ -33,8 +33,8 @@ assert gym.__version__ == "0.18.0", "[Version WARNING] please try `pip install g
 
 LEARNING_RATE = 5e-4
 OBS_DIM_SIZE = [80, 80]
-EPISODES = 500
-SAVE_DIR = "./model.ckpt"
+EPISODES = 2000
+SAVE_PATH = "./dpg_model.ckpt"
 
 
 # 训练一个episode
@@ -97,6 +97,10 @@ def calc_reward_to_go(reward_list, gamma=0.99):
     reward_arr -= np.mean(reward_arr)
     reward_arr /= np.std(reward_arr)
     return reward_arr
+    
+
+def save_model(agent, save_path: str):
+    agent.save(save_path)
 
 
 def main():
@@ -118,22 +122,27 @@ def main():
 
     for i in range(EPISODES):
         obs_list, action_list, reward_list = run_train_episode(agent, env)
-        if i % 10 == 0:
-            logger.info("Episode {}, Reward Sum {}.".format(
-                i, sum(reward_list)))
+        if (i + 1) % 20 == 0:
+            logger.info("episode: {}    train reward: {}".format(
+                i + 1, sum(reward_list)))
 
         batch_obs = np.array(obs_list)
         batch_action = np.array(action_list)
         batch_reward = calc_reward_to_go(reward_list)
 
         agent.learn(batch_obs, batch_action, batch_reward)
-        if (i + 1) % 100 == 0:
+
+        if (i + 1) % 10 == 0:
             # render=True 查看显示效果
             total_reward = run_evaluate_episodes(agent, env, render=False)
-            logger.info('Test reward: {}'.format(total_reward))
-    run_evaluate_episodes(agent, env, render=True)
-    # save the parameters to ./model.ckpt
-    agent.save(SAVE_DIR)
+            logger.info("episode: {}    test reward: {}".format(i + 1, total_reward))
+
+            logger.info("episode: {}    save model: {}".format(i + 1, SAVE_PATH))
+            save_model(agent, SAVE_PATH)
+
+    # 训练结束，保存模型
+    save_model(agent, SAVE_PATH)
+    logger.info("Finished training...")
 
 
 if __name__ == '__main__':
