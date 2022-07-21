@@ -38,10 +38,11 @@ MEMORY_WARMUP_SIZE = 200  # replay_memory 里需要预存一些经验数据，�
 BATCH_SIZE = 64  # 每次给agent learn的数据数量，从replay memory随机里sample一批数据出来
 LEARNING_RATE = 5e-4  # 学习率
 GAMMA = 0.99  # reward 的衰减因子，一般取 0.9 到 0.999 不等，原值 0.99
-TRAIN_EPISODE = 2000
+TRAIN_EPISODE = 2000 # 训练多少个episode
+SAVE_EPISODE = 20 # 模型保存间隔
 
-OBS_SHAPE = [105, 80]
-SAVE_DIR = "./dqn_model.ckpt"
+OBS_SHAPE = [96, 96] # 观察图像的大小，即图像的高和宽
+SAVE_PATH = "./dqn_model.ckpt" # 模型保存路径
 
 
 class TransformsObservation(gym.ObservationWrapper):
@@ -56,6 +57,7 @@ class TransformsObservation(gym.ObservationWrapper):
         self.observation_space = Box(low=0, high=255, shape=obs_shape, dtype=np.uint8)
 
     def observation(self, observation):
+        observation = observation[35:195]  # 裁剪
         transforms = T.Compose([
             T.Resize(size=self.shape),
             T.Grayscale(num_output_channels=1), 
@@ -130,11 +132,15 @@ def to_features(image):
     return image
 
 
+def save_model(agent, save_path: str):
+    agent.save(save_path)
+
+
 def main():
     env = build_env()
     obs_dim = env.observation_space.shape
     act_dim = env.action_space.n
-    # logger.info('obs_dim {}, act_dim {}'.format(obs_dim, act_dim))
+    logger.info('obs_dim {}x{},  act_dim {}'.format(obs_dim[0], obs_dim[1], act_dim))
 
     rpm = ReplayMemory(MEMORY_SIZE)  # DQN的经验回放池
 
@@ -148,11 +154,11 @@ def main():
         algorithm=algorithm,
         act_dim=act_dim,
         e_greed=0.1,  # 有一定概率随机选取动作，探索，原值 0.1
-        e_greed_decrement=1e-6)  # 随着训练逐步收敛，探索的程度慢慢降低，原值 0
+        e_greed_decrement=1e-7)  # 随着训练逐步收敛，探索的程度慢慢降低，原值 0
 
     # 加载模型并评估
-    # if os.path.exists(SAVE_DIR):
-    #     agent.restore(SAVE_DIR)
+    # if os.path.exists(SAVE_PATH):
+    #     agent.restore(SAVE_PATH)
     #     run_evaluate_episodes(agent, env, render=True)
     #     exit()
 
@@ -160,7 +166,7 @@ def main():
     print("start memory warmup size: {}".format(MEMORY_WARMUP_SIZE))
     for i in range(MEMORY_WARMUP_SIZE):
         total_reward = run_train_episode(agent, env, rpm)
-        if (i + 1) % 10 == 0:
+        if (i + 1) % SAVE_EPISODE == 0:
            logger.info("episode: {}    e_greed: {}    train reward: {}    rpm: {}".format(
             i + 1, agent.e_greed, total_reward, len(rpm)))
     print("end memory warmup size: {}".format(MEMORY_WARMUP_SIZE))
@@ -172,21 +178,23 @@ def main():
         total_reward = run_train_episode(agent, env, rpm)
 
         # test part    render=True 查看显示效果
-        if (i + 1) % 10 == 0:
+        if (i + 1) % SAVE_EPISODE == 0:
             eval_reward = run_evaluate_episodes(agent, env, render=False)
             logger.info("episode: {}    e_greed: {}    test reward: {}    rpm: {}".format(
                 i + 1, agent.e_greed, eval_reward, len(rpm)))
+            logger.info("episode: {}    save model: {}".format(i + 1, SAVE_PATH))
+            save_model(agent, SAVE_PATH)
 
     # 训练结束，保存模型
-    save_path = SAVE_DIR
-    agent.save(save_path)
+    agent.save(SAVE_PATH)
+    print("end train episode: {}".format(TRAIN_EPISODE))
 
 def model_summary():
     # 原图 210x160x3，image[35:195]  # 裁剪
     net = model.PaddleModel()
     c = 1
-    h = 105
-    w = 80
+    h = 96
+    w = 96
     params_info = paddle.summary(
         net, (1, c, h, w))
     print(params_info)

@@ -59,7 +59,7 @@ class Model(parl.Model):
 
         input_channels = 1
         mid_channels = 32
-        first_features = 2240 # 1 c 640, 3 c 3456
+        first_features = 2592 # 1 c 640, 3 c 3456
         
         self.model = nn.Sequential(
             nn.Conv2D(in_channels=input_channels, out_channels=mid_channels, kernel_size=5, stride=2, padding=0),
@@ -93,7 +93,7 @@ class PaddleModel(nn.Layer):
         
         input_channels = 1
         mid_channels = 32
-        first_features = 2240 # 1 c 640, 3 c 3456
+        first_features = 2592 # 1 c 640, 3 c 3456
         
         self.model = nn.Sequential(
             nn.Conv2D(in_channels=input_channels, out_channels=mid_channels, kernel_size=5, stride=2, padding=0),
@@ -103,9 +103,9 @@ class PaddleModel(nn.Layer):
             nn.Conv2D(in_channels=mid_channels, out_channels=mid_channels, kernel_size=5, stride=2, padding=0),
             nn.ReLU(),
             nn.Flatten(),
-            nn.Linear(in_features=first_features, out_features=512),
-            nn.ReLU(),
-            nn.Linear(in_features=512, out_features=6)
+            # nn.Linear(in_features=first_features, out_features=512),
+            # nn.ReLU(),
+            # nn.Linear(in_features=512, out_features=6)
         )
 
     def forward(self, obs):
