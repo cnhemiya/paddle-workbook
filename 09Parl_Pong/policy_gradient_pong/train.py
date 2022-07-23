@@ -32,8 +32,9 @@ assert gym.__version__ == "0.18.0", "[Version WARNING] please try `pip install g
 
 
 LEARNING_RATE = 5e-4
-OBS_DIM_SIZE = [80, 80]
+OBS_SHAPE = [80, 80]
 EPISODES = 2000
+SAVE_EPISODE = 20 # 模型保存间隔
 SAVE_PATH = "./dpg_model.ckpt"
 
 
@@ -105,7 +106,7 @@ def save_model(agent, save_path: str):
 
 def main():
     env = gym.make('Pong-v0')
-    obs_dim = OBS_DIM_SIZE[0] * OBS_DIM_SIZE[1]  # 80 * 80
+    obs_dim = OBS_SHAPE[0] * OBS_SHAPE[1]  # 80 * 80
     act_dim = env.action_space.n
     logger.info('obs_dim {}, act_dim {}'.format(obs_dim, act_dim))
 
@@ -122,7 +123,7 @@ def main():
 
     for i in range(EPISODES):
         obs_list, action_list, reward_list = run_train_episode(agent, env)
-        if (i + 1) % 20 == 0:
+        if (i + 1) % SAVE_EPISODE == 0:
             logger.info("episode: {}    train reward: {}".format(
                 i + 1, sum(reward_list)))
 
@@ -132,9 +133,9 @@ def main():
 
         agent.learn(batch_obs, batch_action, batch_reward)
 
-        if (i + 1) % 10 == 0:
+        if (i + 1) % SAVE_EPISODE == 0:
             # render=True 查看显示效果
-            total_reward = run_evaluate_episodes(agent, env, render=False)
+            total_reward = run_evaluate_episodes(agent, env, render=True)
             logger.info("episode: {}    test reward: {}".format(i + 1, total_reward))
 
             logger.info("episode: {}    save model: {}".format(i + 1, SAVE_PATH))
